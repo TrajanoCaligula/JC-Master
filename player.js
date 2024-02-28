@@ -17,7 +17,7 @@ function Player(x, y, map)
 	var pirate = new Texture("Textures/Characters/Pirate.png");
 
 	// Prepare PIRATE sprite & its animations
-	this.sprite = new Sprite(x, y, 32, 32, 8, pirate);
+	this.sprite = new Sprite(x, y, 64, 64, 8, pirate);
 
 	//STAND
 	this.sprite.addAnimation();

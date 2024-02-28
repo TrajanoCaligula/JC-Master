@@ -14,7 +14,7 @@ function Shark(x, y, map)
 	var shark = new Texture("Textures/Characters/Shark.png");
 
 	// Prepare PIRATE sprite & its animations
-	this.sprite = new Sprite(x, y, 32, 32, 8, shark);
+	this.sprite = new Sprite(x, y, 64, 64, 8, shark);
 
 	//STAND
 	this.sprite.addAnimation();

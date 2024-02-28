@@ -8,7 +8,7 @@ function Scene()
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	
 	// Create tilemap
-	this.map = new Tilemap(tilesheet, [32, 32], [30, 19], [0, 16], level01);
+	this.map = new Tilemap(tilesheet, [32, 32], [30, 19], [0, 32], level01);
 	
 	// Create entities
 	this.player = new Player(224, 240, this.map);

@@ -99,6 +99,8 @@ function Player(x, y, map)
 
 	this.Alive = true;
 	this.Dead = false;
+	this.size = 1;
+	this.vulnerability = true;
 }
 
 
@@ -225,26 +227,68 @@ Player.prototype.draw = function()
 
 Player.prototype.collisionBox = function()
 {
-	var box = new Box(this.sprite.x + 7, this.sprite.y+4, this.sprite.x + this.sprite.width - 7, this.sprite.y + this.sprite.height);
+    if(this.size == 1)	var box = new Box(this.sprite.x + 7, this.sprite.y+4, this.sprite.x + this.sprite.width - 7, this.sprite.y + this.sprite.height);
+    //TODO: else in case we need to change the collision box depending on the size of the player
 	
 	return box;
 }
 
 Player.prototype.killerCollisionBox = function()
 {
-	var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
-	
+	if(this.size == 1)	var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
+	//TODO: else in case we need to change the collision box depending on the size of the player
 	return box;
 }
 
-Player.prototype.hitted = function()
+Player.prototype.hitted = function() //TODO: Change this.size to 1 and change the set of animations to littlepirate and change the collision box
 {
 	num_anim = this.sprite.currentAnimation;
-	if(num_anim == 0 || num_anim == 2 || num_anim == 4 || num_anim == 6)this.sprite.setAnimation(PIRATE_HIT_LEFT);
-	else this.sprite.setAnimation(PIRATE_HIT_RIGHT);
-	this.Alive = false;
-	this.jumpAngle = 0;
-	this.startY = this.sprite.y;
+	if(this.vulnerability && this.size == 2){ //TODO:change the set of animations to littlepirate
+        this.size = 1;
+        this.jumpAngle = 0;
+        this.startY = this.sprite.y;
+        if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT){
+            this.sprite.setAnimation(PIRATE_HIT_LEFT);
+        }
+        else {
+            this.sprite.setAnimation(PIRATE_HIT_RIGHT);
+        }
+	} else if(this.vulnerability){
+	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_LEFT);
+        else this.sprite.setAnimation(PIRATE_HIT_RIGHT);
+        this.Alive = false;
+        this.jumpAngle = 0;
+        this.startY = this.sprite.y;
+	}
+
+}
+
+Player.prototype.hitsFlag = function()
+{
+   num_anim = this.sprite.currentAnimation;
+   if(num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT) this.sprite.setAnimation(PIRATE_FALL_LEFT);
+   else this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+   //TODO: Go down to the floor and points
+}
+
+Player.prototype.powerUpWheel = function() //TODO
+{
+    this.vulnerability = false;
+}
+
+Player.prototype.powerUpHat = function() //TODO
+{
+    this.size = 2;
+}
+
+Player.prototype.powerDownWheel = function() //TODO
+{
+    this.vulnerability = true;
+}
+
+Player.prototype.powerDownHat = function() //TODO
+{
+    this.size = 1;
 }
 
 Player.prototype.isAlive = function()

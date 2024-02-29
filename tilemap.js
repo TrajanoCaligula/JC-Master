@@ -1,6 +1,6 @@
 
 // Tilemap. Draws a tilemap using a texture as a tilesheet.
-
+const TERRAIN = 6;
 function Tilemap(tilesheet, tileSize, blockGrid, basePos, map)
 {
 	this.tileSize = tileSize;
@@ -52,11 +52,15 @@ Tilemap.prototype.draw = function ()
 			if(tileId != 0)
 				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
 									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);
-			tileId = this.map.layers[4].data[pos];
+			/*tileId = this.map.layers[4].data[pos];
 			if(tileId != 0)
 				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
-									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);
-			tileId = this.map.layers[5].data[pos];
+									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);*/
+			/*tileId = this.map.layers[5].data[pos];
+			if(tileId != 0)
+				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
+									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);*/
+			tileId = this.map.layers[6].data[pos];
 			if(tileId != 0)
 				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
 									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);
@@ -75,7 +79,7 @@ Tilemap.prototype.collisionMoveLeft = function(sprite)
 	
 	for(var y=y0; y<=y1; y++)
 	{
-		if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
 			return true;
 	}
 	
@@ -93,7 +97,7 @@ Tilemap.prototype.collisionMoveRight = function(sprite)
 	
 	for(var y=y0; y<=y1; y++)
 	{
-		if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
 			return true;
 	}
 	
@@ -111,7 +115,7 @@ Tilemap.prototype.collisionMoveDown = function(sprite)
 	
 	for(var x=x0; x<=x1; x++)
 	{
-		if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
 		{
 			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
 			return true;

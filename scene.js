@@ -38,7 +38,7 @@ Scene.prototype.update = function(deltaTime)
 {
 	// Keep track of time
 	this.currentTime += deltaTime;
-	
+	if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
 	// Update entities
 	this.player.update(deltaTime);
 	for(var i = 0; i < this.barrels.length; i++){
@@ -139,21 +139,24 @@ Scene.prototype.drawHitBoxes = function(){
 	if(this.drawHitBoxesState){
 		this.quads = new Array();
 		var box = this.player.collisionBox();
-		this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
+		this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "blue"));
 		for(var i = 0; i < this.barrels.length; i++){
-			if(this.barrelsActive[i])
-			box = this.barrels[i].collisionBox();
-			this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "green"));
+			if(this.barrelsActive[i]){
+				box = this.barrels[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "purple"));
+			}
 		}
 		for(var i = 0; i < this.barrelsInt.length; i++){
-			if(this.barrelsIntActive[i])
-			box = this.barrelsInt[i].collisionBox();
-			this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "yellow"));
+			if(this.barrelsIntActive[i]){
+				box = this.barrelsInt[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "yellow"));
+			}
 		}
 		for(var i = 0; i < this.enemies_sharks.length; i++){
-			if(this.sharksActive[i])
+			if(this.sharksActive[i]){
 				box = this.enemies_sharks[i].collisionBox();
-				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "blue"));
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
+			}
 		}
 		for(var i = 0; i < this.quads.length; i++){
 			this.quads[i].draw();

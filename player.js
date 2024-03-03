@@ -113,7 +113,7 @@ Player.prototype.update = function(deltaTime)
 		if(this.jumpAngle >= 180)
 		{
 			this.sprite.y = this.sprite.y + 5;
-			if(this.sprite.y > 500)this.Dead = true;
+			if(this.sprite.y > 800)this.Dead = true;
 		}
 		else{
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
@@ -227,7 +227,7 @@ Player.prototype.draw = function()
 
 Player.prototype.collisionBox = function()
 {
-    if(this.size == 1)	var box = new Box(this.sprite.x + 7, this.sprite.y+4, this.sprite.x + this.sprite.width - 7, this.sprite.y + this.sprite.height);
+    if(this.size == 1)	var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
     //TODO: else in case we need to change the collision box depending on the size of the player
 	
 	return box;

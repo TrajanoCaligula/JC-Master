@@ -18,11 +18,11 @@ function Scene()
 	this.barrelsIntActive = []
 	this.createBarrelsInt();
 
-	this.player = new Player(224, 240, this.map);
+	this.player = new Player(224, 608, this.map);
 	this.playerALive = true;
 
 	this.enemies_sharks = [];
-	this.enemies_sharks.push(new Shark(334, 240, this.map));
+	this.enemies_sharks.push(new Shark(734, 544, this.map));
 	this.sharksActive = [];
 	this.sharksActive.push(true);
 	
@@ -30,6 +30,7 @@ function Scene()
 	this.currentTime = 0;
 
 	this.textactive = false;
+	this.drawHitBoxesState = false; // FOR DEBUBBING
 }
 
 
@@ -80,22 +81,22 @@ Scene.prototype.draw = function ()
 
 	// Draw tilemap
 	this.map.draw();
-
+	this.drawHitBoxes();
 	// Draw entities
 	
 	if(!this.player.Dead)this.player.draw();
 
 	for(var i = 0; i < this.barrels.length; i++){	
-		if(this.barrelsActive[i] && (this.barrels[i].sprite.x < 800 && this.barrels[i].sprite.x > -40))
+		if(this.barrelsActive[i] && this.isInsideScreen(this.barrels[i]))
 			this.barrels[i].draw();
 	}
 	for(var i = 0; i < this.barrelsInt.length; i++){	
-		if(this.barrelsIntActive[i] && (this.barrelsInt[i].sprite.x < 800 && this.barrelsInt[i].sprite.x > -40))
+		if(this.barrelsIntActive[i] && this.isInsideScreen(this.barrelsInt[i]))
 			this.barrelsInt[i].draw();
 	}
 
 	for(var i = 0; i < this.enemies_sharks.length; i++){
-		if(this.sharksActive[i] && (this.enemies_sharks[i].sprite.x < 800 && this.enemies_sharks[i].sprite.x > -40))
+		if(this.sharksActive[i] && this.isInsideScreen(this.enemies_sharks[i]))
 			this.enemies_sharks[i].draw();
 	}
 
@@ -127,5 +128,35 @@ Scene.prototype.createBarrelsInt = function()
 		}
 }
 
+Scene.prototype.isInsideScreen = function(obj){
+	if(obj.sprite.x < 1000 && obj.sprite.x > -80)
+		return true;
+	else
+		return false;
+}
 
-
+Scene.prototype.drawHitBoxes = function(){
+	if(this.drawHitBoxesState){
+		this.quads = new Array();
+		var box = this.player.collisionBox();
+		this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
+		for(var i = 0; i < this.barrels.length; i++){
+			if(this.barrelsActive[i])
+			box = this.barrels[i].collisionBox();
+			this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "green"));
+		}
+		for(var i = 0; i < this.barrelsInt.length; i++){
+			if(this.barrelsIntActive[i])
+			box = this.barrelsInt[i].collisionBox();
+			this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "yellow"));
+		}
+		for(var i = 0; i < this.enemies_sharks.length; i++){
+			if(this.sharksActive[i])
+				box = this.enemies_sharks[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "blue"));
+		}
+		for(var i = 0; i < this.quads.length; i++){
+			this.quads[i].draw();
+		}
+	}
+}

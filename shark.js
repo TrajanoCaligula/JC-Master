@@ -135,7 +135,7 @@ Shark.prototype.draw = function()
 
 Shark.prototype.collisionBox = function()
 {
-	var box = new Box(this.sprite.x + 7, this.sprite.y+5, this.sprite.x + this.sprite.width - 4, this.sprite.y + this.sprite.height-8);
+	var box = new Box(this.sprite.x + 12, this.sprite.y+15, this.sprite.x + this.sprite.width - 10, this.sprite.y + this.sprite.height);
 	
 	return box;
 }

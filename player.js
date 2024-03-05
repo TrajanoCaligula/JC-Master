@@ -131,7 +131,7 @@ Player.prototype.update = function(deltaTime)
 			this.sprite.x -= 2;
 			if(this.map.collisionMoveLeft(this.sprite))
 				this.sprite.x += 2;
-			if (this.sprite.x < -8) this.sprite.x += 2;
+			if (this.sprite.x < -7) this.sprite.x += 2;
 		}
 		else if(keyboard[39]) // KEY_RIGHT
 		{

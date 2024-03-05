@@ -73,7 +73,7 @@ Tilemap.prototype.draw = function ()
 
 Tilemap.prototype.collisionMoveLeft = function(sprite)
 {
-	var x = Math.floor((sprite.x + 12- this.basePos[0]) / this.tileSize[0]);
+	var x = Math.floor((sprite.x + 18 - this.basePos[0]) / this.tileSize[0]);
 	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
 	var y1 = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
 	
@@ -91,7 +91,7 @@ Tilemap.prototype.collisionMoveLeft = function(sprite)
 
 Tilemap.prototype.collisionMoveRight = function(sprite)
 {
-	var x = Math.floor((sprite.x + sprite.width - 12 - this.basePos[0]) / this.tileSize[0]);
+	var x = Math.floor((sprite.x + sprite.width - 18 - this.basePos[0]) / this.tileSize[0]);
 	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
 	var y1 = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
 	
@@ -110,8 +110,8 @@ Tilemap.prototype.collisionMoveRight = function(sprite)
 Tilemap.prototype.collisionMoveDown = function(sprite)
 {
 	var y = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
-	var x0 = Math.floor((sprite.x + 12 - this.basePos[0]) / this.tileSize[0]);
-	var x1 = Math.floor((sprite.x + sprite.width - 14 - this.basePos[0]) / this.tileSize[0]);
+	var x0 = Math.floor((sprite.x + 18 - this.basePos[0]) / this.tileSize[0]);
+	var x1 = Math.floor((sprite.x + sprite.width - 18 - this.basePos[0]) / this.tileSize[0]);
 	
 	for(var x=x0; x<=x1; x++)
 	{

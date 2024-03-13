@@ -31,39 +31,53 @@ function Scene()
 
 	this.textactive = false;
 	this.drawHitBoxesState = false; // FOR DEBUBBING
+
+	this.displacement=0;
+	this.end = false;
 }
 
 
 Scene.prototype.update = function(deltaTime)
 {
-	// Keep track of time
-	this.currentTime += deltaTime;
-	if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
-	// Update entities
-	this.player.update(deltaTime);
-	for(var i = 0; i < this.barrels.length; i++){
-		this.barrels[i].update(deltaTime);
+	if(this.end){
+
 	}
-	for(var i = 0; i < this.barrelsInt.length; i++){
-		this.barrelsInt[i].update(deltaTime);
-	}
-	for(var i = 0; i < this.enemies_sharks.length; i++){
-		this.enemies_sharks[i].update(deltaTime);
-	}
-	if(this.player.Alive){
-	// Check for collision between entities
+	else{
+		// Keep track of time
+		this.currentTime += deltaTime;
+		if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
+		// Update entities
+		this.player.update(deltaTime);
 		for(var i = 0; i < this.barrels.length; i++){
-			if(this.barrelsActive[i]&&this.player.collisionBox().intersect(this.barrels[i].collisionBox()))
-				this.barrelsActive[i] = false;
+			this.barrels[i].update(deltaTime);
 		}
 		for(var i = 0; i < this.barrelsInt.length; i++){
-			if(this.barrelsIntActive[i]&&this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox()))
-				this.barrelsIntActive[i] = false;
+			this.barrelsInt[i].update(deltaTime);
 		}
-
 		for(var i = 0; i < this.enemies_sharks.length; i++){
-			if(this.sharksActive[i]&&this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
-				this.player.hitted();
+			this.enemies_sharks[i].update(deltaTime);
+		}
+		if((this.player.sprite.x-this.displacement)>224){
+			this.displacement = this.player.sprite.x-224;
+		}
+		if(this.player.sprite.x-this.displacement< -7){
+			this.player.sprite.x = this.displacement-7;
+		}
+		if(this.player.Alive){
+		// Check for collision between entities
+			for(var i = 0; i < this.barrels.length; i++){
+				if(this.barrelsActive[i]&&this.player.collisionBox().intersect(this.barrels[i].collisionBox()))
+					this.barrelsActive[i] = false;
+			}
+			for(var i = 0; i < this.barrelsInt.length; i++){
+				if(this.barrelsIntActive[i]&&this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox()))
+					this.barrelsIntActive[i] = false;
+			}
+
+			for(var i = 0; i < this.enemies_sharks.length; i++){
+				if(this.sharksActive[i]&&this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
+					this.player.hitted();
+				}
 			}
 		}
 	}
@@ -78,7 +92,8 @@ Scene.prototype.draw = function ()
 	// Clear background
 	context.fillStyle = "rgb(224, 224, 240)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
-
+	context.save();
+	context.translate(-this.displacement,0);
 	// Draw tilemap
 	this.map.draw();
 	this.drawHitBoxes();
@@ -99,7 +114,7 @@ Scene.prototype.draw = function ()
 		if(this.sharksActive[i] && this.isInsideScreen(this.enemies_sharks[i]))
 			this.enemies_sharks[i].draw();
 	}
-
+	context.restore();
 }
 
 

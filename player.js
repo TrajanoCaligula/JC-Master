@@ -14,7 +14,7 @@ const PIRATE_HIT_RIGHT = 9;
 function Player(x, y, map)
 {
 	// Loading spritesheets
-	var pirate = new Texture("Textures/Characters/Pirate.png");
+	var pirate = new Texture("Textures/Characters/PirateMini.png");
 
 	// Prepare PIRATE sprite & its animations
 	this.sprite = new Sprite(x, y, 64, 64, 8, pirate);

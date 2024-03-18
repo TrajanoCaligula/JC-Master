@@ -3,91 +3,21 @@ const PIRATE_STAND_LEFT = 0;
 const PIRATE_STAND_RIGHT = 1;
 const PIRATE_WALK_LEFT = 2;
 const PIRATE_WALK_RIGHT = 3;
-const PIRATE_JUMP_LEFT = 4;
-const PIRATE_JUMP_RIGHT = 5;
-const PIRATE_FALL_LEFT = 6;
-const PIRATE_FALL_RIGHT = 7;
-const PIRATE_HIT_LEFT = 8;
-const PIRATE_HIT_RIGHT = 9;
+const PIRATE_RUN_LEFT = 4;
+const PIRATE_RUN_RIGHT = 5;
+const PIRATE_JUMP_LEFT = 6;
+const PIRATE_JUMP_RIGHT = 7;
+const PIRATE_FALL_LEFT = 8;
+const PIRATE_FALL_RIGHT = 9;
+const PIRATE_HIT_LEFT = 10;
+const PIRATE_HIT_RIGHT = 11;
 
 
 function Player(x, y, map)
 {
 	// Loading spritesheets
-	var pirate = new Texture("Textures/Characters/Pirate.png");
 
-	// Prepare PIRATE sprite & its animations
-	this.sprite = new Sprite(x, y, 64, 64, 8, pirate);
-
-	//STAND
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_STAND_LEFT, [160, 192, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_LEFT, [128, 192, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_LEFT, [96, 192, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_LEFT, [64, 192, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_LEFT, [32, 192, 32, 32]);
-
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_STAND_RIGHT, [0, 0, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_RIGHT, [32, 0, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_RIGHT, [64, 0, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_RIGHT, [96, 0, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_STAND_RIGHT, [128, 0, 32, 32]);
-
-
-	//WALK
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_WALK_LEFT, [160, 224, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_LEFT, [128, 224, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_LEFT, [96, 224, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_LEFT, [64, 224, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_LEFT, [32, 224, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_LEFT, [0, 224, 32, 32]);
-
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_WALK_RIGHT, [0, 32, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_RIGHT, [32, 32, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_RIGHT, [64, 32, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_RIGHT, [96, 32, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_RIGHT, [128, 32, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
-
-	//JUMP
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_JUMP_LEFT, [160, 256, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_JUMP_LEFT, [128, 256, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_JUMP_LEFT, [96, 256, 32, 32]);
-
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_JUMP_RIGHT, [0, 64, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_JUMP_RIGHT, [32, 64, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_JUMP_RIGHT, [64, 64, 32, 32]);
-
-	//FALL
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_FALL_LEFT, [160, 288, 32, 32]);
-
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_FALL_RIGHT, [0, 96, 32, 32]);
-
-	//HIT
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_HIT_LEFT, [0, 160, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_LEFT, [32, 160, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_LEFT, [64, 160, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_LEFT, [96, 160, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_LEFT, [128, 160, 32, 32]);
-	
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(PIRATE_HIT_RIGHT, [160, 352, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_RIGHT, [128, 352, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_RIGHT, [96, 352, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_RIGHT, [64, 352, 32, 32]);
-	this.sprite.addKeyframe(PIRATE_HIT_RIGHT, [32, 352, 32, 32]);
-
-	// Set initial animation
-
-	this.sprite.setAnimation(PIRATE_STAND_RIGHT);
+	this.initializeSprites(x,y);
 	
 	// Set tilemap for collisions
 	this.map = map;
@@ -226,7 +156,7 @@ Player.prototype.update = function(deltaTime)
 	}
 
 	if (keyboard[77]) { //M, supermario
-
+		this.changeSize()
 	}
 
 	if (keyboard[49]) { //1, saltar nivell 1
@@ -249,13 +179,14 @@ Player.prototype.collisionBox = function()
 {
     if(this.size == 1)	var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
     //TODO: else in case we need to change the collision box depending on the size of the player
-	
+	else var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
 	return box;
 }
 
 Player.prototype.killerCollisionBox = function()
 {
 	if(this.size == 1)	var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
+	else var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
 	//TODO: else in case we need to change the collision box depending on the size of the player
 	return box;
 }
@@ -314,6 +245,295 @@ Player.prototype.powerDownHat = function() //TODO
 Player.prototype.isAlive = function()
 {
 	return this.Alive;
+}
+
+Player.prototype.changeSize = function()
+{
+	anim = this.sprite.currentAnimation;
+	if(this.size == 1){
+		this.size = 0;
+		x = this.sprite.x;
+		y = this.sprite.y;
+		this.sprite = this.listSprites[1];
+		this.sprite.x = x
+		this.sprite.y = y
+	}
+	else{
+		this.size = 1;
+		x = this.sprite.x;
+		y = this.sprite.y;
+		this.sprite = this.listSprites[0];
+		this.sprite.x = x
+		this.sprite.y = y
+	}
+	this.sprite.setAnimation(anim);
+}
+
+Player.prototype.initializeSprites = function(x,y)
+{
+
+		this.listSprites = [];
+		// Prepare CAPITAIN PIRATE
+		var bigPirate = new Texture("Textures/Characters/Pirate.png");
+		spriteBigPirate = new Sprite(x, y, 64, 64, 16, bigPirate);
+
+		//STAND
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [160, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [160, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [128, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [128, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [96, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [96, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [64, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [64, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [32, 192, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_LEFT, [32, 192, 32, 32]);
+	
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [0, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [0, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [32, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [32, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [64, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [64, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [96, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [96, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [128, 0, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_STAND_RIGHT, [128, 0, 32, 32]);
+	
+	
+		//WALK
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [160, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [160, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [128, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [128, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [96, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [96, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [64, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [64, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [32, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [32, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [0, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_LEFT, [0, 224, 32, 32]);
+
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [0, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [0, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [32, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [32, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [64, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [64, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [96, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [96, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [128, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [128, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
+
+		//WALK
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [160, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [128, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [96, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [64, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [32, 224, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [0, 224, 32, 32]);
+
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_RUN_RIGHT, [0, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_RIGHT, [32, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_RIGHT, [64, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_RIGHT, [96, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_RIGHT, [128, 32, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_RUN_RIGHT, [160, 32, 32, 32]);
+
+	
+		//JUMP
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_LEFT, [160, 256, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_LEFT, [160, 256, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_LEFT, [128, 256, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_LEFT, [128, 256, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_LEFT, [96, 256, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_LEFT, [96, 256, 32, 32]);
+	
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_RIGHT, [0, 64, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_RIGHT, [0, 64, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_RIGHT, [32, 64, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_RIGHT, [32, 64, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_RIGHT, [64, 64, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_JUMP_RIGHT, [64, 64, 32, 32]);
+	
+		//FALL
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_FALL_LEFT, [160, 288, 32, 32]);
+	
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_FALL_RIGHT, [0, 96, 32, 32]);
+	
+		//HIT
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [0, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [0, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [32, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [32, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [64, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [64, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [96, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [96, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [128, 160, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_LEFT, [128, 160, 32, 32]);
+
+		spriteBigPirate.addAnimation();
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [160, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [160, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [128, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [128, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [96, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [96, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [64, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [64, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [32, 352, 32, 32]);
+		spriteBigPirate.addKeyframe(PIRATE_HIT_RIGHT, [32, 352, 32, 32]);
+
+		this.listSprites.push(spriteBigPirate);
+		
+
+		//PREPARE SMALL PIRATE
+
+		var smallPirate = new Texture("Textures/Characters/PirateMini.png");
+		spriteSmallPirate = new Sprite(x, y, 64, 64, 16, smallPirate);
+
+		//STAND
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [160, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [160, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [128, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [128, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [96, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [96, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [64, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [64, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [32, 192, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_LEFT, [32, 192, 32, 32]);
+	
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [0, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [0, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [32, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [32, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [64, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [64, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [96, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [96, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [128, 0, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_STAND_RIGHT, [128, 0, 32, 32]);
+	
+	
+		//WALK
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [160, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [160, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [128, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [128, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [96, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [96, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [64, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [64, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [32, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [32, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [0, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_LEFT, [0, 224, 32, 32]);
+
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [0, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [0, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [32, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [32, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [64, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [64, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [96, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [96, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [128, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [128, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
+
+		//WALK
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_LEFT, [160, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_LEFT, [128, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_LEFT, [96, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_LEFT, [64, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_LEFT, [32, 224, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_LEFT, [0, 224, 32, 32]);
+
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_RIGHT, [0, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_RIGHT, [32, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_RIGHT, [64, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_RIGHT, [96, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_RIGHT, [128, 32, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_RUN_RIGHT, [160, 32, 32, 32]);
+
+	
+		//JUMP
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_LEFT, [160, 256, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_LEFT, [160, 256, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_LEFT, [128, 256, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_LEFT, [128, 256, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_LEFT, [96, 256, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_LEFT, [96, 256, 32, 32]);
+	
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_RIGHT, [0, 64, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_RIGHT, [0, 64, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_RIGHT, [32, 64, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_RIGHT, [32, 64, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_RIGHT, [64, 64, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_JUMP_RIGHT, [64, 64, 32, 32]);
+	
+		//FALL
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_FALL_LEFT, [160, 288, 32, 32]);
+	
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_FALL_RIGHT, [0, 96, 32, 32]);
+	
+		//HIT
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [0, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [0, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [32, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [32, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [64, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [64, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [96, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [96, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [128, 160, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_LEFT, [128, 160, 32, 32]);
+
+		spriteSmallPirate.addAnimation();
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [160, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [160, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [128, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [128, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [96, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [96, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [64, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [64, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [32, 352, 32, 32]);
+		spriteSmallPirate.addKeyframe(PIRATE_HIT_RIGHT, [32, 352, 32, 32]);
+
+		this.listSprites.push(spriteSmallPirate);
+		
+		// Set initial animation
+		this.sprite = spriteBigPirate;
+		this.sprite.setAnimation(PIRATE_STAND_RIGHT);
 }
 
 

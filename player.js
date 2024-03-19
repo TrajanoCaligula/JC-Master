@@ -55,18 +55,18 @@ Player.prototype.update = function(deltaTime)
 	}
 	else{ // Move PIRATE sprite left/right
 		if(this.hittedState){//HITTED
-			this.hittedStateTime -= (deltaTime);
+			this.hittedStateTime -= (deltaTime);//Contador para tiempo de invulnerabilidad y quieto
 			if(this.hittedStateTime <= 0){
-				this.hittedState = false;
+				this.hittedState = false;//ya no esta siendo golpeado
 				this.hittedStateTime = 0;
-				this.changeSize();
-				this.sprite.setAnimation(this.nextAnimationAfterHitted);
+				this.changeSize();//cambiamos tamaño
+				this.sprite.setAnimation(this.nextAnimationAfterHitted);//ponemos la animación en la que estaba anteriormente
 				if(this.bJumping){
-					if(this.jumpAngle>90){
+					if(this.jumpAngle>90){//si antes estaba saltando y ahora cayendo se actualiza
 						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_FALL_LEFT);
 						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_FALL_RIGHT);
 					}
-					else{
+					else{//
 						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
 						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
 					}
@@ -153,7 +153,7 @@ Player.prototype.update = function(deltaTime)
 				//this.sprite.y -= 2;
 				
 				// Check arrow up key. If pressed, jump.
-				if (keyboard[38] || keyboard[32])
+				if ((keyboard[38] || keyboard[32] )&& !this.hittedState)
 				{
 					this.bJumping = true;
 					this.jumpAngle = 0;

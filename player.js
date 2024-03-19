@@ -30,8 +30,12 @@ function Player(x, y, map)
 	this.Alive = true;
 	this.Dead = false;
 	this.size = 2;
+
+	//Vulnerability
 	this.vulnerability = true;
 	this.vulnerabilityTime = 0;
+
+	//To be Hitted
 	this.hittedState = false;
 	this.hittedStateTime = 0;
 	this.nextAnimationAfterHitted = 0;

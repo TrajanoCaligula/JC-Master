@@ -140,6 +140,11 @@ Shark.prototype.collisionBox = function()
 	return box;
 }
 
+Shark.prototype.hitted = function()
+{
+	
+	//TODO: Add hit animation
+}
 
 
 

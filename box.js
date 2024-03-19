@@ -15,68 +15,29 @@ Box.prototype.intersect = function(box2)
 	       (this.max_y >= box2.min_y) && (box2.max_y >= this.min_y);
 }
 
-Box.prototype.wherecollide = function(box2)
+Box.prototype.whereCollide = function(box2)
 {
 	
 	var collide = 0;//izquierda 1, derecha 2, arriba 3, abajo 4
-	pixelsY1 =  this.max_y-box2.min_y;
-	pixelsY2 =  box2.max_y-this.min_y;
-	pixelsX1 =  this.max_x-box2.min_x;
-	pixelsX2 =  box2.max_x-this.min_x;
+	y1 =  (this.max_y+this.min_y)/2;
+	y2 =  (box2.max_y+box2.min_y)/2;
+	x1 =  (this.max_x+this.min_x)/2;
+	x2 =  (box2.max_x+box2.min_x)/2;
+	diffX= x2-x1;
+	diffY= y2-y1;
 
-	if(pixelsY1 > 0){
-		if(pixelsX1 > 0){
-			if(pixelsX1 <= pixelsY1 && pixelsX1< pixelsX2){
-				collide = 2;
-			}
-			else collide = 4;
-		}
-		else {
-			if(pixelsX2 < pixelsY1 && pixelsX1> pixelsX2){
-				collide = 1;
-			}
-			else collide = 4;
-		}
+	if(Math.abs(diffX)>Math.abs(diffY)){//Lateral collision
+		if(diffX>=0)
+		collide = 1;//Left
+		else collide = 2;//Right
 	}
-	else if(pixelsY2 > 0){
-		if(pixelsX1 > 0){
-			if(pixelsX1 < pixelsY1 && pixelsX1< pixelsX2){
-				collide = 2;
-			}
-			else collide = 3;
-		}
-		else{
-			if(pixelsX2 < pixelsY1 && pixelsX1> pixelsX2){
-				collide = 1;
-			}
-			else collide =3;
-		}
+	else{ //Vertical collision
+		if(diffY>=0)
+		collide = 3;//Down
+		else collide = 4;//Up
 	}
-	else if(pixelsX1 > 0){
-		collide = 2;
-	}
-	else if(pixelsX2 > 0){
-		collide = 1;
-		
-	}	
-	/*if (caja1MinY <= caja2MaxY && caja1MaxY >= caja2MinY) {
-		if (caja1MinX <= caja2MaxX) {
-			collide =1;//izquirda
-		} else if (caja1MaxX >= caja2MinX) {
-			collide =2;//derecha
-		}
-	  } else if (caja1MinX <= caja2MaxX && caja1MaxX >= caja2MinX) {
-		if (caja1MinY <= caja2MaxY) {
-			collide =3;//arriba
-		} else if (caja1MaxY >= caja2MinY) {
-			collide =4;//abajo
-		}
-	  }*/
-
-	  if(collide == 0 || collide == 1 || collide == 2 || collide == 3){
-		return false;
-	  }
-	  else return false;
+	
+	return collide;
 }
 
 

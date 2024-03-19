@@ -22,7 +22,7 @@ function Scene()
 	this.playerALive = true;
 
 	this.enemies_sharks = [];
-	this.enemies_sharks.push(new Shark(734, 544, this.map));
+	this.enemies_sharks.push(new Shark(934, 544, this.map));
 	this.sharksActive = [];
 	this.sharksActive.push(true);
 	
@@ -31,7 +31,6 @@ function Scene()
 
 	this.textactive = false;
 	this.drawHitBoxesState = false; // FOR DEBUBBING
-
 	this.displacement=0;
 	this.end = false;
 }
@@ -63,7 +62,7 @@ Scene.prototype.update = function(deltaTime)
 		if(this.player.sprite.x-this.displacement< -7){
 			this.player.sprite.x = this.displacement-7;
 		}
-		if(this.player.Alive){
+		if(this.player.Alive && !this.player.hittedState){
 		// Check for collision between entities
 			for(var i = 0; i < this.barrels.length; i++){
 				if(this.barrelsActive[i]&&this.player.collisionBox().intersect(this.barrels[i].collisionBox()))
@@ -76,7 +75,14 @@ Scene.prototype.update = function(deltaTime)
 
 			for(var i = 0; i < this.enemies_sharks.length; i++){
 				if(this.sharksActive[i]&&this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
-					this.player.hitted();
+					typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
+					if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
+						this.player.hitted();
+					}
+					else{
+						this.enemies_sharks[i].hitted();
+						this.sharksActive[i] = false;
+					}
 				}
 			}
 		}

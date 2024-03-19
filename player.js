@@ -29,16 +29,20 @@ function Player(x, y, map)
 
 	this.Alive = true;
 	this.Dead = false;
-	this.size = 1;
+	this.size = 2;
 	this.vulnerability = true;
+	this.vulnerabilityTime = 0;
+	this.hittedState = false;
+	this.hittedStateTime = 0;
+	this.nextAnimationAfterHitted = 0;
 }
 
 
 Player.prototype.update = function(deltaTime)
 {
-	// Move PIRATE sprite left/right
-	if(this.Dead)return;
-	else if(!this.Alive){
+	
+	if(this.Dead)return;//IS COMPLEATLY DEAD
+	else if(!this.Alive){//ANIMATION DEAD
 		this.jumpAngle += 4;
 		if(this.jumpAngle >= 180)
 		{
@@ -49,8 +53,28 @@ Player.prototype.update = function(deltaTime)
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
 		}
 	}
-	else{ 
-		if(keyboard[37]) // KEY_LEFT
+	else{ // Move PIRATE sprite left/right
+		if(this.hittedState){//HITTED
+			this.hittedStateTime -= (deltaTime);
+			if(this.hittedStateTime <= 0){
+				this.hittedState = false;
+				this.hittedStateTime = 0;
+				this.changeSize();
+				this.sprite.setAnimation(this.nextAnimationAfterHitted);
+				if(this.bJumping){
+					if(this.jumpAngle>90){
+						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_FALL_LEFT);
+						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+					}
+					else{
+						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
+						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
+					}
+				}
+			}
+			
+		}
+		else if(keyboard[37]) // KEY_LEFT
 		{
 			if(this.sprite.currentAnimation != PIRATE_WALK_LEFT && !this.bJumping)
 				this.sprite.setAnimation(PIRATE_WALK_LEFT);
@@ -75,17 +99,17 @@ Player.prototype.update = function(deltaTime)
 			if(this.map.collisionMoveRight(this.sprite))
 				this.sprite.x -= 2;
 		}
-		else
+		else//Si estamos quietos cambiamos la animacion a parado
 		{
 			if(this.sprite.currentAnimation == PIRATE_WALK_LEFT)
 				this.sprite.setAnimation(PIRATE_STAND_LEFT);
 			if(this.sprite.currentAnimation == PIRATE_WALK_RIGHT)
 				this.sprite.setAnimation(PIRATE_STAND_RIGHT);
 		}
-		if(this.bJumping)
+		if(this.bJumping)//Estado saltando
 		{
 			this.jumpAngle += 4;
-			if(this.jumpAngle >= 180)
+			if(this.jumpAngle >= 180)//Si el angulo es mayor que 180, el salto ha terminado
 			{
 				this.bJumping = false;
 				this.sprite.y = this.startY;
@@ -101,9 +125,9 @@ Player.prototype.update = function(deltaTime)
 				else if((this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT ) && this.sprite.currentAnimation != PIRATE_JUMP_RIGHT)
 					this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
 
-				this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
+				this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);//calcular la posicion en Y del salto
 					
-				if(this.jumpAngle > 90)
+				if(this.jumpAngle > 90)//Si esta descedniendo en el salto
 					if(this.sprite.currentAnimation == PIRATE_JUMP_LEFT)
 						this.sprite.setAnimation(PIRATE_FALL_LEFT);
 					else if(this.sprite.currentAnimation == PIRATE_JUMP_RIGHT)
@@ -177,33 +201,33 @@ Player.prototype.draw = function()
 
 Player.prototype.collisionBox = function()
 {
-    if(this.size == 1)	var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
+    if(this.size == 2)	var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
     //TODO: else in case we need to change the collision box depending on the size of the player
-	else var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
+	else var box = new Box(this.sprite.x + 12, this.sprite.y+25, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
 	return box;
 }
 
 Player.prototype.killerCollisionBox = function()
 {
-	if(this.size == 1)	var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
+	if(this.size == 2)	var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
 	else var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
 	//TODO: else in case we need to change the collision box depending on the size of the player
 	return box;
 }
 
-Player.prototype.hitted = function() //TODO: Change this.size to 1 and change the set of animations to littlepirate and change the collision box
+Player.prototype.hitted = function()
 {
 	num_anim = this.sprite.currentAnimation;
-	if(this.vulnerability && this.size == 2){ //TODO:change the set of animations to littlepirate
-        this.size = 1;
-        this.jumpAngle = 0;
-        this.startY = this.sprite.y;
+	if(this.vulnerability && this.size == 2){ //If the player is vulnerable and is big
+		this.nextAnimationAfterHitted = num_anim;
         if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT){
             this.sprite.setAnimation(PIRATE_HIT_LEFT);
         }
         else {
             this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         }
+		this.hittedState = true;//HITTED
+		this.hittedStateTime = 1000;
 	} else if(this.vulnerability){
 	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_LEFT);
         else this.sprite.setAnimation(PIRATE_HIT_RIGHT);
@@ -250,7 +274,7 @@ Player.prototype.isAlive = function()
 Player.prototype.changeSize = function()
 {
 	anim = this.sprite.currentAnimation;
-	if(this.size == 1){
+	if(this.size == 2){//Change to little pirate
 		this.size = 0;
 		x = this.sprite.x;
 		y = this.sprite.y;
@@ -258,7 +282,7 @@ Player.prototype.changeSize = function()
 		this.sprite.x = x
 		this.sprite.y = y
 	}
-	else{
+	else{//Change to big pirate
 		this.size = 1;
 		x = this.sprite.x;
 		y = this.sprite.y;
@@ -532,7 +556,7 @@ Player.prototype.initializeSprites = function(x,y)
 		this.listSprites.push(spriteSmallPirate);
 		
 		// Set initial animation
-		this.sprite = spriteBigPirate;
+		this.sprite = spriteBigPirate;//TODO: Change this to spriteSmallPirate
 		this.sprite.setAnimation(PIRATE_STAND_RIGHT);
 }
 

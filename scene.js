@@ -8,7 +8,7 @@ function Scene()
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	
 	// Create tilemap
-	this.map = new Tilemap(tilesheet, [32, 32], [30, 19], [0, 32], level01);
+	this.map = new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01);
 	
 	// Create entities
 	this.barrels = []
@@ -56,12 +56,13 @@ Scene.prototype.update = function(deltaTime)
 		for(var i = 0; i < this.enemies_sharks.length; i++){
 			this.enemies_sharks[i].update(deltaTime);
 		}
-		/*if((this.player.sprite.x-this.displacement)>224){
+		
+		if((this.player.sprite.x-this.displacement)>224){
 			this.displacement = this.player.sprite.x-224;
 		}
 		if(this.player.sprite.x-this.displacement< -7){
 			this.player.sprite.x = this.displacement-7;
-		}*/
+		}
 		if(this.player.Alive && !this.player.hittedState){
 		// Check for collision between entities
 			for(var i = 0; i < this.barrels.length; i++){
@@ -99,7 +100,7 @@ Scene.prototype.draw = function ()
 	context.fillStyle = "rgb(224, 224, 240)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.save();
-	//context.translate(-this.displacement,0);
+	context.translate(-this.displacement,0);
 	// Draw tilemap
 	this.map.draw();
 	this.drawHitBoxes();

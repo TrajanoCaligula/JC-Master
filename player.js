@@ -12,6 +12,14 @@ const PIRATE_FALL_RIGHT = 9;
 const PIRATE_HIT_LEFT = 10;
 const PIRATE_HIT_RIGHT = 11;
 
+//Movement
+const MINWALKSPEED = 60;
+const WALKACCEL = 60;
+const RUNACCEL = 120;
+const RELEASDECEL = 360;
+const MAXWALKSPEED = 120;
+const MAXRUNSPEED = 240;
+
 
 function Player(x, y, map)
 {
@@ -39,6 +47,13 @@ function Player(x, y, map)
 	this.hittedState = false;
 	this.hittedStateTime = 0;
 	this.nextAnimationAfterHitted = 0;
+
+	//Movement
+	this.speed = 0;
+	this.accel = 0;
+	this.Running = false;
+	this.incrementX = 0;
+
 }
 
 
@@ -80,35 +95,147 @@ Player.prototype.update = function(deltaTime)
 		}
 		else if(keyboard[37]) // KEY_LEFT
 		{
-			if(this.sprite.currentAnimation != PIRATE_WALK_LEFT && !this.bJumping)
-				this.sprite.setAnimation(PIRATE_WALK_LEFT);
-			else if(this.sprite.currentAnimation == PIRATE_JUMP_RIGHT)
-				this.sprite.setAnimation(PIRATE_JUMP_LEFT);
-			else if(this.sprite.currentAnimation == PIRATE_FALL_RIGHT)
-				this.sprite.setAnimation(PIRATE_FALL_LEFT);
-			this.sprite.x -= 2;
-			if(this.map.collisionMoveLeft(this.sprite))
-				this.sprite.x += 2;
-			if (this.sprite.x < -7) this.sprite.x += 2;
+			if(this.bJumping){
+				if(this.sprite.currentAnimation == PIRATE_JUMP_RIGHT)
+					this.sprite.setAnimation(PIRATE_JUMP_LEFT);
+				if(this.sprite.currentAnimation == PIRATE_FALL_RIGHT)
+					this.sprite.setAnimation(PIRATE_FALL_LEFT);
+			}
+			else{
+				if(this.sprite.currentAnimation != PIRATE_WALK_LEFT  && !this.Running)
+					this.sprite.setAnimation(PIRATE_WALK_LEFT)
+				else if(this.sprite.currentAnimation != PIRATE_RUN_LEFT && this.Running)
+					this.sprite.setAnimation(PIRATE_RUN_LEFT);
+			}	
+
+
+			if(this.speed > -MINWALKSPEED)
+				this.speed = -MINWALKSPEED
+			if(keyboard[16] && this.Running){
+				this.accel = -RUNACCEL
+			}	
+			else{
+				this.accel = -WALKACCEL
+			}	
+
+			this.incrementX = this.speed * deltaTime / 1000.0
+
+			this.sprite.x += this.incrementX
+			if (this.sprite.x < -7){
+				this.sprite.x -= this.incrementX;
+				if(this.sprite.currentAnimation != PIRATE_STAND_LEFT &&(this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT)) this.sprite.setAnimation(PIRATE_STAND_LEFT);
+			} 
+			if(this.map.collisionMoveLeft(this.sprite)){
+				this.sprite.x -= this.incrementX;
+				this.incrementX = 0;
+				this.speed = 0;
+				if(this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT) this.sprite.setAnimation(PIRATE_STAND_LEFT);
+			}
+			
+			this.speed = this.speed + this.accel * deltaTime / 1000.0
+			if(keyboard[16] && this.Running){
+				if(Math.abs(this.speed) > MAXRUNSPEED)this.speed = -MAXRUNSPEED
+			}
+					
+			else{
+				if(!keyboard[16] && Math.abs(this.speed) > MAXWALKSPEED){
+					this.speed = -MAXWALKSPEED;
+					this.Running = false;
+				}
+				else if(keyboard[16] && Math.abs(this.speed)>=MAXWALKSPEED)this.Running = true				
+			}
+			console.log("Speed = " + this.speed);
+
+
 		}
 		else if(keyboard[39]) // KEY_RIGHT
 		{
-			if(this.sprite.currentAnimation != PIRATE_WALK_RIGHT  && !this.bJumping)
-				this.sprite.setAnimation(PIRATE_WALK_RIGHT);
-			else if(this.sprite.currentAnimation == PIRATE_JUMP_LEFT)
-				this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
-			else if(this.sprite.currentAnimation == PIRATE_FALL_LEFT)
-				this.sprite.setAnimation(PIRATE_FALL_RIGHT);
-			this.sprite.x += 2;
-			if(this.map.collisionMoveRight(this.sprite))
-				this.sprite.x -= 2;
+			if(this.bJumping){
+				if(this.sprite.currentAnimation == PIRATE_JUMP_LEFT)
+					this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
+				if(this.sprite.currentAnimation == PIRATE_FALL_LEFT)
+					this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+			}
+			else{
+				if(this.sprite.currentAnimation != PIRATE_WALK_RIGHT  && !this.Running)
+					this.sprite.setAnimation(PIRATE_WALK_RIGHT)
+				else if(this.sprite.currentAnimation != PIRATE_RUN_RIGHT && this.Running)
+					this.sprite.setAnimation(PIRATE_RUN_RIGHT);
+			}	
+
+			if(this.speed < MINWALKSPEED)
+				this.speed = MINWALKSPEED
+			if(keyboard[16] && this.Running){
+				this.accel = RUNACCEL
+			}	
+			else{
+				this.accel = WALKACCEL
+			}	
+
+			this.incrementX = this.speed * deltaTime / 1000.0
+
+			this.sprite.x += this.incrementX
+			if(this.map.collisionMoveRight(this.sprite) ){
+				this.sprite.x -= this.incrementX;
+				this.incrementX = 0;
+				this.speed = 0;
+				if(this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_RUN_RIGHT) this.sprite.setAnimation(PIRATE_STAND_RIGHT);
+			}
+				
+
+			this.speed = this.speed + this.accel * deltaTime / 1000.0
+			if(keyboard[16] && this.Running){
+				if(Math.abs(this.speed) > MAXRUNSPEED)this.speed = MAXRUNSPEED;
+			}
+					
+			else{
+				if(!keyboard[16] && Math.abs(this.speed) > MAXWALKSPEED){
+					this.speed = MAXWALKSPEED;
+					this.Running = false;
+				}
+				else if(keyboard[16] && Math.abs(this.speed)>=MAXWALKSPEED)this.Running = true					
+			}
+			console.log("Speed = " + this.speed);
 		}
 		else//Si estamos quietos cambiamos la animacion a parado
 		{
-			if(this.sprite.currentAnimation == PIRATE_WALK_LEFT)
-				this.sprite.setAnimation(PIRATE_STAND_LEFT);
-			if(this.sprite.currentAnimation == PIRATE_WALK_RIGHT)
-				this.sprite.setAnimation(PIRATE_STAND_RIGHT);
+			if(!this.bJumping){//Si no estamos saltando y no estamos siendo golpeados cambiamos la animacion a parado
+				if((this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_FALL_LEFT) && this.speed > -30)
+					this.sprite.setAnimation(PIRATE_STAND_LEFT);
+				else if((this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_FALL_RIGHT) && this.speed < 30)
+					this.sprite.setAnimation(PIRATE_STAND_RIGHT);
+				else if((this.sprite.currentAnimation == PIRATE_RUN_LEFT || this.sprite.currentAnimation == PIRATE_FALL_LEFT) && !this.Running)
+					this.sprite.setAnimation(PIRATE_WALK_LEFT);
+				else if((this.sprite.currentAnimation == PIRATE_RUN_RIGHT || this.sprite.currentAnimation == PIRATE_FALL_RIGHT) && !this.Running)
+					this.sprite.setAnimation(PIRATE_WALK_RIGHT);
+			}
+
+			if(this.speed > 0) this.accel = -RELEASDECEL
+			else if(this.speed < 0) this.accel = RELEASDECEL
+			else this.accel = 0
+			
+			this.incrementX = this.speed * deltaTime / 1000.0
+			this.sprite.x += this.incrementX
+			if (this.sprite.x < -7) this.sprite.x -= this.incrementX;
+			if(this.map.collisionMoveRight(this.sprite)|| this.map.collisionMoveLeft(this.sprite)){
+				this.sprite.x -= this.incrementX;
+				this.incrementX = 0;
+				this.speed = 0;
+				if(this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_RUN_RIGHT) this.sprite.setAnimation(PIRATE_STAND_RIGHT);
+				else if(this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT) this.sprite.setAnimation(PIRATE_STAND_LEFT);
+			}
+
+			if(this.speed > 0){
+				this.speed = this.speed + this.accel * deltaTime / 1000.0
+				if(this.speed < MINWALKSPEED) this.speed = 0
+
+			} 
+			else if(this.speed < 0){
+				this.speed = this.speed + this.accel * deltaTime / 1000.0
+				if(this.speed > -MINWALKSPEED) this.speed = 0
+			}
+			if(Math.abs(this.speed) <= MAXWALKSPEED) this.Running = false
+			
 		}
 		if(this.bJumping)//Estado saltando
 		{
@@ -124,9 +251,9 @@ Player.prototype.update = function(deltaTime)
 			}
 			else
 			{
-				if((this.sprite.currentAnimation == PIRATE_STAND_LEFT || this.sprite.currentAnimation == PIRATE_WALK_LEFT ) && this.sprite.currentAnimation != PIRATE_JUMP_LEFT)
+				if((this.sprite.currentAnimation == PIRATE_STAND_LEFT || this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT) && this.sprite.currentAnimation != PIRATE_JUMP_LEFT)
 					this.sprite.setAnimation(PIRATE_JUMP_LEFT);
-				else if((this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT ) && this.sprite.currentAnimation != PIRATE_JUMP_RIGHT)
+				else if((this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_RUN_RIGHT) && this.sprite.currentAnimation != PIRATE_JUMP_RIGHT)
 					this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
 
 				this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);//calcular la posicion en Y del salto
@@ -166,9 +293,9 @@ Player.prototype.update = function(deltaTime)
 			}
 			else
 			{
-				if(this.sprite.currentAnimation == PIRATE_STAND_LEFT || this.sprite.currentAnimation == PIRATE_WALK_LEFT)
+				if(this.sprite.currentAnimation == PIRATE_STAND_LEFT || this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT)
 					this.sprite.setAnimation(PIRATE_FALL_LEFT);
-				else if(this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT)
+				else if(this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_RUN_RIGHT)
 					this.sprite.setAnimation(PIRATE_FALL_RIGHT);
 				if (this.sprite.y < 896) {
 
@@ -178,13 +305,9 @@ Player.prototype.update = function(deltaTime)
 		}
 	}
 
-	//TODO
+	/*TODO
 	if (keyboard[71]) { //G,star pirate
 
-	}
-
-	if (keyboard[77]) { //M, supermario
-		this.changeSize()
 	}
 
 	if (keyboard[49]) { //1, saltar nivell 1
@@ -193,6 +316,9 @@ Player.prototype.update = function(deltaTime)
 
 	if (keyboard[50]) { //2, saltar nivell 2
 
+	}*/
+	if (keyboard[77]) { //M, supermario
+		this.changeSize()
 	}
 	// Update sprites
 	this.sprite.update(deltaTime);
@@ -360,7 +486,7 @@ Player.prototype.initializeSprites = function(x,y)
 		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
 		spriteBigPirate.addKeyframe(PIRATE_WALK_RIGHT, [160, 32, 32, 32]);
 
-		//WALK
+		//RUN
 		spriteBigPirate.addAnimation();
 		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [160, 224, 32, 32]);
 		spriteBigPirate.addKeyframe(PIRATE_RUN_LEFT, [128, 224, 32, 32]);

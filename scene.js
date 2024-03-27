@@ -18,12 +18,14 @@ function Scene()
 	this.barrelsIntActive = []
 	this.createBarrelsInt();
 
-	this.player = new Player(224, 608, this.map);
+	this.player = new Player(224, 576, this.map);
 	this.playerALive = true;
 
 	this.enemies_sharks = [];
-	this.enemies_sharks.push(new Shark(934, 544, this.map));
 	this.sharksActive = [];
+	this.createSharks();
+	this.enemies_sharks.push(new Shark(934, 544, this.map));
+	
 	this.sharksActive.push(true);
 	
 	// Store current time
@@ -47,15 +49,6 @@ Scene.prototype.update = function(deltaTime)
 		if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
 		// Update entities
 		this.player.update(deltaTime);
-		for(var i = 0; i < this.barrels.length; i++){
-			this.barrels[i].update(deltaTime);
-		}
-		for(var i = 0; i < this.barrelsInt.length; i++){
-			this.barrelsInt[i].update(deltaTime);
-		}
-		for(var i = 0; i < this.enemies_sharks.length; i++){
-			this.enemies_sharks[i].update(deltaTime);
-		}
 		
 		if((this.player.sprite.x-this.displacement)>224){
 			this.displacement = this.player.sprite.x-224;
@@ -66,23 +59,34 @@ Scene.prototype.update = function(deltaTime)
 		if(this.player.Alive && !this.player.hittedState){
 		// Check for collision between entities
 			for(var i = 0; i < this.barrels.length; i++){
-				if(this.barrelsActive[i]&&this.player.collisionBox().intersect(this.barrels[i].collisionBox()))
-					this.barrelsActive[i] = false;
+				this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
+				if(this.barrelsActive[i]){
+					this.barrels[i].update(deltaTime);
+				}
+				if(this.barrelsActive[i] && this.player.collisionBox().intersect(this.barrels[i].collisionBox()))
+					this.barrels[i].Activated();
 			}
 			for(var i = 0; i < this.barrelsInt.length; i++){
-				if(this.barrelsIntActive[i]&&this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox()))
-					this.barrelsIntActive[i] = false;
+				this.barrelsIntActive[i] = this.isInsideScreen(this.barrelsInt[i]);
+				if(this.barrelsIntActive[i]){
+					this.barrelsInt[i].update(deltaTime);
+				}
+				if(this.barrelsIntActive[i] && this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox()))
+					this.barrelsInt[i].Activated();
 			}
 
 			for(var i = 0; i < this.enemies_sharks.length; i++){
-				if(this.sharksActive[i]&&this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
-					typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
-					if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
-						this.player.hitted();
-					}
-					else{
-						this.enemies_sharks[i].hitted();
-						this.sharksActive[i] = false;
+				this.sharksActive[i] = this.isInsideScreen(this.enemies_sharks[i]);
+				if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
+					this.enemies_sharks[i].update(deltaTime);
+					if(this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
+						typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
+						if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
+							this.player.hitted();
+						}
+						else{
+							this.enemies_sharks[i].killed();
+						}
 					}
 				}
 			}
@@ -100,7 +104,8 @@ Scene.prototype.draw = function ()
 	context.fillStyle = "rgb(224, 224, 240)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.save();
-	context.translate(-this.displacement,0);
+	
+	context.translate(Math.floor(-this.displacement),0);
 	// Draw tilemap
 	this.map.draw();
 	this.drawHitBoxes();
@@ -109,16 +114,16 @@ Scene.prototype.draw = function ()
 	if(!this.player.Dead)this.player.draw();
 
 	for(var i = 0; i < this.barrels.length; i++){	
-		if(this.barrelsActive[i] && this.isInsideScreen(this.barrels[i]))
+		if(this.barrelsActive[i])
 			this.barrels[i].draw();
 	}
 	for(var i = 0; i < this.barrelsInt.length; i++){	
-		if(this.barrelsIntActive[i] && this.isInsideScreen(this.barrelsInt[i]))
+		if(this.barrelsIntActive[i])
 			this.barrelsInt[i].draw();
 	}
 
 	for(var i = 0; i < this.enemies_sharks.length; i++){
-		if(this.sharksActive[i] && this.isInsideScreen(this.enemies_sharks[i]))
+		if(this.sharksActive[i] && !this.enemies_sharks[i].Dead)
 			this.enemies_sharks[i].draw();
 	}
 	context.restore();
@@ -137,6 +142,7 @@ Scene.prototype.createBarrels = function()
 			}
 		}
 }
+
 Scene.prototype.createBarrelsInt = function()
 {
 	for(var j=0, pos=0; j<level01.height; j++)
@@ -150,8 +156,21 @@ Scene.prototype.createBarrelsInt = function()
 		}
 }
 
+Scene.prototype.createSharks = function()
+{
+	for(var j=0, pos=0; j<level01.height; j++)
+		for(var i=0; i<level01.width; i++, pos++)
+		{
+			tileId = level01.layers[6].data[pos];
+			if(tileId != 0){
+				this.enemies_sharks.push(new Shark(i*32+0, 32+32*j-32,this.map));
+				this.sharksActive.push(true);
+			}
+		}
+}
+
 Scene.prototype.isInsideScreen = function(obj){
-	if(obj.sprite.x < 1000 && obj.sprite.x > -80)
+	if(obj.sprite.x < 1000+this.displacement && obj.sprite.x > this.displacement-300)
 		return true;
 	else
 		return false;
@@ -175,7 +194,7 @@ Scene.prototype.drawHitBoxes = function(){
 			}
 		}
 		for(var i = 0; i < this.enemies_sharks.length; i++){
-			if(this.sharksActive[i]){
+			if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
 				box = this.enemies_sharks[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
 			}

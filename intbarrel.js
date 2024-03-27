@@ -18,6 +18,11 @@ function Intbarrel(x, y)
 	this.sprite.addKeyframe(0, [224, 0, 32, 32]);
 	this.sprite.addKeyframe(0, [256, 0, 32, 32]);
 	this.sprite.addKeyframe(0, [288, 0, 32, 32]);
+
+	this.sprite.addAnimation();
+	this.sprite.addKeyframe(1, [32, 32, 32, 32]);
+
+	this.beenActivated = false;
 }
 
 
@@ -37,7 +42,12 @@ Intbarrel.prototype.collisionBox = function()
 	
 	return box;
 }
-
+ Intbarrel.prototype.Activated = function(){
+ 	if(this.beenActivated == false){
+ 		this.sprite.setAnimation(1);
+ 		this.beenActivated = true;
+ 	}
+ }
 
 
 

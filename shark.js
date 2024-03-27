@@ -7,6 +7,8 @@ const SHARK_FALL_RIGHT = 5;
 const SHARK_HIT_LEFT = 6;
 const SHARK_HIT_RIGHT = 7;
 
+const LEFT = 0;
+const RIGHT = 1;
 
 function Shark(x, y, map)
 {
@@ -93,39 +95,71 @@ function Shark(x, y, map)
 	// Set attributes for jump
 	this.jumpAngle = 0;
 	this.isfalling = 0;
+
+	this.Dead = false;
+	this.direction = LEFT;
 	
 }
 
 
 Shark.prototype.update = function(deltaTime)
 {
-
-	if(!this.isfalling){
-		this.sprite.x -= 2;
-		if(this.map.collisionMoveLeft(this.sprite))
-			this.sprite.x += 2;
-	}
+	if(this.Dead)return;
 	else{
-		this.sprite.x -= 1;
-		if(this.map.collisionMoveLeft(this.sprite))
-			this.sprite.x += 1;
+		if(this.direction == LEFT){
+			if(!this.isfalling){
+				if(this.sprite.currentAnimation != SHARK_WALK_LEFT)this.sprite.setAnimation(SHARK_WALK_LEFT);
+				this.sprite.x -= 2;
+				if(this.map.collisionMoveLeft(this.sprite)){
+					this.sprite.x += 2;
+					this.direction = RIGHT;
+				}
+					
+			}
+			else{
+				if(this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);
+				this.sprite.x -= 1;
+				if(this.map.collisionMoveLeft(this.sprite))
+					this.sprite.x += 1;
+					this.direction = RIGHT;
+			}
+		}
+		else{
+			if(!this.isfalling){
+				if(this.sprite.currentAnimation != SHARK_WALK_RIGHT)this.sprite.setAnimation(SHARK_WALK_RIGHT);
+				this.sprite.x += 2;
+				if(this.map.collisionMoveRight(this.sprite)){
+					this.sprite.x -= 2;
+					this.direction = LEFT;
+				}
+					
+			}
+			else{
+				if(this.sprite.currentAnimation != SHARK_FALL_RIGHT)this.sprite.setAnimation(SHARK_FALL_RIGHT);
+				this.sprite.x += 1;
+				if(this.map.collisionMoveRight(this.sprite))
+					this.sprite.x -= 1;
+					this.direction = LEFT;
+			}
+		}
+		// Move PIRATE so that it is affected by gravity
+		this.sprite.y += 6;
+		if(this.map.collisionMoveDown(this.sprite))
+		{	
+			this.isfalling = false;
+			if(this.direction == LEFT && this.sprite.currentAnimation != SHARK_WALK_LEFT)this.sprite.setAnimation(SHARK_WALK_LEFT);
+			else if(this.direction == RIGHT && this.sprite.currentAnimation != SHARK_WALK_RIGHT)this.sprite.setAnimation(SHARK_WALK_RIGHT);
+		}
+		else
+		{
+			this.isfalling = true;
+			if( this.direction == LEFT && this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);	
+			else if(this.direction == RIGHT && this.sprite.currentAnimation != SHARK_FALL_RIGHT)this.sprite.setAnimation(SHARK_FALL_RIGHT);	
+		}		
+		// Update sprites
+		this.sprite.update(deltaTime);
 	}
-	// Move PIRATE so that it is affected by gravity
-	this.sprite.y += 3;
-	if(this.map.collisionMoveDown(this.sprite))
-	{	
-		this.isfalling = false;
-		if(this.sprite.currentAnimation != SHARK_WALK_LEFT)this.sprite.setAnimation(SHARK_WALK_LEFT);
-	}
-	else
-	{
-		this.isfalling = true;
-		if(this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);		
-	}
-
 	
-	// Update sprites
-	this.sprite.update(deltaTime);
 }
 
 Shark.prototype.draw = function()
@@ -140,10 +174,9 @@ Shark.prototype.collisionBox = function()
 	return box;
 }
 
-Shark.prototype.hitted = function()
+Shark.prototype.killed = function()
 {
-	
-	//TODO: Add hit animation
+	this.Dead = true;
 }
 
 

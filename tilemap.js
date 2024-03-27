@@ -1,6 +1,6 @@
 
 // Tilemap. Draws a tilemap using a texture as a tilesheet.
-const TERRAIN = 6;
+const TERRAIN = 8;
 function Tilemap(tilesheet, tileSize, blockGrid, basePos, map)
 {
 	this.tileSize = tileSize;
@@ -52,15 +52,7 @@ Tilemap.prototype.draw = function ()
 			if(tileId != 0)
 				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
 									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);
-			/*tileId = this.map.layers[4].data[pos];
-			if(tileId != 0)
-				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
-									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);*/
-			/*tileId = this.map.layers[5].data[pos];
-			if(tileId != 0)
-				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
-									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);*/
-			tileId = this.map.layers[6].data[pos];
+			tileId = this.map.layers[TERRAIN].data[pos];
 			if(tileId != 0)
 				context.drawImage(this.tilesheet.img, tilePositions[tileId-1][0], tilePositions[tileId-1][1], blockSize[0], blockSize[1], 
 									this.basePos[0] + this.tileSize[0] * i, this.basePos[1] + this.tileSize[1] * j, blockSize[0], blockSize[1]);
@@ -130,14 +122,13 @@ Tilemap.prototype.collisionMoveDown = function(sprite)
 
 Tilemap.prototype.collisionMoveUp = function(sprite)
 {
-  var y = Math.floor((sprite.y + 48 - this.basePos[1]) / this.tileSize[1]);
+  var y = Math.floor((sprite.y + sprite.height-7 - this.basePos[1]) / this.tileSize[1]);
   var x0 = Math.floor((sprite.x + 18 - this.basePos[0]) / this.tileSize[0]);
   var x1 = Math.floor((sprite.x + sprite.width - 18 - this.basePos[0]) / this.tileSize[0]);
 
   for (var x = x0; x <= x1; x++) {
     if (this.map.layers[TERRAIN].data[(y - 1) * this.map.width + x] != 0) {
-      sprite.y = (y + 1) * this.tileSize[1] + this.basePos[1];
-      return true;
+		return true;
     }
   }
 

@@ -14,12 +14,12 @@ function Scene()
 	this.barrels = []
 	this.barrelsActive = []
 	this.createBarrels();
+
 	this.barrelsInt = []
 	this.barrelsIntActive = []
 	this.createBarrelsInt();
 
 	this.player = new Player(224, 576, this.map);
-	this.playerALive = true;
 
 	this.enemies_sharks = [];
 	this.sharksActive = [];
@@ -28,13 +28,10 @@ function Scene()
 	this.enemies_crabs = [];
 	this.crabsActive = [];
 	this.createCrabs();
-	
-	this.sharksActive.push(true);
-	
+		
 	// Store current time
 	this.currentTime = 0;
 
-	this.textactive = false;
 	this.drawHitBoxesState = false; // FOR DEBUBBING
 	this.displacement=0;
 	this.end = false;
@@ -43,29 +40,32 @@ function Scene()
 
 Scene.prototype.update = function(deltaTime)
 {
+	this.currentTime += deltaTime;
 	if(this.end){
 
 	}
 	else{
 		// Keep track of time
-		this.currentTime += deltaTime;
 		if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
-		// Update entities
+
 		this.player.update(deltaTime);
 		
+		//Displacement
 		if((this.player.sprite.x-this.displacement)>224){
 			this.displacement = this.player.sprite.x-224;
 		}
 		if(this.player.sprite.x-this.displacement< -7){
 			this.player.sprite.x = this.displacement-7;
 		}
-		if(this.player.Alive && !this.player.hittedState){
+
+		// Update entities
+		if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
 		// Check for collision between entities
 			for(var i = 0; i < this.barrels.length; i++){
 				this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
 				if(this.barrelsActive[i]){
 					this.barrels[i].update(deltaTime);
-					if(this.player.collisionBox().intersect(this.barrels[i].collisionBox())){
+					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrels[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.barrels[i].collisionBox());
 						if(typeCollision == 4)
 							this.barrels[i].Activated();
@@ -77,7 +77,7 @@ Scene.prototype.update = function(deltaTime)
 				this.barrelsIntActive[i] = this.isInsideScreen(this.barrelsInt[i]);
 				if(this.barrelsIntActive[i]){
 					this.barrelsInt[i].update(deltaTime);
-					if(this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox())){
+					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 						if(typeCollision == 4)
 							this.barrelsInt[i].Activated();
@@ -90,7 +90,7 @@ Scene.prototype.update = function(deltaTime)
 				this.sharksActive[i] = this.isInsideScreen(this.enemies_sharks[i]);
 				if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
 					this.enemies_sharks[i].update(deltaTime);
-					if(!this.enemies_sharks[i].isDying && this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
+					if(!this.player.hittedState && !this.enemies_sharks[i].isDying && this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
 						if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
 							this.player.hitted();

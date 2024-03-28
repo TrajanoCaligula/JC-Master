@@ -65,24 +65,24 @@ function Shark(x, y, map)
 
 	//HIT
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [224, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [192, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [160, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [128, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [96, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [64, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [32, 284, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [0, 284, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [224, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [192, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [160, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [128, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [96, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [64, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [32, 384, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [0, 384, 32, 32]);
 
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [0, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [32, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [64, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [96, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [128, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [160, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [192, 192, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [224, 192, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [0, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [32, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [64, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [96, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [128, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [160, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [192, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [224, 160, 32, 32]);
 
 
 	// Set initial animation
@@ -95,9 +95,12 @@ function Shark(x, y, map)
 	// Set attributes for jump
 	this.jumpAngle = 0;
 	this.isfalling = 0;
+	this.direction = LEFT;
 
 	this.Dead = false;
-	this.direction = LEFT;
+	this.isDying = false;
+	this.DyingTime = 980;
+	this.goDown = false;
 	
 }
 
@@ -105,6 +108,21 @@ function Shark(x, y, map)
 Shark.prototype.update = function(deltaTime)
 {
 	if(this.Dead)return;
+	if(this.isDying){
+		if(this.direction == LEFT){
+			if(this.sprite.currentAnimation != SHARK_HIT_LEFT)this.sprite.setAnimation(SHARK_HIT_LEFT);
+		}
+		else{
+			if(this.sprite.currentAnimation != SHARK_HIT_RIGHT)this.sprite.setAnimation(SHARK_HIT_RIGHT);
+		}
+		this.sprite.update(deltaTime);
+		this.DyingTime -= deltaTime;
+		if(this.DyingTime <= 490 && !this.goDown){
+			this.sprite.y += 10;
+			this.goDown = true;
+		}
+		if(this.DyingTime <= 0)this.Dead = true;
+	}
 	else{
 		if(this.direction == LEFT){
 			if(!this.isfalling){
@@ -176,7 +194,7 @@ Shark.prototype.collisionBox = function()
 
 Shark.prototype.killed = function()
 {
-	this.Dead = true;
+	this.isDying = true;
 }
 
 

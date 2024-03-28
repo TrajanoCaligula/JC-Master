@@ -73,6 +73,10 @@ Tilemap.prototype.collisionMoveLeft = function(sprite)
 	{
 		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
 			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
 	}
 	
 	return false;
@@ -90,6 +94,10 @@ Tilemap.prototype.collisionMoveRight = function(sprite)
 	for(var y=y0; y<=y1; y++)
 	{
 		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
 			return true;
 	}
 	
@@ -112,6 +120,16 @@ Tilemap.prototype.collisionMoveDown = function(sprite)
 			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
 			return true;
 		}
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
 	}
 	
 	return false;
@@ -128,6 +146,12 @@ Tilemap.prototype.collisionMoveUp = function(sprite)
 
   for (var x = x0; x <= x1; x++) {
     if (this.map.layers[TERRAIN].data[(y - 1) * this.map.width + x] != 0) {
+		return true;
+    }
+	if (this.map.layers[5].data[(y - 1) * this.map.width + x] != 0) {
+		return true;
+    }
+	if (this.map.layers[4].data[(y - 1) * this.map.width + x] != 0) {
 		return true;
     }
   }

@@ -24,7 +24,10 @@ function Scene()
 	this.enemies_sharks = [];
 	this.sharksActive = [];
 	this.createSharks();
-	this.enemies_sharks.push(new Shark(934, 544, this.map));
+
+	this.enemies_crabs = [];
+	this.crabsActive = [];
+	this.createCrabs();
 	
 	this.sharksActive.push(true);
 	
@@ -62,24 +65,32 @@ Scene.prototype.update = function(deltaTime)
 				this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
 				if(this.barrelsActive[i]){
 					this.barrels[i].update(deltaTime);
+					if(this.player.collisionBox().intersect(this.barrels[i].collisionBox())){
+						typeCollision = this.player.collisionBox().whereCollide(this.barrels[i].collisionBox());
+						if(typeCollision == 4)
+							this.barrels[i].Activated();
+					}
 				}
-				if(this.barrelsActive[i] && this.player.collisionBox().intersect(this.barrels[i].collisionBox()))
-					this.barrels[i].Activated();
+				
 			}
 			for(var i = 0; i < this.barrelsInt.length; i++){
 				this.barrelsIntActive[i] = this.isInsideScreen(this.barrelsInt[i]);
 				if(this.barrelsIntActive[i]){
 					this.barrelsInt[i].update(deltaTime);
+					if(this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox())){
+						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
+						if(typeCollision == 4)
+							this.barrelsInt[i].Activated();
+					}
 				}
-				if(this.barrelsIntActive[i] && this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox()))
-					this.barrelsInt[i].Activated();
+				
 			}
 
 			for(var i = 0; i < this.enemies_sharks.length; i++){
 				this.sharksActive[i] = this.isInsideScreen(this.enemies_sharks[i]);
 				if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
 					this.enemies_sharks[i].update(deltaTime);
-					if(this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
+					if(!this.enemies_sharks[i].isDying && this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
 						if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
 							this.player.hitted();
@@ -165,6 +176,19 @@ Scene.prototype.createSharks = function()
 			if(tileId != 0){
 				this.enemies_sharks.push(new Shark(i*32+0, 32+32*j-32,this.map));
 				this.sharksActive.push(true);
+			}
+		}
+}
+
+Scene.prototype.createCrabs = function()
+{
+	for(var j=0, pos=0; j<level01.height; j++)
+		for(var i=0; i<level01.width; i++, pos++)
+		{
+			tileId = level01.layers[7].data[pos];
+			if(tileId != 0){
+				//this.enemies_crabs.push(new Crab(i*32+0, 32+32*j-32,this.map));
+				this.crabsActive.push(true);
 			}
 		}
 }

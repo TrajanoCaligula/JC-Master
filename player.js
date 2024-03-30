@@ -350,17 +350,8 @@ Player.prototype.draw = function()
 
 Player.prototype.collisionBox = function()
 {
-    if(this.size == 1)	var box = new Box(this.sprite.x + 12, this.sprite.y+8, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
-    //TODO: else in case we need to change the collision box depending on the size of the player
-	else var box = new Box(this.sprite.x + 12, this.sprite.y+25, this.sprite.x + this.sprite.width - 12, this.sprite.y + this.sprite.height);
-	return box;
-}
-
-Player.prototype.killerCollisionBox = function()
-{
-	if(this.size == 1)	var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
-	else var box = new Box(this.sprite.x + 8, this.sprite.y+ this.sprite.height+1, this.sprite.x + this.sprite.width - 8, this.sprite.y + this.sprite.height+2);
-	//TODO: else in case we need to change the collision box depending on the size of the player
+    if(this.size == 1)	var box = new Box(this.sprite.x + 16, this.sprite.y+8, this.sprite.x + this.sprite.width - 16, this.sprite.y + this.sprite.height);
+	else var box = new Box(this.sprite.x + 16, this.sprite.y+25, this.sprite.x + this.sprite.width - 16, this.sprite.y + this.sprite.height);
 	return box;
 }
 

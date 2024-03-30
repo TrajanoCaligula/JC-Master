@@ -67,7 +67,7 @@ Scene.prototype.update = function(deltaTime)
 					this.barrels[i].update(deltaTime);
 					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrels[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.barrels[i].collisionBox());
-						if(typeCollision == 4)
+						if(typeCollision == 4 && this.player.jumpState == 1)
 							this.barrels[i].Activated();
 					}
 				}
@@ -79,7 +79,7 @@ Scene.prototype.update = function(deltaTime)
 					this.barrelsInt[i].update(deltaTime);
 					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
-						if(typeCollision == 4)
+						if(typeCollision == 4 && this.player.jumpState == 1)
 							this.barrelsInt[i].Activated();
 					}
 				}

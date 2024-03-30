@@ -69,6 +69,7 @@ function Player(x, y, map)
 	this.accel = 0;
 	this.Running = false;
 	this.incrementX = 0;
+	this.jumpState = 0;
 
 }
 
@@ -263,6 +264,7 @@ Player.prototype.update = function(deltaTime)
 			{
 				this.bJumping = false;
 				this.sprite.y = this.startY;
+				this.jumpState = 0;
 			}
 			else
 			{
@@ -273,6 +275,7 @@ Player.prototype.update = function(deltaTime)
 				//calcular la posicion en Y del salto);
 				this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);//calcular la posicion en Y del salto
 				if(this.jumpAngle > 90){//Si esta descedniendo en el salto
+					this.jumpState = 2;
 					if(this.sprite.currentAnimation == PIRATE_JUMP_LEFT)
 						this.sprite.setAnimation(PIRATE_FALL_LEFT);
 					else if(this.sprite.currentAnimation == PIRATE_JUMP_RIGHT)
@@ -290,6 +293,7 @@ Player.prototype.update = function(deltaTime)
 			this.sprite.y += 6;//Gravity
 			if(this.map.collisionMoveDown(this.sprite))
 			{	
+				this.jumpState = 0;
 				this.bJumping = false;
 				if(!this.bJumping && (this.sprite.currentAnimation == PIRATE_FALL_LEFT || this.sprite.currentAnimation == PIRATE_JUMP_LEFT))
 					this.sprite.setAnimation(PIRATE_STAND_LEFT);
@@ -302,10 +306,12 @@ Player.prototype.update = function(deltaTime)
 					this.bJumping = true;
 					this.jumpAngle = 0;
 					this.startY = this.sprite.y;
+					this.jumpState = 1;
 				}
 			}
 			else
 			{
+				this.jumpState = 2;
 				if(this.sprite.currentAnimation == PIRATE_STAND_LEFT || this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT || this.sprite.currentAnimation == PIRATE_HIT_LEFT)
 					this.sprite.setAnimation(PIRATE_FALL_LEFT);
 				else if(this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_RUN_RIGHT || this.sprite.currentAnimation == PIRATE_HIT_RIGHT)

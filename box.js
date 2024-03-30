@@ -27,7 +27,7 @@ Box.prototype.whereCollide = function(box2)
 	diffY= y2-y1;
 	console.log("diffX: "+diffX);
 	console.log("diffY: "+diffY);
-	if(Math.abs(diffX)>=(Math.abs(diffY)-1)){//Lateral collision
+	if(Math.abs(diffX)>=(Math.abs(diffY))){//Lateral collision
 		if(diffX>=0)
 		collide = 1;//Left
 		else collide = 2;//Right

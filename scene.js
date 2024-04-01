@@ -1,4 +1,5 @@
 
+const FLAGLAYER = 9;
 
 // Scene. Updates and draws a single scene of the game.
 

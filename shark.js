@@ -20,16 +20,6 @@ function Shark(x, y, map)
 
 	//STAND
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [224, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [192, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [160, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [128, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [96, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [64, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [32, 224, 32, 32]);
-	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [0, 224, 32, 32]);
-
-	this.sprite.addAnimation();
 	this.sprite.addKeyframe(SHARK_STAND_LEFT, [0, 0, 32, 32]);
 	this.sprite.addKeyframe(SHARK_STAND_LEFT, [32, 0, 32, 32]);
 	this.sprite.addKeyframe(SHARK_STAND_LEFT, [64, 0, 32, 32]);
@@ -39,14 +29,17 @@ function Shark(x, y, map)
 	this.sprite.addKeyframe(SHARK_STAND_LEFT, [192, 0, 32, 32]);
 	this.sprite.addKeyframe(SHARK_STAND_LEFT, [224, 0, 32, 32]);
 
-	//WALK
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [224, 256, 32, 32]);
-	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [192, 256, 32, 32]);
-	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [160, 256, 32, 32]);
-	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [128, 256, 32, 32]);
-	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [96, 256, 32, 32]);
-	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [64, 256, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [224, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [192, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [160, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [128, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [96, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [64, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [32, 224, 32, 32]);
+	this.sprite.addKeyframe(SHARK_STAND_RIGHT, [0, 224, 32, 32]);
+
+	//WALK
 
 	this.sprite.addAnimation();
 	this.sprite.addKeyframe(SHARK_WALK_LEFT, [0, 32, 32, 32]);
@@ -56,14 +49,32 @@ function Shark(x, y, map)
 	this.sprite.addKeyframe(SHARK_WALK_LEFT, [128, 32, 32, 32]);
 	this.sprite.addKeyframe(SHARK_WALK_LEFT, [160, 32, 32, 32]);
 
-	//FALL
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHARK_FALL_RIGHT, [224, 320, 32, 32]);
+	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [224, 256, 32, 32]);
+	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [192, 256, 32, 32]);
+	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [160, 256, 32, 32]);
+	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [128, 256, 32, 32]);
+	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [96, 256, 32, 32]);
+	this.sprite.addKeyframe(SHARK_WALK_RIGHT, [64, 256, 32, 32]);
 
+	//FALL
 	this.sprite.addAnimation();
 	this.sprite.addKeyframe(SHARK_FALL_LEFT, [0, 96, 32, 32]);
 
+	this.sprite.addAnimation();
+	this.sprite.addKeyframe(SHARK_FALL_RIGHT, [224, 320, 32, 32]);
+
 	//HIT
+	this.sprite.addAnimation();
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [0, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [32, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [64, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [96, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [128, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [160, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [192, 160, 32, 32]);
+	this.sprite.addKeyframe(SHARK_HIT_LEFT, [224, 160, 32, 32]);
+
 	this.sprite.addAnimation();
 	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [224, 384, 32, 32]);
 	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [192, 384, 32, 32]);
@@ -74,15 +85,6 @@ function Shark(x, y, map)
 	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [32, 384, 32, 32]);
 	this.sprite.addKeyframe(SHARK_HIT_RIGHT, [0, 384, 32, 32]);
 
-	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [0, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [32, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [64, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [96, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [128, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [160, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [192, 160, 32, 32]);
-	this.sprite.addKeyframe(SHARK_HIT_LEFT, [224, 160, 32, 32]);
 
 
 	// Set initial animation

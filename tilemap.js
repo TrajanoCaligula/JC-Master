@@ -104,6 +104,88 @@ Tilemap.prototype.collisionMoveRight = function(sprite)
 	return false;
 }
 
+Tilemap.prototype.collisionMoveLeftCrab = function(sprite)
+{
+	var x = Math.floor((sprite.x + 5 - this.basePos[0]) / this.tileSize[0]);
+	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
+	var y1 = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
+	
+	for(var y=y0; y<=y1; y++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
+	}
+	
+	return false;
+}
+
+// Computes if the right part of a sprite collides with the tilemap.
+// Returns a boolean with the result.
+
+Tilemap.prototype.collisionMoveRightCrab = function(sprite)
+{
+	var x = Math.floor((sprite.x + sprite.width - 50 - this.basePos[0]) / this.tileSize[0]);
+	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
+	var y1 = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
+	
+	for(var y=y0; y<=y1; y++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
+	}
+	
+	return false;
+}
+
+Tilemap.prototype.collisionMoveLeftShell = function(sprite)
+{
+	var x = Math.floor((sprite.x + 5 - this.basePos[0]) / this.tileSize[0]);
+	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
+	var y1 = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
+	
+	for(var y=y0; y<=y1; y++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
+	}
+	
+	return false;
+}
+
+// Computes if the right part of a sprite collides with the tilemap.
+// Returns a boolean with the result.
+
+Tilemap.prototype.collisionMoveRightShell = function(sprite)
+{
+	var x = Math.floor((sprite.x + sprite.width - 20 - this.basePos[0]) / this.tileSize[0]);
+	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
+	var y1 = Math.floor((sprite.y + sprite.height - 1 - this.basePos[1]) / this.tileSize[1]);
+	
+	for(var y=y0; y<=y1; y++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
+	}
+	
+	return false;
+}
+
 // Computes if the bottom of a sprite collides with the tilemap.
 // Returns a boolean with the result, and if it collides, it changes its Y position so as to avoid it.
 

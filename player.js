@@ -64,6 +64,10 @@ function Player(x, y, map)
 	this.hittedStateTime = 0;
 	this.nextAnimationAfterHitted = 0;
 
+	//To hit
+	this.feedbackAnimation = false;
+	this.feedbackTime = 0;
+
 	//Movement
 	this.speed = 0;
 	this.accel = 0;
@@ -85,6 +89,14 @@ Player.prototype.update = function(deltaTime)
 			this.sprite.y += 5;
 			if(this.sprite.y > 800)this.Dead = true;
 		}
+		else{
+			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
+		}
+	}
+	else if (this.feedbackAnimation){
+		this.jumpAngle += 4;
+		this.feedbackTime -= deltaTime;
+		if(this.feedbackTime <= 0) this.feedbackAnimation = false;
 		else{
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
 		}
@@ -391,6 +403,17 @@ Player.prototype.hitsFlag = function()
    if(num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT) this.sprite.setAnimation(PIRATE_FALL_LEFT);
    else this.sprite.setAnimation(PIRATE_FALL_RIGHT);
    //TODO: Go down to the floor and points
+}
+
+Player.prototype.hitsEnemy = function()
+{
+   num_anim = this.sprite.currentAnimation;
+   if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
+   else this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
+   this.feedbackAnimation = true;
+   this.jumpAngle = 0;
+   this.feedbackTime = 100;
+   this.startY = this.sprite.y;
 }
 
 Player.prototype.powerUpWheel = function() //TODO

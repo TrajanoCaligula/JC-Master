@@ -29,6 +29,9 @@ function Scene()
 	this.enemies_crabs = [];
 	this.crabsActive = [];
 	this.createCrabs();
+
+	this.enemies_shells = [];
+	this.shellsActive = [];
 		
 	// Store current time
 	this.currentTime = 0;
@@ -97,6 +100,7 @@ Scene.prototype.update = function(deltaTime)
 							this.player.hitted();
 						}
 						else{
+							this.player.hitsEnemy();
 							this.enemies_sharks[i].killed();
 						}
 					}
@@ -109,29 +113,57 @@ Scene.prototype.update = function(deltaTime)
 					this.enemies_crabs[i].update(deltaTime);
 					if(!this.player.hittedState && !this.enemies_crabs[i].isDying && this.player.collisionBox().intersect(this.enemies_crabs[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.enemies_crabs[i].collisionBox());
-						if(typeCollision == 1){//TODO: IMPACTE PER LESQUERRA?
-							if(this.enemies_crabs[i].alive && !this.enemies_crabs[i].moving) {
-								this.enemies_crabs[i].direction = 1; //RIGHT	
-								this.enemies_crabs[i].sprite.setAnimation(SHELL_RIGHT);
-								this.enemies_crabs[i].sprite.x = x;
-								this.enemies_crabs[i].sprite.y = y;
-							}
-							else this.player.hitted();
+						if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
+							this.player.hitted();
+						}	
+						else{	
+							this.player.hitsEnemy();
+							this.enemies_shells.push(new Shell(this.enemies_crabs[i].sprite.x+20, this.enemies_crabs[i].sprite.y,this.map));
+							var size = this.enemies_shells.length;
+							this.enemies_shells[size-1].isMoving = false;
+							this.shellsActive.push(true);
+							this.enemies_crabs[i].killed();
 						}
-						else if(typeCollision == 2){//TODO: IMPACTE PER DRETA?
-							if(this.enemies_crabs[i].alive && !this.enemies_crabs[i].moving) {
-								this.enemies_crabs[i].direction = 0; //LEFT		
-								this.enemies_crabs[i].sprite.setAnimation(SHELL_LEFT);
-								this.enemies_crabs[i].sprite.x = x;
-								this.enemies_crabs[i].sprite.y = y;
+					}
+				}
+			}
+
+			for(var i = 0; i < this.enemies_shells.length; i++){
+				this.shellsActive[i] = this.isInsideScreen(this.enemies_shells[i]);
+				if(this.shellsActive[i] && !this.enemies_shells[i].Dead){
+					this.enemies_shells[i].update(deltaTime);
+					if(!this.player.hittedState && !this.enemies_shells[i].isDying && this.player.collisionBox().intersect(this.enemies_shells[i].collisionBox())){
+						typeCollision = this.player.collisionBox().whereCollide(this.enemies_shells[i].collisionBox());
+
+						if(typeCollision == 1){
+							if(this.enemies_shells[i].isMoving) this.player.hitted();
+							else {
+								this.enemies_shells[i].isMoving = true;
+								this.enemies_shells[i].direction = RIGHT;
 							}
-							else this.player.hitted();
 						}
-						else if(typeCollision == 4){//TODO: sota?
+						else if(typeCollision == 2){ 
+							if(this.enemies_shells[i].isMoving) this.player.hitted();
+							else {
+								this.enemies_shells[i].isMoving = true;
+								this.enemies_shells[i].direction = LEFT;
+							}
+						}
+						else if(typeCollision == 4){ 
 							this.player.hitted();
 						}
-						else{
-							if(this.enemies_crabs[i].alive) this.enemies_crabs[i].hitted();
+						else{ 
+							if(this.enemies_shells[i].isMoving) {
+								this.player.hitsEnemy();
+								this.enemies_shells[i].isMoving = false;
+								num_anim = this.enemies_shells[i].sprite.currentAnimation;
+								if(num_anim == SHELL_MOVE_LEFT) this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_LEFT);
+								else this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_RIGHT);
+							}
+							else {
+								this.player.hitsEnemy();
+								//this.enemies_shells[i].killed();
+							}
 						}
 					}
 				}
@@ -177,6 +209,11 @@ Scene.prototype.draw = function ()
 	for(var i = 0; i < this.enemies_crabs.length; i++){
 		if(this.crabsActive[i] && !this.enemies_crabs[i].Dead)
 			this.enemies_crabs[i].draw();
+	}
+
+	for(var i = 0; i < this.enemies_shells.length; i++){
+		if(this.shellsActive[i] && !this.enemies_shells[i].Dead)
+			this.enemies_shells[i].draw();
 	}
 	context.restore();
 }
@@ -264,10 +301,16 @@ Scene.prototype.drawHitBoxes = function(){
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
 			}
 		}
-		for(var i = 0; i < this.enemies_carbs.length; i++){
-			if(this.crabsActive[i] && !this.enemies_carbs[i].Dead){
-				box = this.enemies_carbs[i].collisionBox();
+		for(var i = 0; i < this.enemies_crabs.length; i++){
+			if(this.crabsActive[i] && !this.enemies_crabs[i].Dead){
+				box = this.enemies_crabs[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "green"));
+			}
+		}
+		for(var i = 0; i < this.enemies_shells.length; i++){
+			if(this.shellsActive[i] && !this.enemies_shells[i].Dead){
+				box = this.enemies_shells[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "pink"));
 			}
 		}
 		for(var i = 0; i < this.quads.length; i++){

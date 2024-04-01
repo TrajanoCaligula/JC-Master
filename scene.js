@@ -101,6 +101,40 @@ Scene.prototype.update = function(deltaTime)
 					}
 				}
 			}
+
+			for(var i = 0; i < this.enemies_crabs.length; i++){
+				this.crabsActive[i] = this.isInsideScreen(this.enemies_crabs[i]);
+				if(this.crabsActive[i] && !this.enemies_crabs[i].Dead){
+					this.enemies_crabs[i].update(deltaTime);
+					if(!this.player.hittedState && !this.enemies_crabs[i].isDying && this.player.collisionBox().intersect(this.enemies_crabs[i].collisionBox())){
+						typeCollision = this.player.collisionBox().whereCollide(this.enemies_crabs[i].collisionBox());
+						if(typeCollision == 1){//TODO: IMPACTE PER LESQUERRA?
+							if(this.enemies_crabs[i].alive && !this.enemies_crabs[i].moving) {
+								this.enemies_crabs[i].direction = 1; //RIGHT	
+								this.enemies_crabs[i].sprite.setAnimation(SHELL_RIGHT);
+								this.enemies_crabs[i].sprite.x = x;
+								this.enemies_crabs[i].sprite.y = y;
+							}
+							else this.player.hitted();
+						}
+						else if(typeCollision == 2){//TODO: IMPACTE PER DRETA?
+							if(this.enemies_crabs[i].alive && !this.enemies_crabs[i].moving) {
+								this.enemies_crabs[i].direction = 0; //LEFT		
+								this.enemies_crabs[i].sprite.setAnimation(SHELL_LEFT);
+								this.enemies_crabs[i].sprite.x = x;
+								this.enemies_crabs[i].sprite.y = y;
+							}
+							else this.player.hitted();
+						}
+						else if(typeCollision == 4){//TODO: sota?
+							this.player.hitted();
+						}
+						else{
+							if(this.enemies_crabs[i].alive) this.enemies_crabs[i].hitted();
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -221,6 +255,12 @@ Scene.prototype.drawHitBoxes = function(){
 			if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
 				box = this.enemies_sharks[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
+			}
+		}
+		for(var i = 0; i < this.enemies_carbs.length; i++){
+			if(this.crabsActive[i] && !this.enemies_carbs[i].Dead){
+				box = this.enemies_carbs[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "green"));
 			}
 		}
 		for(var i = 0; i < this.quads.length; i++){

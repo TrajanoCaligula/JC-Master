@@ -163,6 +163,7 @@ Scene.prototype.draw = function ()
 		if(this.barrelsActive[i])
 			this.barrels[i].draw();
 	}
+
 	for(var i = 0; i < this.barrelsInt.length; i++){	
 		if(this.barrelsIntActive[i])
 			this.barrelsInt[i].draw();
@@ -171,6 +172,11 @@ Scene.prototype.draw = function ()
 	for(var i = 0; i < this.enemies_sharks.length; i++){
 		if(this.sharksActive[i] && !this.enemies_sharks[i].Dead)
 			this.enemies_sharks[i].draw();
+	}
+
+	for(var i = 0; i < this.enemies_crabs.length; i++){
+		if(this.crabsActive[i] && !this.enemies_crabs[i].Dead)
+			this.enemies_crabs[i].draw();
 	}
 	context.restore();
 }
@@ -222,7 +228,7 @@ Scene.prototype.createCrabs = function()
 		{
 			tileId = level01.layers[7].data[pos];
 			if(tileId != 0){
-				//this.enemies_crabs.push(new Crab(i*32+0, 32+32*j-32,this.map));
+				this.enemies_crabs.push(new Crab(i*32+0, 32+32*j-32,this.map));
 				this.crabsActive.push(true);
 			}
 		}

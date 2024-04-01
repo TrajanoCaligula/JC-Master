@@ -137,9 +137,10 @@ Shark.prototype.update = function(deltaTime)
 			else{
 				if(this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);
 				this.sprite.x -= 1;
-				if(this.map.collisionMoveLeft(this.sprite))
+				if(this.map.collisionMoveLeft(this.sprite)){
 					this.sprite.x += 1;
 					this.direction = RIGHT;
+				}
 			}
 		}
 		else{
@@ -155,9 +156,10 @@ Shark.prototype.update = function(deltaTime)
 			else{
 				if(this.sprite.currentAnimation != SHARK_FALL_RIGHT)this.sprite.setAnimation(SHARK_FALL_RIGHT);
 				this.sprite.x += 1;
-				if(this.map.collisionMoveRight(this.sprite))
+				if(this.map.collisionMoveRight(this.sprite)){
 					this.sprite.x -= 1;
 					this.direction = LEFT;
+				}
 			}
 		}
 		// Move PIRATE so that it is affected by gravity

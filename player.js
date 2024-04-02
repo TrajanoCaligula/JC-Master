@@ -100,6 +100,7 @@ Player.prototype.update = function(deltaTime)
 		else{
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
 		}
+		this.resetJump();
 	}
 	else{ //PIRATE ALIVE
 		if(this.hittedState){//HITTED
@@ -360,6 +361,10 @@ Player.prototype.update = function(deltaTime)
 	// Update sprites
 	this.sprite.update(deltaTime);
 }
+Player.prototype.resetJump = function(){
+	this.jumpAngle = 0;
+	this.jumpState = 1;
+}
 
 Player.prototype.draw = function()
 {
@@ -378,17 +383,13 @@ Player.prototype.hitted = function()
 	num_anim = this.sprite.currentAnimation;
 	if(this.vulnerability && this.size == 1){ //If the player is vulnerable and is big
 		this.nextAnimationAfterHitted = num_anim;
-        if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT){
-            this.sprite.setAnimation(PIRATE_HIT_LEFT);
-        }
-        else {
-            this.sprite.setAnimation(PIRATE_HIT_RIGHT);
-        }
+        if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT) this.sprite.setAnimation(PIRATE_HIT_RIGHT);
+        else this.sprite.setAnimation(PIRATE_HIT_LEFT);
 		this.hittedState = true;//HITTED
 		this.hittedStateTime = 1000;
 	} else if(this.vulnerability){
-	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_LEFT);
-        else this.sprite.setAnimation(PIRATE_HIT_RIGHT);
+	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_RIGHT);
+        else this.sprite.setAnimation(PIRATE_HIT_LEFT);
         this.isDying = true;
         this.jumpAngle = 0;
         this.startY = this.sprite.y;
@@ -430,7 +431,6 @@ Player.prototype.powerUpWheel = function() //TODO
 
 Player.prototype.powerUpHat = function() //TODO
 {
-    this.size = 1;
 	this.changeSize();
 }
 

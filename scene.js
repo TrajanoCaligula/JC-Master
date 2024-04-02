@@ -74,13 +74,24 @@ Scene.prototype.update = function(deltaTime)
 		if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
 		// Check for collision between entities
 			for(var i = 0; i < this.barrels.length; i++){
-				this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
+				if(this.barrels[i].isShown) this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
 				if(this.barrelsActive[i]){
 					this.barrels[i].update(deltaTime);
 					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrels[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.barrels[i].collisionBox());
-						if(typeCollision == 4 && this.player.jumpState == 1)
-							this.barrels[i].Activated();
+						if(typeCollision == 4 && this.player.jumpState == 1){
+							if(this.player.size == 1) {
+								console.log("OPosition",this.barrels[i].sprite.x,this.barrels[i].sprite.y);
+								this.barrelsActive[i] = false;
+								this.barrels[i].isShown = false;
+								pos=(this.barrels[i].sprite.x/32)* level01.height+((this.barrels[i].sprite.y-32)/32);
+								console.log("FPosition", pos);
+								this.map.map.layers[4].data[pos]=0
+							}
+							else {
+								//todo: interaccio que no trenca
+							}
+						}
 					}
 				}
 				
@@ -94,12 +105,12 @@ Scene.prototype.update = function(deltaTime)
 						if(typeCollision == 4 && this.player.jumpState == 1)
 							if(!this.barrelsInt[i].beenActivated){
 								if(this.player.size == 0){
-								this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
-								this.hatsActive.push(true);
+									this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
+									this.hatsActive.push(true);
 								}
 								else{
-								this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
-								this.wheelsActive.push(true);
+									this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
+									this.wheelsActive.push(true);
 								}
 							}
 							this.barrelsInt[i].Activated();
@@ -163,6 +174,7 @@ Scene.prototype.update = function(deltaTime)
 							this.enemies_shells.push(new Shell(this.enemies_crabs[i].sprite.x+20, this.enemies_crabs[i].sprite.y,this.map));
 							var size = this.enemies_shells.length;
 							this.enemies_shells[size-1].isMoving = false;
+							this.enemies_shells[size-1].setCD();
 							this.shellsActive.push(true);
 							this.enemies_crabs[i].killed();
 						}
@@ -194,20 +206,26 @@ Scene.prototype.update = function(deltaTime)
 						else if(typeCollision == 4){ 
 							this.player.hitted();
 						}
-						else{ 
+						else{ //golpe que para la shell
 							if(this.enemies_shells[i].isMoving) {
 								this.player.hitsEnemy();
 								this.enemies_shells[i].isMoving = false;
 								num_anim = this.enemies_shells[i].sprite.currentAnimation;
 								if(num_anim == SHELL_MOVE_LEFT) this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_LEFT);
 								else this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_RIGHT);
+								this.enemies_shells[i].setCD();
 							}
-							else {
+							else { //golpe y rebote con la shell parada
+								if(this.enemies_shells[i].vulerabilityCD) this.enemies_shells[i].killed();
 								this.player.hitsEnemy();
-								//this.enemies_shells[i].killed();
 							}
 						}
 					}
+					//CHECK COLISION WITH OTHER ENEMIES
+					if(!this.enemies_shells[i].isDying){
+						for(var j = 0; j < this.enemies_sharks.length; j++) if(this.enemies_shells[i].collisionBox().intersect(this.enemies_sharks[j].collisionBox())) this.enemies_sharks[j].killed();
+						for(var j = 0; j < this.enemies_crabs.length; j++)  if (this.enemies_shells[i].collisionBox().intersect(this.enemies_crabs[j].collisionBox())) this.enemies_crabs[j].killed();
+					} 	
 				}
 			}
 
@@ -285,7 +303,7 @@ Scene.prototype.createBarrels = function()
 				this.barrels.push(new Barrel(i*32+0, 32+32*j));
 				this.barrelsActive.push(true);
 			}
-		}
+	}
 }
 
 Scene.prototype.createBarrelsInt = function()

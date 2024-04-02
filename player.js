@@ -431,6 +431,7 @@ Player.prototype.powerUpWheel = function() //TODO
 Player.prototype.powerUpHat = function() //TODO
 {
     this.size = 1;
+	this.changeSize();
 }
 
 Player.prototype.powerDownWheel = function() //TODO

@@ -38,6 +38,8 @@ function Scene()
 
 	this.hats = [];
 	this.hatsActive = [];
+
+	this.flag = new Flag(1000, 576,this.map);
 		
 	// Store current time
 	this.currentTime = 0;
@@ -90,10 +92,15 @@ Scene.prototype.update = function(deltaTime)
 					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrelsInt[i].collisionBox())){
 						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 						if(typeCollision == 4 && this.player.jumpState == 1)
+							if(!this.barrelsInt[i].beenActivated){
+								this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
+								this.hatsActive.push(true);
+								//this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
+								//this.wheelsActive.push(true);
+							}
 							this.barrelsInt[i].Activated();
 							//testing
-							this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
-							this.wheelsActive.push(true);
+							
 					}
 				}
 				
@@ -201,6 +208,11 @@ Scene.prototype.update = function(deltaTime)
 					}
 				}
 			}
+
+			this.flag.update(deltaTime);
+			if(!this.player.hittedState && this.player.collisionBox().intersect(this.flag.collisionBox())){
+				//TODO
+			}
 		}
 	}
 }
@@ -223,7 +235,7 @@ Scene.prototype.draw = function ()
 	// Draw entities
 	
 	if(!this.player.Dead)this.player.draw();
-
+	this.flag.draw();
 	for(var i = 0; i < this.barrels.length; i++){	
 		if(this.barrelsActive[i])
 			this.barrels[i].draw();
@@ -256,6 +268,7 @@ Scene.prototype.draw = function ()
 		if(this.hatsActive[i] && !this.hats[i].Dead)
 			this.hats[i].draw();
 	}
+	
 	context.restore();
 }
 
@@ -366,6 +379,8 @@ Scene.prototype.drawHitBoxes = function(){
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "black"));
 			}
 		}
+		box = this.flag.collisionBox();
+		this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "cyan"));
 		for(var i = 0; i < this.quads.length; i++){
 			this.quads[i].draw();
 		}

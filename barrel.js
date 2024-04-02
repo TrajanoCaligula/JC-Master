@@ -11,6 +11,7 @@ function Barrel(x, y)
 	this.sprite.addAnimation();
 	this.sprite.addKeyframe(1, [32, 32, 32, 32]);
 	this.beenActivated = false;
+	this.isShown = true;
 }
 
 
@@ -26,8 +27,8 @@ Barrel.prototype.draw = function draw()
 
 Barrel.prototype.collisionBox = function()
 {
-	var box = new Box(this.sprite.x, this.sprite.y, this.sprite.x + this.sprite.width, this.sprite.y + this.sprite.height);
-	
+	if(this.isShown) var box = new Box(this.sprite.x, this.sprite.y, this.sprite.x + this.sprite.width, this.sprite.y + this.sprite.height);
+	else var box = new Box(0,0,0,0);
 	return box;
 }
 

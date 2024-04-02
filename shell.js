@@ -76,6 +76,7 @@ function Shell(x, y, map)
 	this.direction = LEFT;
 
 	this.isMoving = false;
+	this.setCD();
 
 	this.Dead = false;
 	this.isDying = false;
@@ -88,7 +89,11 @@ function Shell(x, y, map)
 Shell.prototype.update = function(deltaTime)
 {
 	if(this.Dead)return;
-	if(this.isDying){
+	if(!this.vulerabilityCD){
+		this.CDTime -= deltaTime;
+		if(this.CDTime <= 0) this.vulerabilityCD = true;
+	} 
+	else if(this.isDying){
 		if(this.direction == LEFT){
 			if(this.sprite.currentAnimation != CRAB_HIT_LEFT)this.sprite.setAnimation(CRAB_HIT_LEFT);
 		}
@@ -103,7 +108,7 @@ Shell.prototype.update = function(deltaTime)
 		}
 		if(this.DyingTime <= 0)this.Dead = true;
 	}
-	
+
 	else{
 		if(this.isMoving){
 			if(this.direction == LEFT){
@@ -122,7 +127,7 @@ Shell.prototype.update = function(deltaTime)
 					this.direction = LEFT;
 				}
 			}
-		} 		
+		}				
 		// Move PIRATE so that it is affected by gravity
 		this.sprite.y += 6;
 		if(this.map.collisionMoveDown(this.sprite)) this.isfalling = false;
@@ -143,6 +148,12 @@ Shell.prototype.collisionBox = function()
 	var box = new Box(this.sprite.x + 1, this.sprite.y+30, this.sprite.x + this.sprite.width - 20, this.sprite.y + this.sprite.height);
 	
 	return box;
+}
+
+Shell.prototype.setCD = function()
+{
+	this.vulerabilityCD = false;
+	this.CDTime = 1000;
 }
 
 Shell.prototype.killed = function()

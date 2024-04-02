@@ -93,14 +93,16 @@ Scene.prototype.update = function(deltaTime)
 						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 						if(typeCollision == 4 && this.player.jumpState == 1)
 							if(!this.barrelsInt[i].beenActivated){
+								if(this.player.size == 0){
 								this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
 								this.hatsActive.push(true);
-								//this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
-								//this.wheelsActive.push(true);
+								}
+								else{
+								this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
+								this.wheelsActive.push(true);
+								}
 							}
 							this.barrelsInt[i].Activated();
-							//testing
-							
 					}
 				}
 				

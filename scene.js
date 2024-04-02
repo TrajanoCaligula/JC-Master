@@ -32,6 +32,12 @@ function Scene()
 
 	this.enemies_shells = [];
 	this.shellsActive = [];
+
+	this.wheels = [];
+	this.wheelsActive = [];
+
+	this.hats = [];
+	this.hatsActive = [];
 		
 	// Store current time
 	this.currentTime = 0;
@@ -85,10 +91,37 @@ Scene.prototype.update = function(deltaTime)
 						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 						if(typeCollision == 4 && this.player.jumpState == 1)
 							this.barrelsInt[i].Activated();
+							//testing
+							this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-64,this.map));
+							this.wheelsActive.push(true);
 					}
 				}
 				
 			}
+
+			for(var i = 0; i < this.hats.length; i++){
+				this.hatsActive[i] = this.isInsideScreen(this.hats[i]);
+				if(this.hatsActive[i] && !this.hats[i].Dead){
+					this.hats[i].update(deltaTime);
+					if(!this.player.hittedState && !this.hats[i].isDying && this.player.collisionBox().intersect(this.hats[i].collisionBox())){
+						this.hats[i].killed();
+						this.player.powerUpHat();
+					}
+				}
+			}
+
+			for(var i = 0; i < this.wheels.length; i++){
+				this.wheelsActive[i] = this.isInsideScreen(this.wheels[i]);
+				if(this.wheelsActive[i] && !this.wheels[i].Dead){
+					this.wheels[i].update(deltaTime);
+					if(!this.player.hittedState && !this.wheels[i].isDying && this.player.collisionBox().intersect(this.wheels[i].collisionBox())){
+						this.wheels[i].killed();
+						this.player.powerUpWheel();
+					}
+				}
+			}
+
+			
 
 			for(var i = 0; i < this.enemies_sharks.length; i++){
 				this.sharksActive[i] = this.isInsideScreen(this.enemies_sharks[i]);
@@ -215,6 +248,14 @@ Scene.prototype.draw = function ()
 		if(this.shellsActive[i] && !this.enemies_shells[i].Dead)
 			this.enemies_shells[i].draw();
 	}
+	for(var i = 0; i < this.wheels.length; i++){
+		if(this.wheelsActive[i] && !this.wheels[i].Dead)
+			this.wheels[i].draw();
+	}
+	for(var i = 0; i < this.hats.length; i++){
+		if(this.hatsActive[i] && !this.hats[i].Dead)
+			this.hats[i].draw();
+	}
 	context.restore();
 }
 
@@ -311,6 +352,18 @@ Scene.prototype.drawHitBoxes = function(){
 			if(this.shellsActive[i] && !this.enemies_shells[i].Dead){
 				box = this.enemies_shells[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "pink"));
+			}
+		}
+		for(var i = 0; i < this.wheels.length; i++){
+			if(this.wheelsActive[i] && !this.wheels[i].Dead){
+				box = this.wheels[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "brown"));
+			}
+		}
+		for(var i = 0; i < this.hats.length; i++){
+			if(this.hatsActive[i] && !this.hats[i].Dead){
+				box = this.hats[i].collisionBox();
+				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "black"));
 			}
 		}
 		for(var i = 0; i < this.quads.length; i++){

@@ -84,9 +84,9 @@ Scene.prototype.update = function(deltaTime)
 								console.log("OPosition",this.barrels[i].sprite.x,this.barrels[i].sprite.y);
 								this.barrelsActive[i] = false;
 								this.barrels[i].isShown = false;
-								pos=(this.barrels[i].sprite.x/32)* level01.height+((this.barrels[i].sprite.y-32)/32);
+								pos=(this.barrels[i].sprite.x/32)+ level01.width*((this.barrels[i].sprite.y-32)/32);
 								console.log("FPosition", pos);
-								this.map.map.layers[4].data[pos]=0
+								this.map.map.layers[4].data[pos]=0;
 							}
 							else {
 								//todo: interaccio que no trenca

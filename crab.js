@@ -107,15 +107,19 @@ Crab.prototype.update = function(deltaTime)
 			this.sprite.y += 10;
 			this.goDown = true;
 		}
-		if(this.DyingTime <= 0)this.Dead = true;
+		if(this.DyingTime <= 0) {
+			this.Dead = true;
+			this.sprite.x = 0;
+			this.sprite.y = 0;
+		}
 	}
 	else{
 		if(this.direction == LEFT){
 			if(!this.isfalling){
 				if(this.sprite.currentAnimation != CRAB_WALK_LEFT)this.sprite.setAnimation(CRAB_WALK_LEFT);
-				this.sprite.x -= 1;
+				this.sprite.x -= 2;
 				if(this.map.collisionMoveLeftCrab(this.sprite)){
-					this.sprite.x += 1;
+					this.sprite.x += 2;
 					this.direction = RIGHT;
 				}
 				
@@ -132,9 +136,9 @@ Crab.prototype.update = function(deltaTime)
 		else{
 			if(!this.isfalling){
 				if(this.sprite.currentAnimation != CRAB_WALK_RIGHT)this.sprite.setAnimation(CRAB_WALK_RIGHT);
-				this.sprite.x += 1;
+				this.sprite.x += 2;
 				if(this.map.collisionMoveRightCrab(this.sprite)){
-					this.sprite.x -= 1;
+					this.sprite.x -= 2;
 					this.direction = LEFT;
 				}
 				

@@ -110,6 +110,8 @@ Hat.prototype.collisionBox = function()
 Hat.prototype.killed = function()
 {
 	this.Dead = true;
+	this.sprite.x = 0;
+	this.sprite.y = 0;
 }
 
 

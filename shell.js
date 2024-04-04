@@ -13,10 +13,10 @@ function Shell(x, y, map)
 
 	//STAND
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHELL_STAND_LEFT, [608, 32, 32, 32]);
+	this.sprite.addKeyframe(SHELL_STAND_LEFT, [0, 0, 32, 32]);
 
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(SHELL_STAND_RIGHT, [0, 0, 32, 32]);
+	this.sprite.addKeyframe(SHELL_STAND_RIGHT, [608, 32, 32, 32]);	
 
 	//WALK
 	this.sprite.addAnimation();
@@ -80,8 +80,10 @@ function Shell(x, y, map)
 
 	this.Dead = false;
 	this.isDying = false;
-	this.DyingTime = 980;
+	this.DyingTime = 240;
 	this.goDown = false;
+
+	this.sound = AudioFX('Sounds/shell.mp3');
 	
 }
 
@@ -95,18 +97,22 @@ Shell.prototype.update = function(deltaTime)
 	} 
 	else if(this.isDying){
 		if(this.direction == LEFT){
-			if(this.sprite.currentAnimation != CRAB_HIT_LEFT)this.sprite.setAnimation(CRAB_HIT_LEFT);
+			if(this.sprite.currentAnimation != SHELL_MOVE_LEFT)this.sprite.setAnimation(SHELL_MOVE_LEFT);
 		}
 		else{
-			if(this.sprite.currentAnimation != CRAB_HIT_RIGHT)this.sprite.setAnimation(CRAB_HIT_RIGHT);
+			if(this.sprite.currentAnimation != SHELL_MOVE_RIGHT)this.sprite.setAnimation(SHELL_MOVE_RIGHT);
 		}
 		this.sprite.update(deltaTime);
 		this.DyingTime -= deltaTime;
-		if(this.DyingTime <= 490 && !this.goDown){
+		if(this.DyingTime <= 120 && !this.goDown){
 			this.sprite.y += 10;
 			this.goDown = true;
 		}
-		if(this.DyingTime <= 0)this.Dead = true;
+		if(this.DyingTime <= 0){
+			this.sprite.x = 0;
+			this.sprite.y = 0;	
+			this.Dead = true;
+		}
 	}
 
 	else{
@@ -127,7 +133,15 @@ Shell.prototype.update = function(deltaTime)
 					this.direction = LEFT;
 				}
 			}
-		}				
+		}
+		else {
+			if(this.direction == LEFT){
+				if(this.sprite.currentAnimation != SHELL_STAND_LEFT)this.sprite.setAnimation(SHELL_STAND_LEFT);
+			}
+			else{
+				if(this.sprite.currentAnimation != SHELL_STAND_RIGHT)this.sprite.setAnimation(SHELL_STAND_RIGHT);
+			}
+		}
 		// Move PIRATE so that it is affected by gravity
 		this.sprite.y += 6;
 		if(this.map.collisionMoveDown(this.sprite)) this.isfalling = false;
@@ -158,6 +172,7 @@ Shell.prototype.setCD = function()
 
 Shell.prototype.killed = function()
 {
+	this.sound.play();
 	this.isDying = true;
 }
 

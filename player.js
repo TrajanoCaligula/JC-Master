@@ -13,11 +13,11 @@ const PIRATE_HIT_LEFT = 10;
 const PIRATE_HIT_RIGHT = 11;
 
 //Movement
-const MINWALKSPEED = 60;
+const MINWALKSPEED = 80;
 const WALKACCEL = 60;
 const RUNACCEL = 120;
 const RELEASDECEL = 360;
-const MAXWALKSPEED = 120;
+const MAXWALKSPEED = 160;
 const MAXRUNSPEED = 240;
 
 
@@ -75,6 +75,10 @@ function Player(x, y, map)
 	this.incrementX = 0;
 	this.jumpState = 0;
 
+	//End of the level
+	this.isEnding = false;
+	this.isFinished = false;
+
 }
 
 
@@ -82,25 +86,33 @@ Player.prototype.update = function(deltaTime)
 {
 	
 	if(this.Dead)return;//IS COMPLEATLY DEAD
+	else if(this.isEnding){//ANIMATION end
+		{
+			this.isDying = false;
+			this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+			this.isFinished = true; // This will be printed after 2 seconds
+		}
+	}
 	else if(this.isDying){//ANIMATION DEAD
 		this.jumpAngle += 4;
 		if(this.jumpAngle >= 180)
 		{
 			this.sprite.y += 5;
-			if(this.sprite.y > 800)this.Dead = true;
+			if(this.sprite.y > 800) this.Dead = true;
 		}
 		else{
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
 		}
 	}
-	else if (this.feedbackAnimation){
+	else if (this.feedbackAnimation){ //for jump
 		this.jumpAngle += 4;
 		this.feedbackTime -= deltaTime;
-		if(this.feedbackTime <= 0) this.feedbackAnimation = false;
+		if(this.feedbackTime <= 0) {
+			this.feedbackAnimation = false;
+		}
 		else{
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
 		}
-		this.resetJump();
 	}
 	else{ //PIRATE ALIVE
 		if(this.hittedState){//HITTED
@@ -120,8 +132,7 @@ Player.prototype.update = function(deltaTime)
 						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
 					}
 				}
-			}
-			
+			}	
 		}
 		else if(keyboard[37]) // KEY_LEFT
 		{
@@ -363,7 +374,8 @@ Player.prototype.update = function(deltaTime)
 }
 Player.prototype.resetJump = function(){
 	this.jumpAngle = 0;
-	this.jumpState = 1;
+	this.jumpState = 2;
+	this.startY = this.sprite.y;
 }
 
 Player.prototype.draw = function()
@@ -386,7 +398,7 @@ Player.prototype.hitted = function()
         if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT) this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         else this.sprite.setAnimation(PIRATE_HIT_LEFT);
 		this.hittedState = true;//HITTED
-		this.hittedStateTime = 1000;
+		this.hittedStateTime = 500;
 	} else if(this.vulnerability){
 	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         else this.sprite.setAnimation(PIRATE_HIT_LEFT);
@@ -413,6 +425,7 @@ Player.prototype.hitsEnemy = function()
    else this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
    this.feedbackAnimation = true;
    this.jumpAngle = 0;
+   this.jumpState = 2;
    this.feedbackTime = 100;
    this.startY = this.sprite.y;
 }

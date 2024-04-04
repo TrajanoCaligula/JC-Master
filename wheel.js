@@ -8,7 +8,7 @@ function Wheel(x, y, map)
 	var wheel = new Texture("Textures/Levels/Wheel.png");
 
 	// Prepare PIRATE sprite & its animations
-	this.sprite = new Sprite(x, y, 64, 64, 8, wheel);
+	this.sprite = new Sprite(x, y, 32, 32, 8, wheel);
 
 	//STAND
 	this.sprite.addAnimation();
@@ -112,6 +112,8 @@ Wheel.prototype.collisionBox = function()
 Wheel.prototype.killed = function()
 {
 	this.Dead = true;
+	this.sprite.x = 0;
+	this.sprite.y = 0;
 }
 
 

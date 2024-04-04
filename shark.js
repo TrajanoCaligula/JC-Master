@@ -103,6 +103,8 @@ function Shark(x, y, map)
 	this.isDying = false;
 	this.DyingTime = 980;
 	this.goDown = false;
+
+	this.deadSound = AudioFX('Sounds/shark.mp3');
 	
 }
 
@@ -123,7 +125,11 @@ Shark.prototype.update = function(deltaTime)
 			this.sprite.y += 10;
 			this.goDown = true;
 		}
-		if(this.DyingTime <= 0)this.Dead = true;
+		if(this.DyingTime <= 0){
+			this.sprite.x = 0;
+			this.sprite.y = 0;	
+			this.Dead = true;
+		}
 	}
 	else{
 		if(this.direction == LEFT){
@@ -198,6 +204,7 @@ Shark.prototype.collisionBox = function()
 
 Shark.prototype.killed = function()
 {
+	this.deadSound.play();
 	this.isDying = true;
 }
 

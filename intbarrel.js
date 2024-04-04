@@ -23,6 +23,10 @@ function Intbarrel(x, y)
 	this.sprite.addKeyframe(1, [32, 32, 32, 32]);
 
 	this.beenActivated = false;
+	this.originalY = this.sprite.y;
+
+	
+	this.sound = AudioFX('Sounds/intBarrel.mp3');
 }
 
 
@@ -38,7 +42,7 @@ Intbarrel.prototype.draw = function draw()
 
 Intbarrel.prototype.collisionBox = function()
 {
-	var box = new Box(this.sprite.x, this.sprite.y, this.sprite.x + this.sprite.width, this.sprite.y + this.sprite.height);
+	var box = new Box(this.sprite.x+2, this.sprite.y+2, this.sprite.x + this.sprite.width-2, this.sprite.y + this.sprite.height-2);
 	
 	return box;
 }
@@ -49,5 +53,13 @@ Intbarrel.prototype.collisionBox = function()
  	}
  }
 
+ Intbarrel.prototype.impact = function(){
+	this.sprite.y -= 2;
+	this.sound.play();
+	setTimeout(() => {
+	  this.sprite.y = this.originalY; // This will be printed after 2 seconds
+	}, 200);
+	this.Activated();
+}
 
 

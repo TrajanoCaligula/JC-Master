@@ -14,12 +14,23 @@ function Barrel(x, y)
 	this.isShown = true;
 	this.originalY = this.sprite.y;
 	this.crack = AudioFX('Sounds/wood_crash.mp3');
+
+	this.animation = false;
+	this.animationTime = 100;
 }
 
 
 Barrel.prototype.update = function(deltaTime)
 {
 	this.sprite.update(deltaTime);
+	if(this.animation){
+		this.animationTime -= deltaTime;
+		if(this.animationTime <= 0){
+			this.sprite.y = this.originalY;
+			this.animation = false;
+			this.animationTime = 100;
+		}
+	}
 }
 
 Barrel.prototype.draw = function draw()

@@ -19,6 +19,8 @@ function Flag(x, y) //TODO
 	this.sprite.addKeyframe(0, [832, 96, 32, 32]);
 	// Set initial animation
 	this.sprite.setAnimation(0);
+
+	this.points = 1000;
 }
 
 

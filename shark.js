@@ -103,6 +103,8 @@ function Shark(x, y, map)
 	this.isDying = false;
 	this.DyingTime = 980;
 	this.goDown = false;
+	
+	this.points = 100;
 
 	this.deadSound = AudioFX('Sounds/shark.mp3');
 	

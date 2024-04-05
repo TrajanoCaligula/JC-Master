@@ -1,39 +1,43 @@
 
 function Coin(x, y) //TODO
 {
-	var flag = new Texture("Textures/Levels/Texture_Level.png");
+	var coin = new Texture("Textures/Levels/Coin.png");
 
 	// Prepare bubble sprite & its animation
-	this.sprite = new Sprite(x, y, 32, 32, 8, flag);
+	this.sprite = new Sprite(x, y, 32, 32, 16, coin);
 
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(0, [576, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [608, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [640, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [672, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [704, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [736, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [768, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [800, 96, 32, 32]);
-	this.sprite.addKeyframe(0, [832, 96, 32, 32]);
+	this.sprite.addKeyframe(0, [0, 0, 16, 16]);
+	this.sprite.addKeyframe(0, [16, 0, 16, 16]);
+	this.sprite.addKeyframe(0, [32, 0, 16, 16]);
+	this.sprite.addKeyframe(0, [48, 0, 16, 16]);
 	// Set initial animation
 	this.sprite.setAnimation(0);
+	this.coinAlive = true;
+	this.animationTime = 400;
+	
+	this.sound = AudioFX('Sounds/intBarrel.mp3');
 }
 
 
-Flag.prototype.update = function(deltaTime)
+Coin.prototype.update = function(deltaTime)
 {
+	this.animationTime -= deltaTime;
+	if(this.animationTime <= 0) this.coinAlive = false;
+	else {
+		this.sprite.y -= 3;
+	}
 	this.sprite.update(deltaTime);
 }
 
-Flag.prototype.draw = function draw()
+Coin.prototype.draw = function draw()
 {
 	this.sprite.draw();
 }
 
-Flag.prototype.collisionBox = function()
+Coin.prototype.collisionBox = function()
 {
-	var box = new Box(this.sprite.x, this.sprite.y-700, this.sprite.x + this.sprite.width, this.sprite.y + this.sprite.height+650);
+	var box = new Box(0,0,0,0);
 	
 	return box;
 }

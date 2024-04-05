@@ -87,6 +87,8 @@ function Crab(x, y, map)
 	this.isDying = false;
 	this.DyingTime = 150;
 	this.goDown = false;
+
+	this.points = 200;
 	
 }
 

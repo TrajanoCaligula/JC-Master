@@ -39,9 +39,11 @@ function Scene()
 	this.hats = [];
 	this.hatsActive = [];
 
+	this.coins = [];
+
 	this.isFinished = false;
 
-	this.flag = new Flag(1000, 200,this.map);
+	this.flag = new Flag(0, 200,this.map);
 		
 	// Store current time
 	this.currentTime = 0;
@@ -95,7 +97,7 @@ Scene.prototype.update = function(deltaTime)
 		if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
 		// Check for collision between entities
 			for(var i = 0; i < this.barrels.length; i++){
-				if(this.barrels[i].isShown) this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
+				this.barrelsActive[i] = this.isInsideScreen(this.barrels[i]);
 				if(this.barrelsActive[i]){
 					this.barrels[i].update(deltaTime);
 					if(!this.player.hittedState && this.player.collisionBox().intersect(this.barrels[i].collisionBox())){
@@ -125,20 +127,26 @@ Scene.prototype.update = function(deltaTime)
 						typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 						if(typeCollision == 4 && this.player.jumpState == 1)
 							if(!this.barrelsInt[i].beenActivated){
-								if(this.player.size == 0){
-									this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
-									this.hatsActive.push(true);
+								if(Math.random() < 0.9){
+									this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
+								} else {
+									if(this.player.size == 0){
+										this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
+										this.hatsActive.push(true);
+									}
+									else{
+										this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-32,this.map));
+										this.wheelsActive.push(true);
+									}
 								}
-								else{
-									this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-32,this.map));
-									this.wheelsActive.push(true);
-								}
+								this.barrelsInt[i].impact();
 							}
-							this.barrelsInt[i].impact();
 					}
 				}
 				
 			}
+
+			for(var i = 0; i < this.coins.length; i++) if(this.coins[i].coinAlive) this.coins[i].update(deltaTime);
 
 			for(var i = 0; i < this.hats.length; i++){
 				this.hatsActive[i] = this.isInsideScreen(this.hats[i]);
@@ -148,6 +156,7 @@ Scene.prototype.update = function(deltaTime)
 						this.hats[i].killed();
 						this.powerUp.play();
 						this.player.powerUpHat();
+						this.points += this.hats[i].points;
 					}
 				}
 			}
@@ -160,6 +169,7 @@ Scene.prototype.update = function(deltaTime)
 						this.wheels[i].killed();
 						this.powerUp.play();
 						this.player.powerUpWheel();
+						this.points += this.wheels[i].points;
 					}
 				}
 			}
@@ -178,6 +188,7 @@ Scene.prototype.update = function(deltaTime)
 						else{
 							this.player.hitsEnemy();
 							this.enemies_sharks[i].killed();
+							this.points += this.enemies_sharks[i].points;
 						}
 					}
 					else if(!this.enemies_sharks[i].isDying){
@@ -206,6 +217,7 @@ Scene.prototype.update = function(deltaTime)
 							this.enemies_shells[size-1].setCD();
 							this.shellsActive.push(true);
 							this.enemies_crabs[i].killed();
+							this.points += this.enemies_crabs[i].points;
 						}
 					}
 					else if(!this.enemies_crabs[i].isDying){
@@ -250,7 +262,10 @@ Scene.prototype.update = function(deltaTime)
 								this.enemies_shells[i].setCD();
 							}
 							else { //golpe y rebote con la shell parada
-								if(this.enemies_shells[i].vulerabilityCD) this.enemies_shells[i].killed();
+								if(this.enemies_shells[i].vulerabilityCD) {
+									this.enemies_shells[i].killed();
+									this.points += this.enemies_shells[i].points;
+							}
 								this.player.hitsEnemy();
 							}
 						}
@@ -263,7 +278,6 @@ Scene.prototype.update = function(deltaTime)
 
 			this.flag.update(deltaTime);
 			if(!this.player.hittedState && this.player.collisionBox().intersect(this.flag.collisionBox())){
-				this.player.isEnding = true;
 				if(this.flag.sprite.y >= 550){
 					this.player.sprite.setAnimation(PIRATE_WALK_RIGHT);
 					//if() check arrivar al final
@@ -272,16 +286,18 @@ Scene.prototype.update = function(deltaTime)
 					console.log(this.isFinished);
 				}
 				else if(this.flag.sprite.y < this.player.sprite.y + 12) {
+					if(!this.player.isEnding) this.points += 1000; //MAX POINTS
 					this.flag.sprite.y += 5;
 				}
 				else if(this.flag.sprite.y > this.player.sprite.y + 12){
+					if(!this.player.isEnding) this.points += (this.flag.sprite.y - this.player.sprite.y) * 10 ; //MAX escalar el valor?
 					this.player.sprite.y += 5;
 				} 
 				else{
 					this.player.sprite.y += 5;
 					this.flag.sprite.y += 5;
 				} 
-
+				this.player.isEnding = true;
 			}
 		}
 	}
@@ -337,6 +353,10 @@ Scene.prototype.draw = function ()
 	for(var i = 0; i < this.hats.length; i++){
 		if(this.hatsActive[i] && !this.hats[i].Dead)
 			this.hats[i].draw();
+	}
+	for(var i = 0; i < this.coins.length; i++){
+		if(this.coins[i].coinAlive)
+			this.coins[i].draw();
 	}
 	
 	context.restore();
@@ -418,7 +438,10 @@ Scene.prototype.checkEntityCollisionShell = function(first, shell){
 				if(first.direction == LEFT) first.direction = RIGHT;
 				else first.direction = LEFT;
 			}
-			else first.killed();
+			else {
+				this.points += first.points;
+				first.killed();
+			}
 		}
 }
 

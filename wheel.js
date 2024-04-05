@@ -54,6 +54,8 @@ function Wheel(x, y, map)
 	this.isBorn = false;
 	this.Dead = false;
 	this.bornTime = 900;	
+
+	this.points = 300;
 }
 
 

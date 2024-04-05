@@ -80,30 +80,35 @@ Scene.prototype.update = function(deltaTime)
 		}
 	}
 	else{
-		// Keep track of time
-		if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
+		if(this.player.changingType != 0){
+			this.player.changingStates(deltaTime,-1,-1);
+		}
+		else{
+			if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
 
-		this.player.update(deltaTime);
+			this.player.update(deltaTime);
+			
+			//Displacement
+			if((this.player.sprite.x-this.displacement)>224){
+				this.displacement = this.player.sprite.x-224;
+			}
+			if(this.player.sprite.x-this.displacement< -7){
+				this.player.sprite.x = this.displacement-7;
+			}
+
+			// Update entities
+			if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
+			// Check for collision between entities
+				this.updateAllBarrels(deltaTime);
+				
+				this.updateAllObjects(deltaTime);
+				
+				this.updateAllEnemies(deltaTime);
+
+				this.updateFlag(deltaTime);
+			}
+		}
 		
-		//Displacement
-		if((this.player.sprite.x-this.displacement)>224){
-			this.displacement = this.player.sprite.x-224;
-		}
-		if(this.player.sprite.x-this.displacement< -7){
-			this.player.sprite.x = this.displacement-7;
-		}
-
-		// Update entities
-		if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
-		// Check for collision between entities
-			this.updateAllBarrels(deltaTime);
-			
-			this.updateAllObjects(deltaTime);
-			
-			this.updateAllEnemies(deltaTime);
-
-			this.updateFlag(deltaTime);
-		}
 	}
 }
 
@@ -127,7 +132,7 @@ Scene.prototype.draw = function ()
 	if(!this.player.Dead)this.player.draw();
 	this.flag.draw();
 	for(var i = 0; i < this.barrels.length; i++){	
-		if(this.barrelsActive[i])
+		if(this.barrelsActive[i]&& this.barrels[i].isShown)
 			this.barrels[i].draw();
 	}
 
@@ -269,7 +274,7 @@ Scene.prototype.drawHitBoxes = function(){
 		var box = this.player.collisionBox();
 		this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "blue"));
 		for(var i = 0; i < this.barrels.length; i++){
-			if(this.barrelsActive[i]){
+			if(this.barrelsActive[i] && this.barrels[i].isShown){
 				box = this.barrels[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "purple"));
 			}
@@ -332,6 +337,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 						this.barrels[i].isShown = false;
 						pos=(this.barrels[i].sprite.x/32)+ level01.width*((this.barrels[i].sprite.y-32)/32);
 						this.map.map.layers[4].data[pos]=0;
+						this.player.resetJump();
 					}
 					else {
 						this.barrels[i].move();
@@ -350,7 +356,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 				typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 				if(typeCollision == 4 && this.player.jumpState == 1)
 					if(!this.barrelsInt[i].beenActivated){
-						if(Math.random() < 0.9){
+						if(Math.random() < 0.1){
 							this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
 						} else {
 							if(this.player.size == 0){
@@ -381,7 +387,10 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 			if(!this.player.hittedState && !this.hats[i].isDying && this.player.collisionBox().intersect(this.hats[i].collisionBox())){
 				this.hats[i].killed();
 				this.powerUp.play();
-				this.player.powerUpHat();
+				if(this.player.size == 0){
+					this.player.changingStates(deltaTime,this.player.actualIndexSprite,this.player.actualIndexSprite+1);
+					this.player.powerUpHat();
+				}
 				this.points += this.hats[i].points;
 			}
 		}
@@ -394,6 +403,9 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 			if(!this.player.hittedState && !this.wheels[i].isDying && this.player.collisionBox().intersect(this.wheels[i].collisionBox())){
 				this.wheels[i].killed();
 				this.powerUp.play();
+				if(this.player.vulnerability){
+					this.player.changingStates(deltaTime,this.player.actualIndexSprite,this.player.actualIndexSprite+2);	
+				}
 				this.player.powerUpWheel();
 				this.points += this.wheels[i].points;
 			}

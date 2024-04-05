@@ -40,6 +40,7 @@ function Player(x, y, map)
 
 	// Set initial animation
 	this.sprite = this.listSprites[0];
+	this.actualIndexSprite = 0;
 	this.sprite.setAnimation(PIRATE_STAND_RIGHT);
 	this.size = 0;
 
@@ -57,6 +58,13 @@ function Player(x, y, map)
 
 	this.isDying = false;
 	this.Dead = false;
+
+	//Change state
+	this.changingType = false;
+	this.changingStateTimer = 0;
+	this.changeCounter = 0;
+	this.actualSprite = -1;
+	this.spriteToChange = -1;
 	
 
 	//To be Hitted
@@ -307,7 +315,8 @@ Player.prototype.update = function(deltaTime)
 					this.bJumping = !this.map.collisionMoveDown(this.sprite);
 				}
 				else if(this.map.collisionMoveUp(this.sprite)){
-					this.jumpAngle = 180-this.jumpAngle; //TODO: Revisar para pulir caida más lenta
+					this.jumpAngle = 90;
+					this.startY = (this.sprite.y + 130 )/ Math.sin(3.14159 * this.jumpAngle / 180);
 				}
 			}
 		}
@@ -347,7 +356,8 @@ Player.prototype.update = function(deltaTime)
 
 	
 	if (keyboard[71]) { //G,star pirate
-		this.powerUpWheel();
+		if(this.vulnerability)this.powerUpWheel();
+		else this.powerDownWheel();
 	}
 	/*TODO
 	if (keyboard[49]) { //1, saltar nivell 1
@@ -373,9 +383,16 @@ Player.prototype.update = function(deltaTime)
 	this.sprite.update(deltaTime);
 }
 Player.prototype.resetJump = function(){
-	this.jumpAngle = 0;
-	this.jumpState = 2;
-	this.startY = this.sprite.y;
+	if(this.jumpAngle<=90){
+		this.jumpAngle = 90;
+		this.startY = (this.sprite.y + 130 )/ Math.sin(3.14159 * this.jumpAngle / 180);
+	}else{
+		this.bJumping = true;
+		this.jumpAngle = 0;
+		this.startY = this.sprite.y;
+		this.jumpState = 1;
+	}
+	
 }
 
 Player.prototype.draw = function()
@@ -409,7 +426,6 @@ Player.prototype.hitted = function()
 
 }
 
-
 Player.prototype.hitsFlag = function()
 {
    num_anim = this.sprite.currentAnimation;
@@ -424,22 +440,18 @@ Player.prototype.hitsEnemy = function()
    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
    else this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
    this.feedbackAnimation = true;
-   this.jumpAngle = 0;
-   this.jumpState = 2;
    this.feedbackTime = 100;
-   this.startY = this.sprite.y;
+   this.resetJump();
+
 }
 
 Player.prototype.powerUpWheel = function() //TODO
 {
-    anim = this.sprite.currentAnimation;
-	x = this.sprite.x;
-	y = this.sprite.y;
-	this.sprite = this.listSprites[this.size+2];
-	this.sprite.setAnimation(anim);
-	this.sprite.x = x;
-	this.sprite.y = y;
-	this.vulnerability = false;
+    if(this.vulnerability){
+		this.setSprite(this.size+2);
+		this.vulnerability = false;
+	}
+	this.vulnerabilityTime = 0;
 }
 
 Player.prototype.powerUpHat = function() //TODO
@@ -454,7 +466,7 @@ Player.prototype.powerDownWheel = function() //TODO
 	x = this.sprite.x;
 	y = this.sprite.y;
 	anim = this.sprite.currentAnimation;
-	this.sprite = this.listSprites[this.size];
+	this.setSprite(this.size);
 	this.sprite.setAnimation(anim);
 	this.sprite.x = x;
 	this.sprite.y = y;
@@ -472,22 +484,50 @@ Player.prototype.isAlive = function()
 
 Player.prototype.changeSize = function()
 {
-	anim = this.sprite.currentAnimation;
-	x = this.sprite.x;
-	y = this.sprite.y;
 	if(this.size == 1){//Change to little pirate
 		this.size = 0;
-		if(this.vulnerability)this.sprite = this.listSprites[0];
-		else this.sprite = this.listSprites[2];
+		if(this.vulnerability)this.setSprite(0);
+		else this.setSprite(2);
 	}
 	else{//Change to big pirate
 		this.size = 1;
-		if(this.vulnerability)this.sprite = this.listSprites[1];
-		else this.sprite = this.listSprites[3];
+		if(this.vulnerability)this.setSprite(1);
+		else this.setSprite(3);
 	}
-	this.sprite.setAnimation(anim);
-	this.sprite.x = x
-	this.sprite.y = y
+}
+
+Player.prototype.changingStates = function(deltaTime, actualSprite, spriteToChange){
+//														0:Small 	0:Small
+//														1:Big		1:Big
+//														2:SmallStar	2:SmallStar
+//														3:BigStar	3:BigStar								
+	if(this.changingType){
+		this.changingStateTimer += deltaTime;
+		if(this.changeCounter > 6){
+			this.changingType = false;
+			this.changingStateTimer = 0;
+			this.changeCounter = 0;
+			this.actualSprite = -1;
+			this.spriteToChange = -1;
+		}
+		else if(this.changingStateTimer >= 100){
+			this.changeCounter += 1;
+			this.changingStateTimer = 0;
+			x = this.sprite.x;
+			y = this.sprite.y;
+			if(this.changeCounter % 2 == 0 ) this.setSprite(this.actualSprite);
+			else this.setSprite(this.spriteToChange);
+			this.sprite.x = x;
+			this.sprite.y = y;
+			this.sprite.update(deltaTime);
+		}
+		
+	}else{
+		this.changingType = true;
+		this.actualSprite = actualSprite;
+		this.spriteToChange = spriteToChange;
+	}
+	
 }
 
 Player.prototype.insertSprite = function(x,y, texture)
@@ -620,6 +660,24 @@ Player.prototype.insertSprite = function(x,y, texture)
 
 		this.listSprites.push(pirate);	
 
+}
+
+Player.prototype.setSprite = function(index){
+	x= this.sprite.x;
+	y= this.sprite.y;
+
+	actualAnim = this.sprite.currentAnimation;
+	console.log("Animation",actualAnim);
+	console.log("Index",index);
+
+	this.sprite = this.listSprites[index];
+
+	this.sprite.setAnimation(actualAnim);
+
+	this.sprite.x = x;
+	this.sprite.y = y;
+
+	this.actualIndexSprite = index;
 }
 
 

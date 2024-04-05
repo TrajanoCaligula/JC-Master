@@ -444,8 +444,6 @@ Player.prototype.hitsEnemy = function()
    num_anim = this.sprite.currentAnimation;
    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
    else this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
-   this.feedbackAnimation = true;
-   this.feedbackTime = 100;
    this.resetJump();
 
 }

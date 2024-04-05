@@ -41,8 +41,8 @@ function Scene()
 
 	this.coins = [];
 
-	this.flag = new Flag(0, 200,this.map);
-	this.isFinished = false;
+	this.createFlag();
+ 	this.isFinished = false;
 	this.finishPointsAdded = false;
 	this.flagHitted = false;
 		
@@ -76,11 +76,23 @@ Scene.prototype.update = function(deltaTime)
 			this.finishPointsAdded = true;
 			this.points += Math.trunc((this.cronoTime/1000)*10);
 		}
-		if(this.isStarting){
+		else if(this.isStarting){
 			this.startingTime += deltaTime;
 			if(this.startingTime >= this.maxTimeStart) {
 				this.isStarting = false;
 			}
+		}
+		else if(keyboard[49]){
+			this.player.sprite.x = 3136;
+			this.player.sprite.y = 576;1
+		}
+		else if(keyboard[50]){
+			this.player.sprite.x = 5980;
+			this.player.sprite.y = 576;
+		}
+		else if(keyboard[51]){
+			this.player.sprite.x = 6304;
+			this.player.sprite.y = 288;
 		}
 		else{
 			if(this.player.changingType != 0){
@@ -290,6 +302,18 @@ Scene.prototype.createCrabs = function()
 			if(tileId != 0){
 				this.enemies_crabs.push(new Crab(i*32+0, 32+32*j-32,this.map));
 				this.crabsActive.push(true);
+			}
+		}
+}
+
+Scene.prototype.createFlag = function()
+{
+	for(var j=0, pos=0; j<level01.height; j++)
+		for(var i=0; i<level01.width; i++, pos++)
+		{
+			tileId = level01.layers[FLAGLAYER].data[pos];
+			if(tileId != 0){
+				this.flag =new Flag(i*32+0, 32+32*j-32,this.map);
 			}
 		}
 }

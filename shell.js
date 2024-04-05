@@ -83,6 +83,8 @@ function Shell(x, y, map)
 	this.DyingTime = 240;
 	this.goDown = false;
 
+	this.points = 200;
+
 	this.sound = AudioFX('Sounds/shell.mp3');
 	
 }

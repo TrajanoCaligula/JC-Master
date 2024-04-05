@@ -62,6 +62,8 @@ function Scene()
 	this.points = 0;
 	this.cronoMax = 360000;
 	this.cronoTime = 0;
+
+	this.playerHasToDraw = true;
 }
 
 
@@ -129,7 +131,6 @@ Scene.prototype.draw = function ()
 	this.drawHitBoxes();
 	// Draw entities
 	
-	if(!this.player.Dead)this.player.draw();
 	this.flag.draw();
 	for(var i = 0; i < this.barrels.length; i++){	
 		if(this.barrelsActive[i]&& this.barrels[i].isShown)
@@ -166,6 +167,14 @@ Scene.prototype.draw = function ()
 	for(var i = 0; i < this.coins.length; i++){
 		if(this.coins[i].coinAlive)
 			this.coins[i].draw();
+	}
+
+	if(!this.player.Dead){
+		if(this.player.hittedState){
+			if(this.playerHasToDraw)this.player.draw();
+			this.playerHasToDraw = !this.playerHasToDraw;
+		}
+		else this.player.draw();
 	}
 	
 	context.restore();
@@ -421,12 +430,18 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 		if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
 			this.enemies_sharks[i].update(deltaTime);
 			if(!this.player.hittedState && !this.enemies_sharks[i].isDying && this.player.collisionBox().intersect(this.enemies_sharks[i].collisionBox())){
-				typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
-				if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
-					this.player.hitted();
+				if(this.player.vulnerability){
+					typeCollision = this.player.collisionBox().whereCollide(this.enemies_sharks[i].collisionBox());
+					if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
+						this.player.hitted();
+					}
+					else{
+						this.player.hitsEnemy();
+						this.enemies_sharks[i].killed();
+						this.points += this.enemies_sharks[i].points;
+					}
 				}
 				else{
-					this.player.hitsEnemy();
 					this.enemies_sharks[i].killed();
 					this.points += this.enemies_sharks[i].points;
 				}

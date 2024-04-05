@@ -123,26 +123,8 @@ Player.prototype.update = function(deltaTime)
 		}
 	}
 	else{ //PIRATE ALIVE
-		if(this.hittedState){//HITTED
-			this.hittedStateTime -= (deltaTime);//Contador para tiempo de invulnerabilidad y quieto
-			if(this.hittedStateTime <= 0){
-				this.hittedState = false;//ya no esta siendo golpeado
-				this.hittedStateTime = 0;
-				this.changeSize();//cambiamos tamaño
-				this.sprite.setAnimation(this.nextAnimationAfterHitted);//ponemos la animación en la que estaba anteriormente
-				if(this.bJumping){
-					if(this.jumpAngle>90){//si antes estaba saltando y ahora cayendo se actualiza
-						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_FALL_LEFT);
-						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_FALL_RIGHT);
-					}
-					else{//
-						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
-						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
-					}
-				}
-			}	
-		}
-		else if(keyboard[37]) // KEY_LEFT
+		
+		if(keyboard[37]) // KEY_LEFT
 		{
 			if(this.bJumping){
 				if(this.sprite.currentAnimation == PIRATE_JUMP_RIGHT)
@@ -334,7 +316,7 @@ Player.prototype.update = function(deltaTime)
 					this.sprite.setAnimation(PIRATE_STAND_RIGHT);
 				
 				// Check arrow up key. If pressed, jump.
-				if ((keyboard[38] || keyboard[32])&& !this.hittedState)
+				if ((keyboard[38] || keyboard[32]))
 				{
 					this.bJumping = true;
 					this.jumpAngle = 0;
@@ -354,7 +336,24 @@ Player.prototype.update = function(deltaTime)
 		}
 	}
 
-	
+	if(this.hittedState){//HITTED
+		this.hittedStateTime -= (deltaTime);//Contador para tiempo de invulnerabilidad y quieto
+		if(this.hittedStateTime <= 0){
+			this.hittedState = false;//ya no esta siendo golpeado
+			this.hittedStateTime = 0;
+			this.sprite.setAnimation(this.nextAnimationAfterHitted);//ponemos la animación en la que estaba anteriormente
+			if(this.bJumping){
+				if(this.jumpAngle>90){//si antes estaba saltando y ahora cayendo se actualiza
+					if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_FALL_LEFT);
+					else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+				}
+				else{//
+					if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
+					else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
+				}
+			}
+		}	
+	}
 	if (keyboard[71]) { //G,star pirate
 		if(this.vulnerability)this.powerUpWheel();
 		else this.powerDownWheel();
@@ -370,7 +369,7 @@ Player.prototype.update = function(deltaTime)
 	if (keyboard[77]) { //M, supermario
 		this.changeSize()
 	}
-	if(!this.vulnerability){
+	if(!this.vulnerability){//TAKE OUT INVULNERABILITY
 		this.vulnerabilityTime += deltaTime;
 		if(this.vulnerabilityTime >= this.vulnerabilityTimeMax){
 			this.powerDownWheel();
@@ -415,7 +414,9 @@ Player.prototype.hitted = function()
         if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT) this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         else this.sprite.setAnimation(PIRATE_HIT_LEFT);
 		this.hittedState = true;//HITTED
-		this.hittedStateTime = 500;
+		this.hittedStateTime = 2000;
+		this.changingStates(0, this.actualIndexSprite, this.actualIndexSprite-1);
+		this.changeSize();
 	} else if(this.vulnerability){
 	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         else this.sprite.setAnimation(PIRATE_HIT_LEFT);
@@ -667,8 +668,6 @@ Player.prototype.setSprite = function(index){
 	y= this.sprite.y;
 
 	actualAnim = this.sprite.currentAnimation;
-	console.log("Animation",actualAnim);
-	console.log("Index",index);
 
 	this.sprite = this.listSprites[index];
 

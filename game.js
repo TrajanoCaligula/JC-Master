@@ -57,8 +57,10 @@ function frameUpdate(timestamp)
 		previousTimestamp += TIME_PER_FRAME;
 		deltaTime = timestamp - previousTimestamp;
 	}
-	if(bUpdated)
+	if(bUpdated){
 		scene.draw();
+		points += scene.points;
+	}
 	window.requestAnimationFrame(frameUpdate)
 }
 

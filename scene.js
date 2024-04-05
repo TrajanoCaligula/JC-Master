@@ -41,16 +41,16 @@ function Scene()
 
 	this.coins = [];
 
-	this.isFinished = false;
-
 	this.flag = new Flag(0, 200,this.map);
+	this.isFinished = false;
+	this.finishPointsAdded = false;
+	this.flagHitted = false;
 		
 	// Store current time
 	this.currentTime = 0;
 
 	this.drawHitBoxesState = false; // FOR DEBUBBING
 	this.displacement=0;
-	this.end = false;
 
 	this.isStarting = true;
 	this.startingTime = 0;
@@ -71,10 +71,10 @@ Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
 		if(interacted) this.music.play();
-		this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
 		this.currentTime += deltaTime;
-		if(this.end){
-			//todo: parar todo
+		if(this.isFinished && !this.finishPointsAdded){
+			this.finishPointsAdded = true;
+			this.points += Math.trunc((this.cronoTime/1000)*10);
 		}
 		if(this.isStarting){
 			this.startingTime += deltaTime;
@@ -112,6 +112,11 @@ Scene.prototype.update = function(deltaTime)
 				}
 			}
 		}
+		if(this.cronoTime <= 1){
+			this.player.isDying = true;
+		} else{
+			this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
+		}
 	} else{
 
 	}
@@ -127,12 +132,49 @@ Scene.prototype.draw = function ()
 	// Clear background
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
-	context.save();
-	
+	context.save()
+
 	context.translate(Math.floor(-this.displacement),0);
 	// Draw tilemap
 	this.map.draw();
 	this.drawHitBoxes();
+
+	// Draw text
+	var text = "PIRATE";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +30, 65);
+
+	var text = this.noramlizeNumbers(this.points);
+	context.font = "32px Candara";
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement + 30, 65+25);
+
+	var text = "WORLD";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65);
+
+	var text = "1 - 1";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65+25);
+
+	var text = "TIME";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65);
+
+	var text = this.noramlizeTime(Math.floor(this.cronoTime / 1000));
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65+25);
+
 	// Draw entities
 	
 	this.flag.draw();
@@ -180,42 +222,6 @@ Scene.prototype.draw = function ()
 		}
 		else this.player.draw();
 	}
-	
-	// Draw text
-	var text = "PIRATE";
-	context.font = "32px Candara";
-	var textSize = context.measureText(text);
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement +30, 65);
-
-	var text = this.noramlizeNumbers(this.points);
-	context.font = "32px Candara";
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement + 30, 65+25);
-
-	var text = "WORLD";
-	context.font = "32px Candara";
-	var textSize = context.measureText(text);
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65);
-
-	var text = "1 - 1";
-	context.font = "32px Candara";
-	var textSize = context.measureText(text);
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65+25);
-
-	var text = "TIME";
-	context.font = "32px Candara";
-	var textSize = context.measureText(text);
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65);
-
-	var text = this.noramlizeTime(Math.floor(this.cronoTime / 1000));
-	context.font = "32px Candara";
-	var textSize = context.measureText(text);
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65+25);
 	
 	context.restore();
 }
@@ -598,14 +604,19 @@ Scene.prototype.updateFlag = function(deltaTime){
 			//if() check arrivar al final
 			this.player.sprite.x += 2;
 			if(this.player.isFinished) this.isFinished = true;
-			console.log(this.isFinished);
 		}
 		else if(this.flag.sprite.y < this.player.sprite.y + 12) {
-			if(!this.player.isEnding) this.points += 1000; //MAX POINTS
+			if(!this.flagHitted) {
+				this.flagHitted = true;
+				this.points += Math.trunc(1/(this.player.sprite.y-this.flag.sprite.y) * 20000); //MAX escalar el valor?
+			}
 			this.flag.sprite.y += 5;
 		}
 		else if(this.flag.sprite.y > this.player.sprite.y + 12){
-			if(!this.player.isEnding) this.points += (this.flag.sprite.y - this.player.sprite.y) * 10 ; //MAX escalar el valor?
+			if(!this.flagHitted){
+				this.flagHitted = true;
+				this.points += 1000; //MAX POINTS
+			}
 			this.player.sprite.y += 5;
 		} 
 		else{

@@ -2,8 +2,6 @@ const HAT_BORN = 0;
 const HAT_LEFT = 1;
 const HAT_RIGHT = 2;
 
-this.points = 200;
-
 function Hat(x, y, map)
 {
 	// Loading spritesheets
@@ -52,6 +50,8 @@ function Hat(x, y, map)
 	this.isBorn = false;
 	this.Dead = false;
 	this.bornTime = 700;
+
+	this.points = 200;
 	
 }
 

@@ -15,6 +15,8 @@ function Coin(x, y) //TODO
 	this.sprite.setAnimation(0);
 	this.coinAlive = true;
 	this.animationTime = 400;
+
+	this.points = 100;
 	
 	this.sound = AudioFX('Sounds/intBarrel.mp3');
 }

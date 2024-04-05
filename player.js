@@ -48,6 +48,7 @@ function Player(x, y, map)
 	this.vulnerability = true;
 	this.vulnerabilityTimeMax = 6000;
 	this.vulnerabilityTime = 0;//Chronometer for vulnerability
+	this.lifes = 3;
 	
 	// Set tilemap for collisions
 	this.map = map;
@@ -93,7 +94,10 @@ function Player(x, y, map)
 Player.prototype.update = function(deltaTime)
 {
 	
-	if(this.Dead)return;//IS COMPLEATLY DEAD
+	if(this.Dead){
+		this.lifes--;
+		return;//IS COMPLEATLY DEAD
+	}
 	else if(this.isEnding){//ANIMATION end
 		{
 			this.isDying = false;

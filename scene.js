@@ -60,8 +60,8 @@ function Scene()
 	this.powerUp = AudioFX('Sounds/powerUp.mp3');
 
 	this.points = 0;
-	this.cronoMax = 360000;
-	this.cronoTime = 0;
+	this.cronoMax = 151000;
+	this.cronoTime = this.cronoMax;
 
 	this.playerHasToDraw = true;
 }
@@ -69,49 +69,53 @@ function Scene()
 
 Scene.prototype.update = function(deltaTime)
 {
-	if(interacted)
-		this.music.play();
-	this.currentTime += deltaTime;
-	if(this.end){
-		//todo: parar todo
-	}
-	if(this.isStarting){
-		this.startingTime += deltaTime;
-		if(this.startingTime >= this.maxTimeStart) {
-			this.isStarting = false;
+	if(this.player.lifes > 0){
+		if(interacted) this.music.play();
+		this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
+		this.currentTime += deltaTime;
+		if(this.end){
+			//todo: parar todo
 		}
-	}
-	else{
-		if(this.player.changingType != 0){
-			this.player.changingStates(deltaTime,-1,-1);
+		if(this.isStarting){
+			this.startingTime += deltaTime;
+			if(this.startingTime >= this.maxTimeStart) {
+				this.isStarting = false;
+			}
 		}
 		else{
-			if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
+			if(this.player.changingType != 0){
+				this.player.changingStates(deltaTime,-1,-1);
+			}
+			else{
+				if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
 
-			this.player.update(deltaTime);
+				this.player.update(deltaTime);
 			
-			//Displacement
-			if((this.player.sprite.x-this.displacement)>224){
-				this.displacement = this.player.sprite.x-224;
-			}
-			if(this.player.sprite.x-this.displacement< -7){
-				this.player.sprite.x = this.displacement-7;
-			}
+				//Displacement
+				if((this.player.sprite.x-this.displacement)>224){
+					this.displacement = this.player.sprite.x-224;
+				}
+				if(this.player.sprite.x-this.displacement< -7){
+					this.player.sprite.x = this.displacement-7;
+				}
 
-			// Update entities
-			if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
-			// Check for collision between entities
-				this.updateAllBarrels(deltaTime);
+				// Update entities
+				if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
+				// Check for collision between entities
+					this.updateAllBarrels(deltaTime);
 				
-				this.updateAllObjects(deltaTime);
+					this.updateAllObjects(deltaTime);
 				
-				this.updateAllEnemies(deltaTime);
+					this.updateAllEnemies(deltaTime);
 
-				this.updateFlag(deltaTime);
+					this.updateFlag(deltaTime);
+				}
 			}
 		}
-		
+	} else{
+
 	}
+	
 }
 
 Scene.prototype.draw = function ()
@@ -121,7 +125,7 @@ Scene.prototype.draw = function ()
 	var context = canvas.getContext("2d");
 
 	// Clear background
-	context.fillStyle = "rgb(224, 224, 240)";
+	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.save();
 	
@@ -177,9 +181,61 @@ Scene.prototype.draw = function ()
 		else this.player.draw();
 	}
 	
+	// Draw text
+	var text = "PIRATE";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +30, 65);
+
+	var text = this.noramlizeNumbers(this.points);
+	context.font = "32px Candara";
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement + 30, 65+25);
+
+	var text = "WORLD";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65);
+
+	var text = "1 - 1";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65+25);
+
+	var text = "TIME";
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65);
+
+	var text = this.noramlizeTime(Math.floor(this.cronoTime / 1000));
+	context.font = "32px Candara";
+	var textSize = context.measureText(text);
+	context.fillStyle = "black";
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65+25);
+	
 	context.restore();
 }
 
+Scene.prototype.noramlizeNumbers = function(x){
+	var value = String(x);
+	if(x < 10)  value = "0000" + value;
+	else if(x < 100)  value = "000" + value;
+	else if(x < 1000)  value = "00" + value;
+	else if(x < 10000)  value = "0" + value;
+	return value;
+}
+
+Scene.prototype.noramlizeTime = function(x){
+	var value = String(x);
+	if(x < 10)  value = "000" + value;
+	else if(x < 100)  value = "00" + value;
+	else if(x < 1000)  value = "0" + value;
+	return value;
+}
 
 Scene.prototype.createBarrels = function()
 {
@@ -365,14 +421,15 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 				typeCollision = this.player.collisionBox().whereCollide(this.barrelsInt[i].collisionBox());
 				if(typeCollision == 4 && this.player.jumpState == 1)
 					if(!this.barrelsInt[i].beenActivated){
-						if(Math.random() < 0.1){
-							this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
-						} else {
-							if(this.player.size == 0){
-								this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
-								this.hatsActive.push(true);
-							}
-							else{
+						if(this.player.size == 0){
+							this.hats.push(new Hat(this.barrelsInt[i].sprite.x-16, this.barrelsInt[i].sprite.y-64,this.map));
+							this.hatsActive.push(true);
+						}
+						else{
+							if(Math.random() < 0.5){
+								this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
+								this.points += this.coins[0].points;
+							} else{
 								this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-32,this.map));
 								this.wheelsActive.push(true);
 							}
@@ -394,13 +451,13 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 		if(this.hatsActive[i] && !this.hats[i].Dead){
 			this.hats[i].update(deltaTime);
 			if(!this.player.hittedState && !this.hats[i].isDying && this.player.collisionBox().intersect(this.hats[i].collisionBox())){
+				this.points += this.hats[i].points;
 				this.hats[i].killed();
 				this.powerUp.play();
 				if(this.player.size == 0){
 					this.player.changingStates(deltaTime,this.player.actualIndexSprite,this.player.actualIndexSprite+1);
 					this.player.powerUpHat();
 				}
-				this.points += this.hats[i].points;
 			}
 		}
 	}
@@ -410,13 +467,13 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 		if(this.wheelsActive[i] && !this.wheels[i].Dead){
 			this.wheels[i].update(deltaTime);
 			if(!this.player.hittedState && !this.wheels[i].isDying && this.player.collisionBox().intersect(this.wheels[i].collisionBox())){
+				this.points += this.wheels[i].points;
 				this.wheels[i].killed();
 				this.powerUp.play();
 				if(this.player.vulnerability){
 					this.player.changingStates(deltaTime,this.player.actualIndexSprite,this.player.actualIndexSprite+2);	
 				}
 				this.player.powerUpWheel();
-				this.points += this.wheels[i].points;
 			}
 		}
 	}
@@ -437,13 +494,13 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					}
 					else{
 						this.player.hitsEnemy();
-						this.enemies_sharks[i].killed();
 						this.points += this.enemies_sharks[i].points;
+						this.enemies_sharks[i].killed();
 					}
 				}
 				else{
-					this.enemies_sharks[i].killed();
 					this.points += this.enemies_sharks[i].points;
+					this.enemies_sharks[i].killed();
 				}
 			}
 			else if(!this.enemies_sharks[i].isDying){
@@ -471,8 +528,8 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					this.enemies_shells[size-1].direction = this.enemies_crabs[i].direction;
 					this.enemies_shells[size-1].setCD();
 					this.shellsActive.push(true);
-					this.enemies_crabs[i].killed();
 					this.points += this.enemies_crabs[i].points;
+					this.enemies_crabs[i].killed();
 				}
 			}
 			else if(!this.enemies_crabs[i].isDying){

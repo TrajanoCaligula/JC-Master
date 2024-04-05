@@ -8,6 +8,7 @@ var scene = new Scene();
 var previousTimestamp;
 var keyboard = [];
 var interacted;
+var points = 0;
 
 
 // Control keyboard events

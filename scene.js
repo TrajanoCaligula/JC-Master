@@ -112,11 +112,10 @@ Scene.prototype.update = function(deltaTime)
 				}
 			}
 		}
-		if(this.cronoTime <= 1){
+		if(this.cronoTime <= 3)
 			this.player.isDying = true;
-		} else{
-			this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
-		}
+		else if (!this.flagHitted)this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
+
 	} else{
 
 	}
@@ -144,36 +143,36 @@ Scene.prototype.draw = function ()
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
 	context.fillStyle = "black";
-	context.fillText(text, this.displacement +30, 65);
+	context.fillText(text, this.displacement +30, 75);
 
 	var text = this.noramlizeNumbers(this.points);
 	context.font = "32px Candara";
 	context.fillStyle = "black";
-	context.fillText(text, this.displacement + 30, 65+25);
+	context.fillText(text, this.displacement + 30, 75+25);
 
 	var text = "WORLD";
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
 	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65);
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75);
 
 	var text = "1 - 1";
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
 	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65+25);
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75+25);
 
 	var text = "TIME";
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
 	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65);
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75);
 
 	var text = this.noramlizeTime(Math.floor(this.cronoTime / 1000));
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
 	context.fillStyle = "black";
-	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65+25);
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75+25);
 
 	// Draw entities
 	

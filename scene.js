@@ -121,7 +121,7 @@ Scene.prototype.draw = function ()
 	var context = canvas.getContext("2d");
 
 	// Clear background
-	context.fillStyle = "rgb(224, 224, 240)";
+	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.save();
 	
@@ -459,18 +459,23 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 		if(this.crabsActive[i] && !this.enemies_crabs[i].Dead){
 			this.enemies_crabs[i].update(deltaTime);
 			if(!this.player.hittedState && !this.enemies_crabs[i].isDying && this.player.collisionBox().intersect(this.enemies_crabs[i].collisionBox())){
-				typeCollision = this.player.collisionBox().whereCollide(this.enemies_crabs[i].collisionBox());
-				if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
-					this.player.hitted();
-				}	
-				else{	
-					this.player.hitsEnemy();
-					this.enemies_shells.push(new Shell(this.enemies_crabs[i].sprite.x+15, this.enemies_crabs[i].sprite.y,this.map));
-					var size = this.enemies_shells.length;
-					this.enemies_shells[size-1].isMoving = false;
-					this.enemies_shells[size-1].direction = this.enemies_crabs[i].direction;
-					this.enemies_shells[size-1].setCD();
-					this.shellsActive.push(true);
+				if(this.player.vulnerability){
+					typeCollision = this.player.collisionBox().whereCollide(this.enemies_crabs[i].collisionBox());
+					if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
+						this.player.hitted();
+					}	
+					else{	
+						this.player.hitsEnemy();
+						this.enemies_shells.push(new Shell(this.enemies_crabs[i].sprite.x+15, this.enemies_crabs[i].sprite.y,this.map));
+						var size = this.enemies_shells.length;
+						this.enemies_shells[size-1].isMoving = false;
+						this.enemies_shells[size-1].direction = this.enemies_crabs[i].direction;
+						this.shellsActive.push(true);
+						this.enemies_crabs[i].killed();
+						this.points += this.enemies_crabs[i].points;
+					}
+				}
+				else{
 					this.enemies_crabs[i].killed();
 					this.points += this.enemies_crabs[i].points;
 				}
@@ -488,40 +493,47 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 		if(this.shellsActive[i] && !this.enemies_shells[i].Dead){
 			this.enemies_shells[i].update(deltaTime);
 			if(!this.player.hittedState && !this.enemies_shells[i].isDying && this.player.collisionBox().intersect(this.enemies_shells[i].collisionBox())){
-				typeCollision = this.player.collisionBox().whereCollide(this.enemies_shells[i].collisionBox());
-
-				if(typeCollision == 1){
-					if(this.enemies_shells[i].isMoving) this.player.hitted();
-					else {
-						this.enemies_shells[i].isMoving = true;
-						this.enemies_shells[i].direction = RIGHT;
+				if(this.player.vulnerability){
+					typeCollision = this.player.collisionBox().whereCollide(this.enemies_shells[i].collisionBox());
+					if(typeCollision == 1){
+						if(this.enemies_shells[i].isMoving) this.player.hitted();
+						else {
+							this.enemies_shells[i].isMoving = true;
+							this.enemies_shells[i].direction = RIGHT;
+						}
+					}
+					else if(typeCollision == 2){ 
+						if(this.enemies_shells[i].isMoving) this.player.hitted();
+						else {
+							this.enemies_shells[i].isMoving = true;
+							this.enemies_shells[i].direction = LEFT;
+						}
+					}
+					else if(typeCollision == 4){ 
+						this.player.hitted();
+					}
+					else{ //golpe que para la shell
+						if(this.enemies_shells[i].isMoving) {
+							this.player.hitsEnemy();
+							this.enemies_shells[i].isMoving = false;
+							num_anim = this.enemies_shells[i].sprite.currentAnimation;
+							if(num_anim == SHELL_MOVE_LEFT) this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_LEFT);
+							else this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_RIGHT);
+							this.enemies_shells[i].setCD();
+						}
+						else { //golpe y rebote con la shell parada
+							if(this.enemies_shells[i].vulerabilityCD) {
+								this.enemies_shells[i].killed();
+								this.points += this.enemies_shells[i].points;
+						}
+							this.player.hitsEnemy();
+						}
 					}
 				}
-				else if(typeCollision == 2){ 
-					if(this.enemies_shells[i].isMoving) this.player.hitted();
-					else {
-						this.enemies_shells[i].isMoving = true;
-						this.enemies_shells[i].direction = LEFT;
-					}
-				}
-				else if(typeCollision == 4){ 
-					this.player.hitted();
-				}
-				else{ //golpe que para la shell
-					if(this.enemies_shells[i].isMoving) {
-						this.player.hitsEnemy();
-						this.enemies_shells[i].isMoving = false;
-						num_anim = this.enemies_shells[i].sprite.currentAnimation;
-						if(num_anim == SHELL_MOVE_LEFT) this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_LEFT);
-						else this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_RIGHT);
-						this.enemies_shells[i].setCD();
-					}
-					else { //golpe y rebote con la shell parada
-						if(this.enemies_shells[i].vulerabilityCD) {
-							this.enemies_shells[i].killed();
-							this.points += this.enemies_shells[i].points;
-					}
-						this.player.hitsEnemy();
+				else{
+					if(this.enemies_shells[i].vulerabilityCD) {
+						this.enemies_shells[i].killed();
+						this.points += this.enemies_shells[i].points;
 					}
 				}
 			}

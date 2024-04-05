@@ -167,7 +167,7 @@ Shell.prototype.collisionBox = function()
 Shell.prototype.setCD = function()
 {
 	this.vulerabilityCD = false;
-	this.CDTime = 1000;
+	this.CDTime = 0;
 }
 
 Shell.prototype.killed = function()

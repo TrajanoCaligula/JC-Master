@@ -25,8 +25,6 @@ Box.prototype.whereCollide = function(box2)
 	x2 =  (box2.max_x+box2.min_x)/2;
 	diffX= x2-x1;
 	diffY= y2-y1;
-	console.log("diffX: "+diffX);
-	console.log("diffY: "+diffY);
 	if(Math.abs(diffX)>=(Math.abs(diffY))){//Lateral collision
 		if(diffX>=0)
 		collide = 1;//Left

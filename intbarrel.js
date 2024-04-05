@@ -66,6 +66,7 @@ Intbarrel.prototype.collisionBox = function()
 
  Intbarrel.prototype.impact = function(){
 	this.originalY = this.sprite.y;
+	this.animation = true;
 	this.sprite.y -= 2;
 	this.sound.play();
 	this.Activated();

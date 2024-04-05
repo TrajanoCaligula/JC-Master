@@ -297,7 +297,7 @@ Player.prototype.update = function(deltaTime)
 				else if((this.sprite.currentAnimation == PIRATE_STAND_RIGHT || this.sprite.currentAnimation == PIRATE_WALK_RIGHT || this.sprite.currentAnimation == PIRATE_RUN_RIGHT) && this.sprite.currentAnimation != PIRATE_JUMP_RIGHT && this.sprite.currentAnimation != PIRATE_FALL_RIGHT)
 					this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
 				//calcular la posicion en Y del salto);
-				this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);//calcular la posicion en Y del salto
+				this.sprite.y = this.startY - 130 * Math.sin(3.14159 * this.jumpAngle / 180);//calcular la posicion en Y del salto
 				if(this.jumpAngle > 90){//Si esta descedniendo en el salto
 					this.jumpState = 2;
 					if(this.sprite.currentAnimation == PIRATE_JUMP_LEFT)

@@ -54,9 +54,7 @@ Barrel.prototype.Activated = function(){
 
 Barrel.prototype.move = function(){
 	this.sprite.y -= 2;
-	setTimeout(() => {
-	  this.sprite.y = this.originalY; // This will be printed after 2 seconds
-	}, 100);
+	this.animation = true;	
 }
 Barrel.prototype.crash = function(){
 	this.crack.play();

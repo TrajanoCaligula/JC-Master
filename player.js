@@ -48,7 +48,7 @@ function Player(x, y, map)
 	this.vulnerability = true;
 	this.vulnerabilityTimeMax = 6000;
 	this.vulnerabilityTime = 0;//Chronometer for vulnerability
-	this.lifes = 3;
+	this.lifes = 4;
 	
 	// Set tilemap for collisions
 	this.map = map;

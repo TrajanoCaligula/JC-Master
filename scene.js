@@ -7,6 +7,8 @@ function Scene()
 {
 	// Loading texture to use in a TileMap
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
+	this.imPirateLife = new Image();
+	this.imPirateLife.src = "Textures/Characters/PirateLife.png";
 	
 	// Create tilemap
 	this.map = new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01);
@@ -137,8 +139,10 @@ Scene.prototype.update = function(deltaTime)
 		}
 		else if (!this.flagHitted)this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
 		if(this.player.Dead){
-				this.music.stop();
-				this.restart();
+				if(this.player.lifes>0)this.restart();
+				else{
+
+				}
 		}
 	}
 	
@@ -167,9 +171,20 @@ Scene.prototype.draw = function ()
 	var textSize = context.measureText(text);
 	context.fillStyle = "black";
 	context.fillText(text, this.displacement +30, 75);
-
+	
 	var text = this.noramlizeNumbers(this.points);
 	context.fillText(text, this.displacement + 30, 75+25);
+
+	
+	context.drawImage(this.imPirateLife, this.displacement +150, 60);
+
+	var text = " x "
+	context.font = "24px Candara";
+	context.fillText(text, this.displacement + 175, 75);
+
+	var text = this.player.lifes-1;
+	context.font = "32px Candara";
+	context.fillText(text, this.displacement + 195, 75);
 
 	var text = "WORLD";
 	var textSize = context.measureText(text);

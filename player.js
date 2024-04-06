@@ -73,9 +73,6 @@ function Player(x, y, map)
 	this.hittedStateTime = 0;
 	this.nextAnimationAfterHitted = 0;
 
-	//To hit
-	this.feedbackAnimation = false;
-	this.feedbackTime = 0;
 
 	//Movement
 	this.speed = 0;
@@ -95,36 +92,25 @@ Player.prototype.update = function(deltaTime)
 {
 	
 	if(this.Dead){
-		this.lifes--;
 		return;//IS COMPLEATLY DEAD
 	}
 	else if(this.isEnding){//ANIMATION end
-		{
-			this.isDying = false;
-			this.sprite.setAnimation(PIRATE_FALL_RIGHT);
-			this.isFinished = true; // This will be printed after 2 seconds
-		}
+		
+		this.isDying = false;
+		this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+		this.isFinished = true; // This will be printed after 2 seconds
+
 	}
 	else if(this.isDying){//ANIMATION DEAD
 		this.jumpAngle += 4;
 		if(this.jumpAngle >= 180)
 		{
 			this.sprite.y += 5;
-			if(this.sprite.y > 800) this.Dead = true;
 		}
 		else{
 			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
 		}
-	}
-	else if (this.feedbackAnimation){ //for jump
-		this.jumpAngle += 4;
-		this.feedbackTime -= deltaTime;
-		if(this.feedbackTime <= 0) {
-			this.feedbackAnimation = false;
-		}
-		else{
-			this.sprite.y = this.startY - 96 * Math.sin(3.14159 * this.jumpAngle / 180);
-		}
+		if(this.sprite.y > this.map.killY) this.Die();//DEAD
 	}
 	else{ //PIRATE ALIVE
 		
@@ -310,7 +296,7 @@ Player.prototype.update = function(deltaTime)
 		{
 			// Move PIRATE so that it is affected by gravity
 			this.sprite.y += 6;//Gravity
-			if(this.map.collisionMoveDown(this.sprite))
+			if(this.sprite.y < this.map.limitY  && this.map.collisionMoveDown(this.sprite) )
 			{	
 				this.jumpState = 0;
 				this.bJumping = false;
@@ -330,6 +316,7 @@ Player.prototype.update = function(deltaTime)
 			}
 			else
 			{
+				if(this.sprite.y >= this.map.limitY)this.killOutOfMap();	
 				this.jumpState = 2;
 				if(this.sprite.currentAnimation == PIRATE_STAND_LEFT || this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT || this.sprite.currentAnimation == PIRATE_HIT_LEFT)
 					this.sprite.setAnimation(PIRATE_FALL_LEFT);
@@ -338,49 +325,47 @@ Player.prototype.update = function(deltaTime)
 			}
 			
 		}
-	}
+	
 
-	if(this.hittedState){//HITTED
-		this.hittedStateTime -= (deltaTime);//Contador para tiempo de invulnerabilidad y quieto
-		if(this.hittedStateTime <= 0){
-			this.hittedState = false;//ya no esta siendo golpeado
-			this.hittedStateTime = 0;
-			this.sprite.setAnimation(this.nextAnimationAfterHitted);//ponemos la animación en la que estaba anteriormente
-			if(this.bJumping){
-				if(this.jumpAngle>90){//si antes estaba saltando y ahora cayendo se actualiza
-					if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_FALL_LEFT);
-					else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+		if(this.hittedState){//HITTED
+			this.hittedStateTime -= (deltaTime);//Contador para tiempo de invulnerabilidad y quieto
+			if(this.hittedStateTime <= 0){
+				this.hittedState = false;//ya no esta siendo golpeado
+				this.hittedStateTime = 0;
+				this.sprite.setAnimation(this.nextAnimationAfterHitted);//ponemos la animación en la que estaba anteriormente
+				if(this.bJumping){
+					if(this.jumpAngle>90){//si antes estaba saltando y ahora cayendo se actualiza
+						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_FALL_LEFT);
+						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_FALL_RIGHT);
+					}
+					else{//
+						if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
+						else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
+					}
 				}
-				else{//
-					if(this.sprite.currentAnimation == PIRATE_HIT_LEFT)this.sprite.setAnimation(PIRATE_JUMP_LEFT);
-					else if(this.sprite.currentAnimation == PIRATE_HIT_RIGHT)this.sprite.setAnimation(PIRATE_JUMP_RIGHT);
-				}
-			}
-		}	
-	}
-	if (keyboard[71]) { //G,star pirate
-		if(this.vulnerability)this.powerUpWheel();
-		else this.powerDownWheel();
-	}
-	/*TODO
-	if (keyboard[49]) { //1, saltar nivell 1
-
-	}
-
-	if (keyboard[50]) { //2, saltar nivell 2
-
-	}*/
-	if (keyboard[77]) { //M, supermario
-		this.changeSize()
-	}
-	if(!this.vulnerability){//TAKE OUT INVULNERABILITY
-		this.vulnerabilityTime += deltaTime;
-		if(this.vulnerabilityTime >= this.vulnerabilityTimeMax){
-			this.powerDownWheel();
+			}	
 		}
-	}
-	if(this.sprite.y == 640){
-		this.hitted();//TODO: Cambiar por muerte
+		if (keyboard[71]) { //G,star pirate
+			if(this.vulnerability)this.powerUpWheel();
+			else this.powerDownWheel();
+		}
+		/*TODO
+		if (keyboard[49]) { //1, saltar nivell 1
+
+		}
+
+		if (keyboard[50]) { //2, saltar nivell 2
+
+		}*/
+		if (keyboard[77]) { //M, supermario
+			this.changeSize()
+		}
+		if(!this.vulnerability){//TAKE OUT INVULNERABILITY
+			this.vulnerabilityTime += deltaTime;
+			if(this.vulnerabilityTime >= this.vulnerabilityTimeMax){
+				this.powerDownWheel();
+			}
+		}
 	}
 	// Update sprites
 	this.sprite.update(deltaTime);
@@ -532,6 +517,24 @@ Player.prototype.changingStates = function(deltaTime, actualSprite, spriteToChan
 	}
 	
 }
+Player.prototype.killOutOfMap = function(){
+	this.isDying = true;
+	this.jumpAngle = 180;
+	this.startY = this.sprite.y;
+}
+
+Player.prototype.killOutOfTime = function(){
+	this.isDying = true;
+	this.jumpAngle = 0;
+	this.startY = this.sprite.y;
+	currentAnim = this.sprite.currentAnimation;
+	if(currentAnim == PIRATE_STAND_LEFT || currentAnim == PIRATE_WALK_LEFT || currentAnim == PIRATE_RUN_LEFT || currentAnim == PIRATE_JUMP_LEFT || currentAnim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_LEFT);
+	else this.sprite.setAnimation(PIRATE_HIT_RIGHT);
+}
+Player.prototype.Die= function(index){
+	this.Dead = true;
+	this.lifes--;
+}
 
 Player.prototype.insertSprite = function(x,y, texture)
 {
@@ -679,6 +682,53 @@ Player.prototype.setSprite = function(index){
 	this.sprite.y = y;
 
 	this.actualIndexSprite = index;
+}
+
+Player.prototype.restart = function(){
+	this.sprite = this.listSprites[0];
+	this.sprite.x = 100;
+	this.sprite.y = 576;
+	this.actualIndexSprite = 0;
+	this.sprite.setAnimation(PIRATE_STAND_RIGHT);
+	this.size = 0;
+
+	//Vulnerability
+	this.vulnerability = true;
+	this.vulnerabilityTime = 0;//Chronometer for vulnerability
+	
+	// Set tilemap for collisions
+	
+	// Set attributes for jump
+	this.bJumping = false;
+	this.jumpAngle = 0;
+
+	this.isDying = false;
+	this.Dead = false;
+
+	//Change state
+	this.changingType = false;
+	this.changingStateTimer = 0;
+	this.changeCounter = 0;
+	this.actualSprite = -1;
+	this.spriteToChange = -1;
+	
+
+	//To be Hitted
+	this.hittedState = false;
+	this.hittedStateTime = 0;
+	this.nextAnimationAfterHitted = 0;
+
+	//Movement
+	this.speed = 0;
+	this.accel = 0;
+	this.Running = false;
+	this.incrementX = 0;
+	this.jumpState = 0;
+
+	//End of the level
+	this.isEnding = false;
+	this.isFinished = false;
+
 }
 
 

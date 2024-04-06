@@ -27,7 +27,7 @@ function Intbarrel(x, y)
 
 	
 	this.animation = false;
-	this.animationTime = 100;
+	this.animationTime = 200;
 	
 	this.sound = AudioFX('Sounds/intBarrel.mp3');
 }

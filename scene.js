@@ -20,7 +20,7 @@ function Scene()
 	this.barrelsIntActive = []
 	this.createBarrelsInt();
 
-	this.player = new Player(224, 576, this.map);
+	this.player = new Player(100, 576, this.map);
 
 	this.enemies_sharks = [];
 	this.sharksActive = [];
@@ -45,12 +45,15 @@ function Scene()
  	this.isFinished = false;
 	this.finishPointsAdded = false;
 	this.flagHitted = false;
+
+	this.particleBarrels = [];
 		
 	// Store current time
 	this.currentTime = 0;
 
 	this.drawHitBoxesState = false; // FOR DEBUBBING
 	this.displacement=0;
+	this.displacementMargin = 224;
 
 	this.isStarting = true;
 	this.startingTime = 0;
@@ -82,18 +85,6 @@ Scene.prototype.update = function(deltaTime)
 				this.isStarting = false;
 			}
 		}
-		else if(keyboard[49]){
-			this.player.sprite.x = 3136;
-			this.player.sprite.y = 576;1
-		}
-		else if(keyboard[50]){
-			this.player.sprite.x = 5980;
-			this.player.sprite.y = 576;
-		}
-		else if(keyboard[51]){
-			this.player.sprite.x = 6304;
-			this.player.sprite.y = 288;
-		}
 		else{
 			if(this.player.changingType != 0){
 				this.player.changingStates(deltaTime,-1,-1);
@@ -104,15 +95,29 @@ Scene.prototype.update = function(deltaTime)
 				this.player.update(deltaTime);
 			
 				//Displacement
-				if((this.player.sprite.x-this.displacement)>224){
-					this.displacement = this.player.sprite.x-224;
+				if((this.player.sprite.x-this.displacement)>this.displacementMargin){
+					this.displacement = this.player.sprite.x-this.displacementMargin;
 				}
 				if(this.player.sprite.x-this.displacement< -7){
 					this.player.sprite.x = this.displacement-7;
 				}
-
 				// Update entities
-				if(this.player.isAlive()){//TODO: NO SE MUEVEN POR ESTO BOBO
+				if(this.player.isAlive()){
+					if(keyboard[49]){// TP 1
+						this.player.sprite.x = 3136;
+						this.player.sprite.y = 576;
+						this.displacement = this.player.sprite.x-this.displacementMargin;
+					}
+					else if(keyboard[50]){// TP 2
+						this.player.sprite.x = 5980;
+						this.player.sprite.y = 576;
+						this.displacement = this.player.sprite.x-this.displacementMargin;
+					}
+					else if(keyboard[51]){// TP 3
+						this.player.sprite.x = 6304;
+						this.player.sprite.y = 288;
+						this.displacement = this.player.sprite.x-this.displacementMargin;
+					}
 				// Check for collision between entities
 					this.updateAllBarrels(deltaTime);
 				
@@ -121,16 +126,22 @@ Scene.prototype.update = function(deltaTime)
 					this.updateAllEnemies(deltaTime);
 
 					this.updateFlag(deltaTime);
+
+					this.updateParticles(deltaTime);
 				}
 			}
 		}
-		if(this.cronoTime <= 3)
-			this.player.isDying = true;
+		if(this.cronoTime <= 3){
+			this.cronoTime = 0;
+			if(!this.player.isDying && !this.Dead)this.player.killOutOfTime();
+		}
 		else if (!this.flagHitted)this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
-
-	} else{
-
+		if(this.player.Dead){
+				this.music.stop();
+				this.restart();
+		}
 	}
+	
 	
 }
 
@@ -158,32 +169,22 @@ Scene.prototype.draw = function ()
 	context.fillText(text, this.displacement +30, 75);
 
 	var text = this.noramlizeNumbers(this.points);
-	context.font = "32px Candara";
-	context.fillStyle = "black";
 	context.fillText(text, this.displacement + 30, 75+25);
 
 	var text = "WORLD";
-	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillStyle = "black";
 	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75);
 
 	var text = "1 - 1";
-	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillStyle = "black";
 	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75+25);
 
 	var text = "TIME";
-	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillStyle = "black";
 	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75);
 
 	var text = this.noramlizeTime(Math.floor(this.cronoTime / 1000));
-	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillStyle = "black";
 	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75+25);
 
 	// Draw entities
@@ -225,7 +226,10 @@ Scene.prototype.draw = function ()
 		if(this.coins[i].coinAlive)
 			this.coins[i].draw();
 	}
-
+	for(var i = 0; i < this.particleBarrels.length; i++){
+		if(this.particleBarrels[i].active)
+			this.particleBarrels[i].draw();
+	}
 	if(!this.player.Dead){
 		if(this.player.hittedState){
 			if(this.playerHasToDraw)this.player.draw();
@@ -427,6 +431,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 				if(typeCollision == 4 && this.player.jumpState == 1){
 					if(this.player.size == 1) {	
 						this.barrels[i].crash();
+						this.particleBarrels.push(new ParticBarrelDest(this.barrels[i].sprite.x, this.barrels[i].sprite.y));
 						this.barrelsActive[i] = false;
 						this.barrels[i].isShown = false;
 						pos=(this.barrels[i].sprite.x/32)+ level01.width*((this.barrels[i].sprite.y-32)/32);
@@ -455,7 +460,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 							this.hatsActive.push(true);
 						}
 						else{
-							if(Math.random() < 0.5){
+							if(Math.random() < 0.0){
 								this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
 								this.points += this.coins[0].points;
 							} else{
@@ -660,4 +665,85 @@ Scene.prototype.updateFlag = function(deltaTime){
 		} 
 		this.player.isEnding = true;
 	}
+}
+
+Scene.prototype.updateParticles = function(deltaTime){
+	for(var i = 0; i < this.particleBarrels.length; i++){
+		if(!this.particleBarrels[i].active){
+			this.particleBarrels.splice(i,1);
+			i--;
+		} 
+		else this.particleBarrels[i].update(deltaTime);
+	}
+}
+
+Scene.prototype.restart = function(){
+  // Resetting barrels
+  this.map.map = JSON.parse(JSON.stringify(this.map.ogMap));
+  this.barrels = [];
+  this.barrelsActive = [];
+  this.createBarrels();
+
+  // Resetting internal barrels
+  this.barrelsInt = [];
+  this.barrelsIntActive = [];
+  this.createBarrelsInt();
+
+  // Resetting player position
+  this.player.restart();
+
+  // Resetting enemies
+  this.enemies_sharks = [];
+  this.sharksActive = [];
+  this.createSharks();
+
+  this.enemies_crabs = [];
+  this.crabsActive = [];
+  this.createCrabs();
+
+  this.enemies_shells = [];
+  this.shellsActive = [];
+
+  // Resetting other entities
+  this.wheels = [];
+  this.wheelsActive = [];
+
+  this.hats = [];
+  this.hatsActive = [];
+
+  this.coins = [];
+
+  // Resetting flag and finish status
+  this.createFlag();
+  this.isFinished = false;
+  this.finishPointsAdded = false;
+  this.flagHitted = false;
+
+  // Resetting particles
+  this.particleBarrels = [];
+
+  // Resetting time
+  this.currentTime = 0;
+  this.cronoTime = this.cronoMax;
+
+  // Stop music
+  this.music.stop();
+
+  // Start music again
+  this.music.play();
+
+  // Resetting other flags and variables
+  this.drawHitBoxesState = false;
+  this.displacement = 0;
+  this.isStarting = true;
+  this.startingTime = 0;
+
+  // Resetting audio
+  this.powerUp = AudioFX('Sounds/powerUp.mp3');
+
+  // Resetting points
+  this.points = 0;
+
+  // Allow player to be drawn again
+  this.playerHasToDraw = true;
 }

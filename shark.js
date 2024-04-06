@@ -134,7 +134,7 @@ Shark.prototype.update = function(deltaTime)
 		}
 	}
 	else{
-		if(this.direction == LEFT){
+		if(this.direction == LEFT && this.sprite.y < this.map.limitY){
 			if(!this.isfalling){
 				if(this.sprite.currentAnimation != SHARK_WALK_LEFT)this.sprite.setAnimation(SHARK_WALK_LEFT);
 				this.sprite.x -= 2;
@@ -153,7 +153,7 @@ Shark.prototype.update = function(deltaTime)
 				}
 			}
 		}
-		else{
+		else if(this.sprite.y < this.map.limitY){
 			if(!this.isfalling){
 				if(this.sprite.currentAnimation != SHARK_WALK_RIGHT)this.sprite.setAnimation(SHARK_WALK_RIGHT);
 				this.sprite.x += 2;
@@ -173,8 +173,8 @@ Shark.prototype.update = function(deltaTime)
 			}
 		}
 		// Move PIRATE so that it is affected by gravity
-		this.sprite.y += 6;
-		if(this.map.collisionMoveDown(this.sprite))
+		this.sprite.y += 5;
+		if(this.sprite.y < this.map.limitY  && this.map.collisionMoveDown(this.sprite))
 		{	
 			this.isfalling = false;
 			if(this.direction == LEFT && this.sprite.currentAnimation != SHARK_WALK_LEFT)this.sprite.setAnimation(SHARK_WALK_LEFT);
@@ -183,7 +183,8 @@ Shark.prototype.update = function(deltaTime)
 		else
 		{
 			this.isfalling = true;
-			if( this.direction == LEFT && this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);	
+			if(this.sprite.y > this.map.killY)this.Dead = true;
+			if(this.direction == LEFT && this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);	
 			else if(this.direction == RIGHT && this.sprite.currentAnimation != SHARK_FALL_RIGHT)this.sprite.setAnimation(SHARK_FALL_RIGHT);	
 		}		
 		// Update sprites

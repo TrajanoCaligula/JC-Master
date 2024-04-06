@@ -6,7 +6,10 @@ function Tilemap(tilesheet, tileSize, blockGrid, basePos, map)
 	this.tileSize = tileSize;
 	this.basePos = basePos;
 	this.blockGrid = blockGrid;
-	this.map = map
+	this.ogMap = JSON.parse(JSON.stringify(map));
+	this.map = JSON.parse(JSON.stringify(map));
+	this.limitY = 640;
+	this.killY = 800;
 
 	this.tilesheet = tilesheet;
 }
@@ -144,6 +147,33 @@ Tilemap.prototype.collisionMoveRightCrab = function(sprite)
 	
 	return false;
 }
+Tilemap.prototype.collisionMoveDownCrab = function(sprite){
+	var y = Math.floor((sprite.y + sprite.height-1 - this.basePos[1]) / this.tileSize[1]);
+	var x0 = Math.floor((sprite.x +4 - this.basePos[0]) / this.tileSize[0]);
+	var x1 = Math.floor((sprite.x + sprite.width -60- this.basePos[0]) / this.tileSize[0]);
+	
+	for(var x=x0; x<=x1; x++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+	}
+	
+	return false;
+
+}
 
 Tilemap.prototype.collisionMoveLeftShell = function(sprite)
 {
@@ -217,6 +247,8 @@ Tilemap.prototype.collisionMoveDown = function(sprite)
 	return false;
 }
 
+
+
 // Computes if the top of a sprite collides with the tilemap.
 // Returns a boolean with the result, and if it collides, it changes its Y position so as to avoid it.
 
@@ -239,5 +271,70 @@ Tilemap.prototype.collisionMoveUp = function(sprite)
   }
 
   return false;
-};
+}
 
+Tilemap.prototype.collisionMoveDownWheel = function(sprite)
+{
+	var y = Math.floor((sprite.y + sprite.height - this.basePos[1]) / this.tileSize[1]);
+	var x0 = Math.floor((sprite.x+3 - this.basePos[0]) / this.tileSize[0]);
+	var x1 = Math.floor((sprite.x + sprite.width-3 - this.basePos[0]) / this.tileSize[0]);
+	
+	for(var x=x0; x<=x1; x++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+		{
+			sprite.y = y * this.tileSize[1] - sprite.height + this.basePos[1];
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+Tilemap.prototype.collisionMoveLeftWheel = function(sprite)
+{
+	var x = Math.floor((sprite.x+3  - this.basePos[0]) / this.tileSize[0]);
+	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
+	var y1 = Math.floor((sprite.y + sprite.height - this.basePos[1]) / this.tileSize[1]);
+	
+	for(var y=y0; y<=y1; y++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
+	}
+	
+	return false;
+}
+
+Tilemap.prototype.collisionMoveRightWheel = function(sprite)
+{
+	var x = Math.floor((sprite.x + sprite.width -3- this.basePos[0]) / this.tileSize[0]);
+	var y0 = Math.floor((sprite.y - this.basePos[1]) / this.tileSize[1]);
+	var y1 = Math.floor((sprite.y + sprite.height - this.basePos[1]) / this.tileSize[1]);
+	
+	for(var y=y0; y<=y1; y++)
+	{
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+			return true;
+		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+			return true;
+	}
+	
+	return false;
+}

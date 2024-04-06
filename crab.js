@@ -116,7 +116,7 @@ Crab.prototype.update = function(deltaTime)
 		}
 	}
 	else{
-		if(this.direction == LEFT){
+		if(this.direction == LEFT && this.sprite.y < this.map.limitY){
 			if(!this.isfalling){
 				if(this.sprite.currentAnimation != CRAB_WALK_LEFT)this.sprite.setAnimation(CRAB_WALK_LEFT);
 				this.sprite.x -= 2;
@@ -135,7 +135,7 @@ Crab.prototype.update = function(deltaTime)
 				}
 			}
 		}
-		else{
+		else if(this.sprite.y < this.map.limitY){
 			if(!this.isfalling){
 				if(this.sprite.currentAnimation != CRAB_WALK_RIGHT)this.sprite.setAnimation(CRAB_WALK_RIGHT);
 				this.sprite.x += 2;
@@ -155,8 +155,8 @@ Crab.prototype.update = function(deltaTime)
 			}
 		}
 		// Move PIRATE so that it is affected by gravity
-		this.sprite.y += 6;
-		if(this.map.collisionMoveDown(this.sprite))
+		this.sprite.y += 5;
+		if(this.sprite.y < this.map.limitY && this.map.collisionMoveDownCrab(this.sprite))
 		{	
 			this.isfalling = false;
 			if(this.direction == LEFT && this.sprite.currentAnimation != CRAB_WALK_LEFT) this.sprite.setAnimation(CRAB_WALK_LEFT);
@@ -164,6 +164,7 @@ Crab.prototype.update = function(deltaTime)
 		}
 		else
 		{
+			if(this.sprite.y >= this.map.killY)this.Dead = true;
 			this.isfalling = true;
 			if( this.direction == LEFT && this.sprite.currentAnimation != CRAB_FALL_LEFT)this.sprite.setAnimation(CRAB_FALL_LEFT);	
 			else if(this.direction == RIGHT && this.sprite.currentAnimation != CRAB_FALL_RIGHT)this.sprite.setAnimation(CRAB_FALL_RIGHT);	

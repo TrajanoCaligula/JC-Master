@@ -49,7 +49,7 @@ function Wheel(x, y, map)
 	// Set attributes for jump
 	this.jumpAngle = 0;
 	this.isfalling = 0;
-	this.direction = RIGHT;
+	this.direction = LEFT;
 
 	this.isBorn = false;
 	this.Dead = false;
@@ -63,7 +63,6 @@ Wheel.prototype.update = function(deltaTime)
 {
 	if(this.Dead)return;
 	else if(!this.isBorn){
-		this.sprite.update(deltaTime);
 		this.bornTime -= deltaTime;
 		if(this.bornTime <= 0) {
 			this.isBorn = true;
@@ -72,10 +71,11 @@ Wheel.prototype.update = function(deltaTime)
 		}
 	}
 	else{
-		if(this.direction == LEFT){
+		if(this.map.collisionMoveDownWheel(this.sprite)) this.sprite.y -=1;
+		if(this.direction == LEFT){		
 			if(this.sprite.currentAnimation != WHEEL_LEFT) this.sprite.setAnimation(WHEEL_LEFT);
 			this.sprite.x -= 2;
-			if(this.map.collisionMoveLeft(this.sprite)){
+			if(this.map.collisionMoveLeftWheel(this.sprite)){
 				this.sprite.x += 2;
 				this.direction = RIGHT;
 			}
@@ -83,20 +83,20 @@ Wheel.prototype.update = function(deltaTime)
 		else{
 			if(this.sprite.currentAnimation != WHEEL_RIGHT)this.sprite.setAnimation(WHEEL_RIGHT);
 			this.sprite.x += 2;
-			if(this.map.collisionMoveRight(this.sprite)){
-			console.log("collision");
+			if(this.map.collisionMoveRightWheel(this.sprite)){
 				this.sprite.x -= 2;
 				this.direction = LEFT;
 			}
-			
-		}	
+		}
 		// Move PIRATE so that it is affected by gravity
+		
 		this.sprite.y += 6;
-		if(this.map.collisionMoveDown(this.sprite)) this.isfalling = false;
+		if(this.map.collisionMoveDownWheel(this.sprite))this.isfalling = false;
 		else this.isfalling = true;
 		// Update sprites
-		this.sprite.update(deltaTime);
-	}	
+		
+	}
+	this.sprite.update(deltaTime);	
 }
 
 Wheel.prototype.draw = function()

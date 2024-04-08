@@ -9,6 +9,8 @@ function Scene()
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	this.imPirateLife = new Image();
 	this.imPirateLife.src = "Textures/Characters/PirateLife.png";
+	this.imCoins = new Image();
+	this.imCoins.src = "Textures/Levels/Coins.png";
 	
 	// Create tilemap
 	this.map = new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01);
@@ -22,7 +24,7 @@ function Scene()
 	this.barrelsIntActive = []
 	this.createBarrelsInt();
 
-	this.player = new Player(100, 576, this.map);
+	this.player = new Player(100, 0, this.map);
 
 	this.enemies_sharks = [];
 	this.sharksActive = [];
@@ -42,11 +44,13 @@ function Scene()
 	this.hatsActive = [];
 
 	this.coins = [];
+	this.nbCoins = 0;
 
 	this.createFlag();
  	this.isFinished = false;
 	this.finishPointsAdded = false;
 	this.flagHitted = false;
+	this.endLevel = false;
 
 	this.particleBarrels = [];
 		
@@ -59,12 +63,13 @@ function Scene()
 
 	this.isStarting = true;
 	this.startingTime = 0;
-	this.maxTimeStart = 900;
+	this.maxTimeStart = 3000;
 
 	this.music = AudioFX('Sounds/music_level.mp3', { loop: true });
 	this.powerUp = AudioFX('Sounds/powerUp.mp3');
 
 	this.points = 0;
+	this.displayPoints = [];
 	this.cronoMax = 151000;
 	this.cronoTime = this.cronoMax;
 
@@ -77,12 +82,19 @@ Scene.prototype.update = function(deltaTime)
 	if(this.player.lifes > 0){
 		if(interacted) this.music.play();
 		this.currentTime += deltaTime;
-		if(this.isFinished && !this.finishPointsAdded){
-			this.finishPointsAdded = true;
-			this.points += Math.trunc((this.cronoTime/1000)*10);
+		if(this.isFinished){
+			this.player.sprite.x += 2;
+			if((this.player.sprite.x - this.flag.sprite.x) >= (5*32) && !this.finishPointsAdded){
+				this.finishPointsAdded = true;
+				this.points += Math.trunc((this.cronoTime/1000)*10);
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, Math.trunc((this.cronoTime/1000)*10)));
+				this.endLevel = true;
+			}
 		}
-		else if(this.isStarting){
+		if(this.isStarting){
 			this.startingTime += deltaTime;
+			this.cronoTime = this.cronoMax;
+			if(this.player.sprite.y <= 576) this.player.sprite.y +=3;
 			if(this.startingTime >= this.maxTimeStart) {
 				this.isStarting = false;
 			}
@@ -97,7 +109,7 @@ Scene.prototype.update = function(deltaTime)
 				this.player.update(deltaTime);
 			
 				//Displacement
-				if((this.player.sprite.x-this.displacement)>this.displacementMargin){
+				if((this.player.sprite.x-this.displacement)>this.displacementMargin && (this.flag.sprite.x-this.player.sprite.x) > 450){
 					this.displacement = this.player.sprite.x-this.displacementMargin;
 				}
 				if(this.player.sprite.x-this.displacement< -7){
@@ -130,12 +142,14 @@ Scene.prototype.update = function(deltaTime)
 					this.updateFlag(deltaTime);
 
 					this.updateParticles(deltaTime);
+
+					this.updatePoints(deltaTime);
 				}
 			}
 		}
 		if(this.cronoTime <= 3){
 			this.cronoTime = 0;
-			if(!this.player.isDying && !this.Dead)this.player.killOutOfTime();
+			if(!this.player.isDying && !this.Dead) this.player.killOutOfTime();
 		}
 		else if (!this.flagHitted)this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
 		if(this.player.Dead){
@@ -161,30 +175,31 @@ Scene.prototype.draw = function ()
 	context.save()
 
 	context.translate(Math.floor(-this.displacement),0);
-	// Draw tilemap
-	this.map.draw();
-	this.drawHitBoxes();
+	context.fillStyle = "white";
+	if(!this.isStarting) this.map.draw();
 
 	// Draw text
 	var text = "PIRATE";
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillStyle = "black";
-	context.fillText(text, this.displacement +30, 75);
+	context.fillText(text, this.displacement + 30, 75);
 	
 	var text = this.noramlizeNumbers(this.points);
 	context.fillText(text, this.displacement + 30, 75+25);
-
 	
-	context.drawImage(this.imPirateLife, this.displacement +150, 60);
+	context.drawImage(this.imPirateLife, this.displacement + (896/4), 80,30,25);
 
-	var text = " x "
+	var text = " x " + (this.player.lifes-1).toString();
+	if(this.player.lifes-1 <= 0) text = " x 0";
 	context.font = "24px Candara";
-	context.fillText(text, this.displacement + 175, 75);
+	var textSize = context.measureText(text);
+	context.fillText(text, this.displacement + (896/4)+textSize.width, 100);
 
-	var text = this.player.lifes-1;
-	context.font = "32px Candara";
-	context.fillText(text, this.displacement + 195, 75);
+	context.drawImage(this.imCoins, this.displacement + 896-(896/4) - 65, 75, 32, 32);
+	var text = " x " + (this.nbCoins).toString();
+	context.font = "24px Candara";
+	var textSize = context.measureText(text);
+	context.fillText(text, this.displacement + 896-(896/4)-textSize.width, 100);
 
 	var text = "WORLD";
 	var textSize = context.measureText(text);
@@ -203,47 +218,59 @@ Scene.prototype.draw = function ()
 	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75+25);
 
 	// Draw entities
-	
-	this.flag.draw();
-	for(var i = 0; i < this.barrels.length; i++){	
-		if(this.barrelsActive[i]&& this.barrels[i].isShown)
-			this.barrels[i].draw();
-	}
+	if(!this.isStarting){
+		// Draw tilemap
+		this.drawHitBoxes();
+		this.flag.draw();
+		for(var i = 0; i < this.barrels.length; i++){	
+			if(this.barrelsActive[i]&& this.barrels[i].isShown)
+				this.barrels[i].draw();
+		}
 
-	for(var i = 0; i < this.barrelsInt.length; i++){	
-		if(this.barrelsIntActive[i])
-			this.barrelsInt[i].draw();
-	}
+		for(var i = 0; i < this.barrelsInt.length; i++){	
+			if(this.barrelsIntActive[i])
+				this.barrelsInt[i].draw();
+		}
 
-	for(var i = 0; i < this.enemies_sharks.length; i++){
-		if(this.sharksActive[i] && !this.enemies_sharks[i].Dead)
-			this.enemies_sharks[i].draw();
-	}
+		for(var i = 0; i < this.enemies_sharks.length; i++){
+			if(this.sharksActive[i] && !this.enemies_sharks[i].Dead)
+				this.enemies_sharks[i].draw();
+		}
 
-	for(var i = 0; i < this.enemies_crabs.length; i++){
-		if(this.crabsActive[i] && !this.enemies_crabs[i].Dead)
-			this.enemies_crabs[i].draw();
-	}
+		for(var i = 0; i < this.enemies_crabs.length; i++){
+			if(this.crabsActive[i] && !this.enemies_crabs[i].Dead)
+				this.enemies_crabs[i].draw();
+		}
 
-	for(var i = 0; i < this.enemies_shells.length; i++){
-		if(this.shellsActive[i] && !this.enemies_shells[i].Dead)
-			this.enemies_shells[i].draw();
-	}
-	for(var i = 0; i < this.wheels.length; i++){
-		if(this.wheelsActive[i] && !this.wheels[i].Dead)
-			this.wheels[i].draw();
-	}
-	for(var i = 0; i < this.hats.length; i++){
-		if(this.hatsActive[i] && !this.hats[i].Dead)
-			this.hats[i].draw();
-	}
-	for(var i = 0; i < this.coins.length; i++){
-		if(this.coins[i].coinAlive)
-			this.coins[i].draw();
-	}
-	for(var i = 0; i < this.particleBarrels.length; i++){
-		if(this.particleBarrels[i].active)
-			this.particleBarrels[i].draw();
+		for(var i = 0; i < this.enemies_shells.length; i++){
+			if(this.shellsActive[i] && !this.enemies_shells[i].Dead)
+				this.enemies_shells[i].draw();
+		}
+		for(var i = 0; i < this.wheels.length; i++){
+			if(this.wheelsActive[i] && !this.wheels[i].Dead)
+				this.wheels[i].draw();
+		}
+		for(var i = 0; i < this.hats.length; i++){
+			if(this.hatsActive[i] && !this.hats[i].Dead)
+				this.hats[i].draw();
+		}
+		for(var i = 0; i < this.coins.length; i++){
+			if(this.coins[i].coinAlive)
+				this.coins[i].draw();
+		}
+		for(var i = 0; i < this.particleBarrels.length; i++){
+			if(this.particleBarrels[i].active)
+				this.particleBarrels[i].draw();
+		}
+		for(var i = 0; i < this.displayPoints.length; i++){
+			if(this.displayPoints[i].active)
+				this.displayPoints[i].draw();
+		}
+	} else {
+		var text = "1 - 1";
+		context.font = "64px Candara";
+		var textSize = context.measureText(text);
+		context.fillText(text, 896/2 - textSize.width/2, 736/2);
 	}
 	if(!this.player.Dead){
 		if(this.player.hittedState){
@@ -252,7 +279,6 @@ Scene.prototype.draw = function ()
 		}
 		else this.player.draw();
 	}
-	
 	context.restore();
 }
 
@@ -361,6 +387,7 @@ Scene.prototype.checkEntityCollisionShell = function(first, shell){
 				else first.direction = LEFT;
 			}
 			else {
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.first.points));
 				this.points += first.points;
 				first.killed();
 			}
@@ -475,8 +502,10 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 							this.hatsActive.push(true);
 						}
 						else{
-							if(Math.random() < 0.0){
+							if(Math.random() < 0.3){
+								this.nbCoins +=1;
 								this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
+								this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.coins[0].points));
 								this.points += this.coins[0].points;
 							} else{
 								this.wheels.push(new Wheel(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-32,this.map));
@@ -501,6 +530,7 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 			this.hats[i].update(deltaTime);
 			if(!this.player.hittedState && !this.hats[i].isDying && this.player.collisionBox().intersect(this.hats[i].collisionBox())){
 				this.points += this.hats[i].points;
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.hats[i].points));
 				this.hats[i].killed();
 				this.powerUp.play();
 				if(this.player.size == 0){
@@ -517,6 +547,7 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 			this.wheels[i].update(deltaTime);
 			if(!this.player.hittedState && !this.wheels[i].isDying && this.player.collisionBox().intersect(this.wheels[i].collisionBox())){
 				this.points += this.wheels[i].points;
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.wheels[i].points));
 				this.wheels[i].killed();
 				this.powerUp.play();
 				if(this.player.vulnerability){
@@ -544,10 +575,12 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					else{
 						this.player.hitsEnemy();
 						this.points += this.enemies_sharks[i].points;
+						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_sharks[i].points));
 						this.enemies_sharks[i].killed();
 					}
 				}
 				else{
+					this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_sharks[i].points));
 					this.points += this.enemies_sharks[i].points;
 					this.enemies_sharks[i].killed();
 				}
@@ -570,7 +603,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					if(typeCollision == 1 || typeCollision == 2 || typeCollision == 4){
 						this.player.hitted();
 					}	
-					else{	
+					else{		
 						this.player.hitsEnemy();
 						this.enemies_shells.push(new Shell(this.enemies_crabs[i].sprite.x+15, this.enemies_crabs[i].sprite.y,this.map));
 						var size = this.enemies_shells.length;
@@ -579,9 +612,11 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 						this.shellsActive.push(true);
 						this.enemies_crabs[i].killed();
 						this.points += this.enemies_crabs[i].points;
+						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_crabs[i].points));
 					}
 				}
 				else{
+					this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_crabs[i].points));
 					this.points += this.enemies_crabs[i].points;
 					this.enemies_crabs[i].killed();
 				}
@@ -631,6 +666,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 							if(this.enemies_shells[i].vulerabilityCD) {
 								this.enemies_shells[i].killed();
 								this.points += this.enemies_shells[i].points;
+								this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_shells[i].points));
 						}
 							this.player.hitsEnemy();
 						}
@@ -638,6 +674,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 				}
 				else{
 					if(this.enemies_shells[i].vulerabilityCD) {
+						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_shells[i].points));
 						this.enemies_shells[i].killed();
 						this.points += this.enemies_shells[i].points;
 					}
@@ -652,25 +689,29 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 
 Scene.prototype.updateFlag = function(deltaTime){
 	this.flag.update(deltaTime);
+	var botFlag = 576;
 
 	if(!this.player.hittedState && this.player.collisionBox().intersect(this.flag.collisionBox())){
-		if(this.flag.sprite.y >= 550){
-			this.player.sprite.setAnimation(PIRATE_WALK_RIGHT);
-			//if() check arrivar al final
-			this.player.sprite.x += 2;
-			if(this.player.isFinished) this.isFinished = true;
+		if(this.player.sprite.y >= botFlag){
+			if(this.player.isFinished) {
+				this.isFinished = true;
+				this.player.sprite.setAnimation(PIRATE_WALK_RIGHT);
+			}
+			
 		}
 		else if(this.flag.sprite.y < this.player.sprite.y + 12) {
 			if(!this.flagHitted) {
 				this.flagHitted = true;
 				this.points += Math.trunc(1/(this.player.sprite.y-this.flag.sprite.y) * 20000); //MAX escalar el valor?
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,Math.trunc(1/(this.player.sprite.y-this.flag.sprite.y) * 20000)));
 			}
 			this.flag.sprite.y += 5;
 		}
-		else if(this.flag.sprite.y > this.player.sprite.y + 12){
+		else if(this.flag.sprite.y >= this.player.sprite.y + 12){
 			if(!this.flagHitted){
 				this.flagHitted = true;
-				this.points += 1000; //MAX POINTS
+				this.points += 2000; //MAX POINTS
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,2000));
 			}
 			this.player.sprite.y += 5;
 		} 
@@ -689,6 +730,18 @@ Scene.prototype.updateParticles = function(deltaTime){
 			i--;
 		} 
 		else this.particleBarrels[i].update(deltaTime);
+	}
+}
+
+Scene.prototype.updatePoints = function(deltaTime){
+	for(var i = 0; i < this.displayPoints.length; i++){
+		if(!this.displayPoints[i].active){
+			this.displayPoints.splice(i,1);
+			i--;
+		} 
+		else{
+		this.displayPoints[i].update(deltaTime);
+		}
 	}
 }
 

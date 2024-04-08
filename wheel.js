@@ -49,7 +49,7 @@ function Wheel(x, y, map)
 	// Set attributes for jump
 	this.jumpAngle = 0;
 	this.isfalling = 0;
-	this.direction = LEFT;
+	this.direction = RIGHT;
 
 	this.isBorn = false;
 	this.Dead = false;
@@ -57,7 +57,6 @@ function Wheel(x, y, map)
 
 	this.points = 300;
 }
-
 
 Wheel.prototype.update = function(deltaTime)
 {

@@ -52,7 +52,6 @@ function Hat(x, y, map)
 	this.bornTime = 700;
 
 	this.points = 200;
-	
 }
 
 

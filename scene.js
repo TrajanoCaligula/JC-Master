@@ -3,17 +3,19 @@ const FLAGLAYER = 9;
 
 // Scene. Updates and draws a single scene of the game.
 
-function Scene(map, levelID)
+function Scene(map, levelData,levelID)
 {
 	// Loading texture to use in a TileMap
 	this.imPirateLife = new Image();
 	this.imPirateLife.src = "Textures/Characters/PirateLife.png";
 	this.imCoins = new Image();
 	this.imCoins.src = "Textures/Levels/Coins.png";
+	this.levelwidth = levelData.width;
 	
 	// Create tilemap
 	this.map = map;
 	this.levelId = levelID;
+	this.levelData = levelData;
 	
 	// Create entities
 	this.barrels = []
@@ -313,10 +315,10 @@ Scene.prototype.normalizeTime = function(x){
 
 Scene.prototype.createBarrels = function()
 {
-	for(var j=0, pos=0; j<level01.height; j++)
-		for(var i=0; i<level01.width; i++, pos++)
+	for(var j=0, pos=0; j< this.levelData.height; j++)
+		for(var i=0; i<this.levelData.width; i++, pos++)
 		{
-			tileId = level01.layers[4].data[pos];
+			tileId = this.levelData.layers[4].data[pos];
 			if(tileId != 0){
 				this.barrels.push(new Barrel(i*32+0, 32+32*j));
 				this.barrelsActive.push(true);
@@ -326,10 +328,10 @@ Scene.prototype.createBarrels = function()
 
 Scene.prototype.createBarrelsInt = function()
 {
-	for(var j=0, pos=0; j<level01.height; j++)
-		for(var i=0; i<level01.width; i++, pos++)
+	for(var j=0, pos=0; j<this.levelData.height; j++)
+		for(var i=0; i<this.levelData.width; i++, pos++)
 		{
-			tileId = level01.layers[5].data[pos];
+			tileId = this.levelData.layers[5].data[pos];
 			if(tileId != 0){
 				this.barrelsInt.push(new Intbarrel(i*32+0, 32+32*j));
 				this.barrelsIntActive.push(true);
@@ -339,10 +341,10 @@ Scene.prototype.createBarrelsInt = function()
 
 Scene.prototype.createSharks = function()
 {
-	for(var j=0, pos=0; j<level01.height; j++)
-		for(var i=0; i<level01.width; i++, pos++)
+	for(var j=0, pos=0; j<this.levelData.height; j++)
+		for(var i=0; i<this.levelData.width; i++, pos++)
 		{
-			tileId = level01.layers[6].data[pos];
+			tileId = this.levelData.layers[6].data[pos];
 			if(tileId != 0){
 				this.enemies_sharks.push(new Shark(i*32+0, 32+32*j-32,this.map));
 				this.sharksActive.push(true);
@@ -352,10 +354,10 @@ Scene.prototype.createSharks = function()
 
 Scene.prototype.createCrabs = function()
 {
-	for(var j=0, pos=0; j<level01.height; j++)
-		for(var i=0; i<level01.width; i++, pos++)
+	for(var j=0, pos=0; j<this.levelData.height; j++)
+		for(var i=0; i<this.levelData.width; i++, pos++)
 		{
-			tileId = level01.layers[7].data[pos];
+			tileId = this.levelData.layers[7].data[pos];
 			if(tileId != 0){
 				this.enemies_crabs.push(new Crab(i*32+0, 32+32*j-32,this.map));
 				this.crabsActive.push(true);
@@ -365,10 +367,10 @@ Scene.prototype.createCrabs = function()
 
 Scene.prototype.createFlag = function()
 {
-	for(var j=0, pos=0; j<level01.height; j++)
-		for(var i=0; i<level01.width; i++, pos++)
+	for(var j=0, pos=0; j<this.levelData.height; j++)
+		for(var i=0; i<this.levelData.width; i++, pos++)
 		{
-			tileId = level01.layers[FLAGLAYER].data[pos];
+			tileId = this.levelData.layers[FLAGLAYER].data[pos];
 			if(tileId != 0){
 				this.flag =new Flag(i*32+0, 32+32*j-32,this.map);
 			}
@@ -489,7 +491,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 						this.particleBarrels.push(new ParticBarrelDest(this.barrels[i].sprite.x, this.barrels[i].sprite.y));
 						this.barrelsActive[i] = false;
 						this.barrels[i].isShown = false;
-						pos=(this.barrels[i].sprite.x/32)+ level01.width*((this.barrels[i].sprite.y-32)/32);
+						pos=(this.barrels[i].sprite.x/32)+ this.levelwidth*((this.barrels[i].sprite.y-32)/32);
 						this.map.map.layers[4].data[pos]=0;
 						this.player.resetJump();
 					}

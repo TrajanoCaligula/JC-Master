@@ -106,8 +106,8 @@ function loadLevels(){
 	menu = new Menu();
 	credits = new Credits();
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
-	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01),1));	//1 for the level 1 (is shown in the scene)
-	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level02),2));	//2 for the level 2 (is shown in the scene)
+	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01),level01,1));	//1 for the level 1 (is shown in the scene)
+	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level02), level02,2));	//2 for the level 2 (is shown in the scene)
 }
 
 // Init and launch game loop

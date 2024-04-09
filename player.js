@@ -286,7 +286,7 @@ Player.prototype.update = function(deltaTime)
 						this.sprite.setAnimation(PIRATE_FALL_RIGHT);
 					this.bJumping = !this.map.collisionMoveDown(this.sprite);
 				}
-				else if(this.map.collisionMoveUp(this.sprite)){
+				else if(this.map.collisionMoveUp(this.sprite, this.size)){
 					this.jumpAngle = 90;
 					this.startY = (this.sprite.y + 130 )/ Math.sin(3.14159 * this.jumpAngle / 180);
 				}
@@ -304,7 +304,7 @@ Player.prototype.update = function(deltaTime)
 					this.sprite.setAnimation(PIRATE_STAND_LEFT);
 				else if(!this.bJumping && (this.sprite.currentAnimation == PIRATE_FALL_RIGHT || this.sprite.currentAnimation == PIRATE_JUMP_RIGHT))
 					this.sprite.setAnimation(PIRATE_STAND_RIGHT);
-					
+
 				// Check arrow up key. If pressed, jump.
 				if ((keyboard[38] || keyboard[32] || keyboard[87]))
 				{

@@ -397,8 +397,9 @@ Scene.prototype.checkEntityCollisionShell = function(first, shell){
 				else first.direction = LEFT;
 			}
 			else {
-				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.first.points));
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,first.points+shell[i].contKiller*100));
 				this.points += first.points;
+				shell[i].contKiller += 1;
 				first.killed();
 			}
 		}
@@ -436,13 +437,13 @@ Scene.prototype.drawHitBoxes = function(){
 			}
 		}
 		for(var i = 0; i < this.enemies_sharks.length; i++){
-			if(this.sharksActive[i] && !this.enemies_sharks[i].Dead){
+			if(this.sharksActive[i] && !this.enemies_sharks[i].isDying && !this.enemies_sharks[i].Dead){
 				box = this.enemies_sharks[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "red"));
 			}
 		}
 		for(var i = 0; i < this.enemies_crabs.length; i++){
-			if(this.crabsActive[i] && !this.enemies_crabs[i].Dead){
+			if(this.crabsActive[i] && !this.enemies_crabs[i].isDying && !this.enemies_crabs[i].Dead){
 				box = this.enemies_crabs[i].collisionBox();
 				this.quads.push(new Quad(box.min_x, box.min_y,box.max_x - box.min_x , box.max_y-box.min_y, "green"));
 			}
@@ -665,7 +666,6 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					}
 					else{ //golpe que para la shell
 						if(this.enemies_shells[i].isMoving) {
-							this.player.hitsEnemy();
 							this.enemies_shells[i].isMoving = false;
 							num_anim = this.enemies_shells[i].sprite.currentAnimation;
 							if(num_anim == SHELL_MOVE_LEFT) this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_LEFT);
@@ -674,12 +674,10 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 						}
 						else { //golpe y rebote con la shell parada
 							if(this.enemies_shells[i].vulerabilityCD) {
-								this.enemies_shells[i].killed();
-								this.points += this.enemies_shells[i].points;
-								this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.enemies_shells[i].points));
+								this.enemies_shells[i].isMoving = true;
+							}
 						}
-							this.player.hitsEnemy();
-						}
+						this.player.hitsEnemy();
 					}
 				}
 				else{

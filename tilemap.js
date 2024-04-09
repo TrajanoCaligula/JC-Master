@@ -147,6 +147,7 @@ Tilemap.prototype.collisionMoveRightCrab = function(sprite)
 	
 	return false;
 }
+
 Tilemap.prototype.collisionMoveDownCrab = function(sprite){
 	var y = Math.floor((sprite.y + sprite.height-1 - this.basePos[1]) / this.tileSize[1]);
 	var x0 = Math.floor((sprite.x +4 - this.basePos[0]) / this.tileSize[0]);
@@ -247,14 +248,14 @@ Tilemap.prototype.collisionMoveDown = function(sprite)
 	return false;
 }
 
-
-
 // Computes if the top of a sprite collides with the tilemap.
 // Returns a boolean with the result, and if it collides, it changes its Y position so as to avoid it.
 
-Tilemap.prototype.collisionMoveUp = function(sprite)
+Tilemap.prototype.collisionMoveUp = function(sprite, size)
 {
-  var y = Math.floor((sprite.y + sprite.height-7 - this.basePos[1]) / this.tileSize[1]);
+if(size == 1) extra = 26;
+else extra = 10;
+  var y = Math.floor((sprite.y + sprite.height- extra- this.basePos[1]) / this.tileSize[1]);
   var x0 = Math.floor((sprite.x + 18 - this.basePos[0]) / this.tileSize[0]);
   var x1 = Math.floor((sprite.x + sprite.width - 18 - this.basePos[0]) / this.tileSize[0]);
 

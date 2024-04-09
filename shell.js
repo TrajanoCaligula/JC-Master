@@ -84,9 +84,9 @@ function Shell(x, y, map)
 	this.goDown = false;
 
 	this.points = 200;
+	this.contKiller = 0;
 
 	this.sound = AudioFX('Sounds/shell.mp3');
-	
 }
 
 
@@ -111,8 +111,6 @@ Shell.prototype.update = function(deltaTime)
 			this.goDown = true;
 		}
 		if(this.DyingTime <= 0){
-			this.sprite.x = 0;
-			this.sprite.y = 0;	
 			this.Dead = true;
 		}
 	}

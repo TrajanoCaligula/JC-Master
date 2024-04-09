@@ -6,12 +6,14 @@ const TIME_PER_FRAME = 1000 / FRAME_RATE;
 
 var lvls = [];
 var credits;
+var menu;
 var previousTimestamp;
 var keyboard = [];
 var interacted;
 var points = 0;
+var recordPoints = 0;
 var nextLevel = 1;
-var isMenu = false; //	MENU, POSAR A TRUE
+var isMenu = true; //	MENU, POSAR A TRUE
 
 
 // Control keyboard events
@@ -57,7 +59,10 @@ function frameUpdate(timestamp)
 	while(deltaTime > TIME_PER_FRAME)
 	{
 		bUpdated = true;
-		if(isMenu) ;									//TODO:updatemenu;
+		if(isMenu) {
+			menu.update(TIME_PER_FRAME);
+			menu.setRecordPoints(recordPoints);
+		}//TODO:updatemenu;
 		else if(lvls.length == nextLevel){				//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {
@@ -75,7 +80,7 @@ function frameUpdate(timestamp)
 		deltaTime = timestamp - previousTimestamp;
 	}
 	if(bUpdated){
-		if(isMenu) ;									//TODO:draw menu
+		if(isMenu) menu.draw();									//TODO:draw menu
 		else if(lvls.length == nextLevel) credits.draw();
 		else lvls[nextLevel].draw();
 	}
@@ -83,6 +88,7 @@ function frameUpdate(timestamp)
 }
 
 function loadLevels(){
+	menu = new Menu();
 	credits = new Credits();
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01),1));	//1 for the level 1 (is shown in the scene)

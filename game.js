@@ -1,10 +1,11 @@
 
-// Main class. Executes the game loop, redrawing the scene as needed.
+// Main class. Executes the game loop, redrawing the lvl1 as needed.
 
 const FRAME_RATE = 60;
 const TIME_PER_FRAME = 1000 / FRAME_RATE;
 
-var scene = new Scene();
+var lvls = [];
+var lvl1 = new Scene();
 var previousTimestamp;
 var keyboard = [];
 var interacted;
@@ -53,13 +54,13 @@ function frameUpdate(timestamp)
 	while(deltaTime > TIME_PER_FRAME)
 	{
 		bUpdated = true;
-		scene.update(TIME_PER_FRAME);
+		lvl1.update(TIME_PER_FRAME);
 		previousTimestamp += TIME_PER_FRAME;
 		deltaTime = timestamp - previousTimestamp;
 	}
 	if(bUpdated){
-		scene.draw();
-		points += scene.points;
+		lvl1.draw();
+		points += lvl1.points;
 	}
 	window.requestAnimationFrame(frameUpdate)
 }

@@ -80,7 +80,7 @@ function Scene()
 Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
-		if(interacted) this.music.play();
+		this.music.play();
 		this.currentTime += deltaTime;
 		
 		if(this.isStarting){
@@ -98,17 +98,16 @@ Scene.prototype.update = function(deltaTime)
 			else{
 				if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
 
-
-
 				if(!this.isFinished) this.player.update(deltaTime);
 				else{
-					this.player.sprite.x += 2;
 					this.player.sprite.update(deltaTime);
-					if((this.player.sprite.x - this.flag.sprite.x) >= (5*32) && !this.finishPointsAdded){
+					this.player.sprite.x += 2;
+					if((this.player.sprite.x - this.flag.sprite.x) >= (3*32) && !this.finishPointsAdded){
 						this.finishPointsAdded = true;
 						this.points += Math.trunc((this.cronoTime/1000)*10);
 						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, Math.trunc((this.cronoTime/1000)*10)));
 						this.endLevel = true;
+						this.cronoTime = 0;
 					}
 				}
 				//Displacement
@@ -282,6 +281,8 @@ Scene.prototype.draw = function ()
 		}
 		else this.player.draw();
 	}
+	context.fillStyle = "rgb(0, 0, 0)";
+	context.fillRect(0, 736-32, canvas.width, 32);
 	context.restore();
 }
 
@@ -694,7 +695,7 @@ Scene.prototype.updateFlag = function(deltaTime){
 	this.flag.update(deltaTime);
 	var botFlag = 576;
 
-	if(!this.player.hittedState && this.player.collisionBox().intersect(this.flag.collisionBox())){
+	if(!this.isFinished && !this.player.hittedState && this.player.collisionBox().intersect(this.flag.collisionBox())){
 		if(this.player.sprite.y >= botFlag){
 			if(this.player.isFinished) {
 				this.isFinished = true;

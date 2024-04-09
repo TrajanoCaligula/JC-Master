@@ -82,15 +82,7 @@ Scene.prototype.update = function(deltaTime)
 	if(this.player.lifes > 0){
 		if(interacted) this.music.play();
 		this.currentTime += deltaTime;
-		if(this.isFinished){
-			this.player.sprite.x += 2;
-			if((this.player.sprite.x - this.flag.sprite.x) >= (5*32) && !this.finishPointsAdded){
-				this.finishPointsAdded = true;
-				this.points += Math.trunc((this.cronoTime/1000)*10);
-				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, Math.trunc((this.cronoTime/1000)*10)));
-				this.endLevel = true;
-			}
-		}
+		
 		if(this.isStarting){
 			this.startingTime += deltaTime;
 			this.cronoTime = this.cronoMax;
@@ -106,8 +98,19 @@ Scene.prototype.update = function(deltaTime)
 			else{
 				if(keyboard[85])this.drawHitBoxesState = !this.drawHitBoxesState;//FOR DEBUBBING
 
-				this.player.update(deltaTime);
-			
+
+
+				if(!this.isFinished) this.player.update(deltaTime);
+				else{
+					this.player.sprite.x += 2;
+					this.player.sprite.update(deltaTime);
+					if((this.player.sprite.x - this.flag.sprite.x) >= (5*32) && !this.finishPointsAdded){
+						this.finishPointsAdded = true;
+						this.points += Math.trunc((this.cronoTime/1000)*10);
+						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, Math.trunc((this.cronoTime/1000)*10)));
+						this.endLevel = true;
+					}
+				}
 				//Displacement
 				if((this.player.sprite.x-this.displacement)>this.displacementMargin && (this.flag.sprite.x-this.player.sprite.x) > 450){
 					this.displacement = this.player.sprite.x-this.displacementMargin;

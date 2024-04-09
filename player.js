@@ -362,6 +362,7 @@ Player.prototype.update = function(deltaTime)
 	// Update sprites
 	this.sprite.update(deltaTime);
 }
+
 Player.prototype.resetJump = function(){
 	if(this.jumpAngle<=90){
 		this.jumpAngle = 90;

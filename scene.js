@@ -161,12 +161,13 @@ Scene.prototype.update = function(deltaTime)
 		}
 		else if (!this.flagHitted)this.cronoTime -= deltaTime;  //todo, programar que pasa quan acaba el temps
 		if(this.player.Dead){
-				if(this.player.lifes>0)this.restart();
+				if(this.player.lifes>0) this.restart();
 				else{
-
+					this.endLevel = true;
 				}
 		}
 	}
+	else if(this.player.Dead) this.endLevel = true;
 	
 	
 }
@@ -190,40 +191,41 @@ Scene.prototype.draw = function ()
 	var text = "PIRATE";
 	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement + 30, 75);
+	context.fillText(text, this.displacement + 30, 65);
 	
 	var text = this.normalizeNumbers(this.points);
-	context.fillText(text, this.displacement + 30, 75+25);
+	context.fillText(text, this.displacement + 30, 65+25);
 	
-	context.drawImage(this.imPirateLife, this.displacement + (896/4), 80,30,25);
+	context.drawImage(this.imPirateLife, this.displacement + (896/4), 65,30,25);
 
 	var text = " x " + (this.player.lifes-1).toString();
 	if(this.player.lifes-1 <= 0) text = " x 0";
 	context.font = "24px Candara";
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement + (896/4)+textSize.width, 100);
+	context.fillText(text, this.displacement + (896/4)+textSize.width, 90);
 
-	context.drawImage(this.imCoins, this.displacement + 896-(896/4) - 65, 75, 32, 32);
+	context.drawImage(this.imCoins, this.displacement + 896-(896/4) - 65, 65, 32, 32);
 	var text = " x " + (this.nbCoins).toString();
 	context.font = "24px Candara";
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement + 896-(896/4)-textSize.width, 100);
+	context.fillText(text, this.displacement + 896-(896/4)-30, 90);
 
 	var text = "WORLD";
+	context.font = "32px Candara";
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75);
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65);
 
 	var text = "1 - " + this.levelId;
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75+25);
+	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 65+25);
 
 	var text = "TIME";
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75);
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65);
 
 	var text = this.normalizeTime(Math.floor(this.cronoTime / 1000));
 	var textSize = context.measureText(text);
-	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75+25);
+	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 65+25);
 
 	// Draw entities
 	if(!this.isStarting){
@@ -288,7 +290,7 @@ Scene.prototype.draw = function ()
 		else this.player.draw();
 	}
 	context.fillStyle = "rgb(0, 0, 0)";
-	context.fillRect(0, 736-32, canvas.width, 32);
+	context.fillRect(this.player.sprite.x - 50, 736-32, 2*canvas.width, 32);
 	context.restore();
 }
 
@@ -824,4 +826,6 @@ Scene.prototype.restart = function(){
 
   // Allow player to be drawn again
   this.playerHasToDraw = true;
+
+  	this.player = new Player(100, 0, this.map);
 }

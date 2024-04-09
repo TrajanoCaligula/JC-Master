@@ -70,12 +70,12 @@ function frameUpdate(timestamp)
 			menu.points = points;
 			if(nextLevel != -1) isMenu = false;
 		}												//TODO:updatemenu;
-		else if(nextLevel == 2){					//End of last lvl
+		else if(nextLevel == 2){						//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {
 				loadLevels();
 				nextLevel = 0;
-				isMenu = true;						//redirect to menu
+				isMenu = true;							//redirect to menu
 			}
 		} else{											//New lvl
 			lvls[nextLevel].update(TIME_PER_FRAME);
@@ -83,7 +83,12 @@ function frameUpdate(timestamp)
 				points += lvls[nextLevel].points;		//Check points not in loop
 				coins += lvls[nextLevel].coins;
 				lifes = lvls[nextLevel].lifes;
-				nextLevel++;	
+				if(lifes > -1) nextLevel++;	
+				else {
+				console.log(lifes, lvls[nextLevel].lifes);
+					isMenu = true;
+					nextLevel = -1;
+				}
 			}				
 		}
 		previousTimestamp += TIME_PER_FRAME;

@@ -4,8 +4,8 @@ function PointsDisplay(x, y, value)
 	this.active = true;
 	this.TimerActive = 400;
 	this.value = value;
-	this.x = x;
-	this.y = y;
+	this.x = x+32;
+	this.y = y-32;
 	this.deltaTime = 0;
 	this.fontSize = 32;
 }

@@ -413,7 +413,6 @@ Player.prototype.hitted = function()
         this.jumpAngle = 0;
         this.startY = this.sprite.y;
 	}
-
 }
 
 Player.prototype.hitsFlag = function()

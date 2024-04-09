@@ -114,7 +114,7 @@ Player.prototype.update = function(deltaTime)
 	}
 	else{ //PIRATE ALIVE
 		
-		if(keyboard[37]) // KEY_LEFT
+		if(keyboard[37] || keyboard[65]) // KEY_LEFT
 		{
 			if(this.bJumping){
 				if(this.sprite.currentAnimation == PIRATE_JUMP_RIGHT)
@@ -169,7 +169,7 @@ Player.prototype.update = function(deltaTime)
 			}
 
 		}
-		else if(keyboard[39]) // KEY_RIGHT
+		else if(keyboard[39] || keyboard[68]) // KEY_RIGHT
 		{
 			if(this.bJumping){
 				if(this.sprite.currentAnimation == PIRATE_JUMP_LEFT)
@@ -304,9 +304,9 @@ Player.prototype.update = function(deltaTime)
 					this.sprite.setAnimation(PIRATE_STAND_LEFT);
 				else if(!this.bJumping && (this.sprite.currentAnimation == PIRATE_FALL_RIGHT || this.sprite.currentAnimation == PIRATE_JUMP_RIGHT))
 					this.sprite.setAnimation(PIRATE_STAND_RIGHT);
-				
+					
 				// Check arrow up key. If pressed, jump.
-				if ((keyboard[38] || keyboard[32]))
+				if ((keyboard[38] || keyboard[32] || keyboard[87]))
 				{
 					this.bJumping = true;
 					this.jumpAngle = 0;
@@ -349,14 +349,6 @@ Player.prototype.update = function(deltaTime)
 			if(this.vulnerability)this.powerUpWheel();
 			else this.powerDownWheel();
 		}
-		/*TODO
-		if (keyboard[49]) { //1, saltar nivell 1
-
-		}
-
-		if (keyboard[50]) { //2, saltar nivell 2
-
-		}*/
 		if (keyboard[77]) { //M, supermario
 			this.changeSize()
 		}

@@ -16,6 +16,7 @@ var coins = 0;
 var recordPoints = 0;
 var nextLevel = 1;
 var isMenu = true; //	MENU, POSAR A TRUE
+var reload = false;
 
 
 // Control keyboard events
@@ -60,8 +61,8 @@ function frameUpdate(timestamp)
 	
 	while(deltaTime > TIME_PER_FRAME)
 	{
-		bUpdated = true;
 		if(isMenu) {
+			if(reload) refreshLevels();
 			menu.update(TIME_PER_FRAME);
 			menu.setRecordPoints(recordPoints);
 			nextLevel = menu.whereTo-1;
@@ -74,14 +75,9 @@ function frameUpdate(timestamp)
 		else if(nextLevel == 2){						//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {
-				loadLevels();
 				nextLevel = -1;
 				isMenu = true;							//redirect to menu
-
-				for(var i=0; i<lvls.length; i++) {
-					lvls[i].restart();
-					lvls[i].player.lifes = 4;
-				}
+				reload = true;
 			}
 		} else{											//New lvl
 			lvls[nextLevel].update(TIME_PER_FRAME);
@@ -108,6 +104,8 @@ function frameUpdate(timestamp)
 		}
 		previousTimestamp += TIME_PER_FRAME;
 		deltaTime = timestamp - previousTimestamp;
+		
+		bUpdated = true;
 	}
 	if(bUpdated){
 		if(isMenu) menu.draw();									//TODO:draw menu
@@ -123,6 +121,16 @@ function loadLevels(){
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01),level01,1));	//1 for the level 1 (is shown in the scene)
 	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level02), level02,2));	//2 for the level 2 (is shown in the scene)
+}
+
+function refreshLevels(){
+	reload = false;
+	menu = new Menu();
+	credits.restart();
+	for(var i=0; i<lvls.length; i++) {
+					lvls[i].restart();
+					lvls[i].player.lifes = 4;
+				}
 }
 
 // Init and launch game loop

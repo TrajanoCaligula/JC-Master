@@ -129,6 +129,17 @@ Credits.prototype.draw = function draw()
 
 	context.save()
 }
+
+Credits.prototype.restart = function(){
+	this.active = true;
+	this.TimerActive = 2000;
+	this.TimerCredits = 15000;
+	this.deltaTime = 0;
+	this.fontSize = 32;
+	this.title = true;
+	this.displacement = 0;
+	this.baseY = 1000;
+}
  
 
 

@@ -132,6 +132,7 @@ Menu.prototype.draw = function ()
 	var textSize = context.measureText(text);
 	context.fillText(text, (896 - 30)-textSize.width, 65+25);
 
+	context.fillStyle = "black";
 	if(!this.isSelector){
 		var text = "Play";
 		context.font = "64px Candara";

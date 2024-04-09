@@ -83,7 +83,6 @@ function Scene(map, levelData,levelID)
 Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
-		//console.log(this.player.lifes);
 		if(interacted)this.music.play();
 		this.currentTime += deltaTime;
 		

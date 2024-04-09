@@ -523,7 +523,7 @@ Player.prototype.killOutOfTime = function(){
 	if(currentAnim == PIRATE_STAND_LEFT || currentAnim == PIRATE_WALK_LEFT || currentAnim == PIRATE_RUN_LEFT || currentAnim == PIRATE_JUMP_LEFT || currentAnim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_LEFT);
 	else this.sprite.setAnimation(PIRATE_HIT_RIGHT);
 }
-Player.prototype.Die= function(index){
+Player.prototype.Die = function(){
 	this.Dead = true;
 	this.lifes--;
 }

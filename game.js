@@ -69,25 +69,40 @@ function frameUpdate(timestamp)
 			menu.lifes = lifes;
 			menu.points = points;
 			if(nextLevel != -1) isMenu = false;
+			lvls[0].player.lifes = lifes;
 		}												//TODO:updatemenu;
 		else if(nextLevel == 2){						//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {
 				loadLevels();
-				nextLevel = 0;
+				nextLevel = -1;
 				isMenu = true;							//redirect to menu
+
+				for(var i=0; i<lvls.length; i++) {
+					lvls[i].restart();
+					lvls[i].player.lifes = 4;
+				}
 			}
 		} else{											//New lvl
 			lvls[nextLevel].update(TIME_PER_FRAME);
-			if(lvls[nextLevel].endLevel) {				//Check index!
-				points += lvls[nextLevel].points;		//Check points not in loop
-				coins += lvls[nextLevel].coins;
-				lifes = lvls[nextLevel].lifes;
-				if(lifes > -1) nextLevel++;	
-				else {
-				console.log(lifes, lvls[nextLevel].lifes);
-					isMenu = true;
-					nextLevel = -1;
+			if(lvls[nextLevel].endLevel) {
+				lifes = lvls[nextLevel].player.lifes;
+				if(nextLevel == 0){
+					nextLevel = 1;
+					points = lvls[0].points;
+					coins = lvls[0].nbCoins;
+					lifes = lvls[0].player.lifes;
+					lvls[1].player.lifes = lifes;
+
+				}else {
+					nextLevel = 2;
+					points += lvls[1].points;
+					coins += lvls[1].nbCoins;
+					if(points > recordPoints){
+						recordPoints = points;
+						menu.setRecordPoints(recordPoints);
+					}
+					lifes = lvls[1].player.lifes;
 				}
 			}				
 		}

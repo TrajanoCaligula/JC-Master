@@ -83,6 +83,7 @@ function Scene(map, levelData,levelID)
 Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
+		//console.log(this.player.lifes);
 		if(interacted)this.music.play();
 		this.currentTime += deltaTime;
 		
@@ -110,13 +111,13 @@ Scene.prototype.update = function(deltaTime)
 							this.points += (this.player.lifes - 1)*1000;
 							this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, (this.player.lifes - 1)*1000));
 						}
-					if((this.player.sprite.x - this.flag.sprite.x) >= (4*32) && !this.finishPointsAdded){
+					if((this.player.sprite.x - this.flag.sprite.x) >= (8*32) && !this.finishPointsAdded){
 						this.finishPointsAdded = true;
 						this.points += Math.trunc((this.cronoTime/1000)*10);
 						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, Math.trunc((this.cronoTime/1000)*10)));
+						this.endLevel = true;
 						this.cronoTime = 0;
 					}
-					if((this.player.sprite.x - this.flag.sprite.x) >= (12*32))	this.endLevel = true;
 				}
 				//Displacement
 				if((this.player.sprite.x-this.displacement)>this.displacementMargin && (this.flag.sprite.x-this.player.sprite.x) > 450){
@@ -517,7 +518,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 							this.hatsActive.push(true);
 						}
 						else{
-							if(Math.random() < 0.3){
+							if(Math.random() < 0.7){
 								this.nbCoins +=1;
 								this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
 								this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.coins[0].points));
@@ -714,16 +715,18 @@ Scene.prototype.updateFlag = function(deltaTime){
 		else if(this.flag.sprite.y < this.player.sprite.y + 12) {
 			if(!this.flagHitted) {
 				this.flagHitted = true;
-				this.points += Math.trunc(1/(this.player.sprite.y-this.flag.sprite.y) * 20000); //MAX escalar el valor?
-				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,Math.trunc(1/(this.player.sprite.y-this.flag.sprite.y) * 20000)));
+				var tmp = Math.abs((this.player.sprite.y+12)-botFlag)/276;
+				tmp = Math.trunc(tmp * 1000);
+				this.points += tmp; //MAX escalar el valor?
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,tmp));
 			}
 			this.flag.sprite.y += 5;
 		}
 		else if(this.flag.sprite.y >= this.player.sprite.y + 12){
 			if(!this.flagHitted){
 				this.flagHitted = true;
-				this.points += 2000; //MAX POINTS
-				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,2000));
+				this.points += 1000; //MAX POINTS
+				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,1000));
 			}
 			this.player.sprite.y += 5;
 		} 
@@ -733,6 +736,15 @@ Scene.prototype.updateFlag = function(deltaTime){
 		} 
 		this.player.isEnding = true;
 	}
+}
+
+Scene.prototype.normalizePoints = function(x){
+	if (x <= 0) {
+		return 0;
+	  }
+
+	  return Math.min(x * 1000 / (x - 100), 1000); // Scale and clamp to 0-2000
+
 }
 
 Scene.prototype.updateParticles = function(deltaTime){
@@ -827,5 +839,6 @@ Scene.prototype.restart = function(){
   // Allow player to be drawn again
   this.playerHasToDraw = true;
 
-  	this.player = new Player(100, 0, this.map);
+  this.player.sprite.x = 100;
+  this.player.sprite.y = 0;
 }

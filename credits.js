@@ -17,7 +17,7 @@ Credits.prototype.update = function(deltaTime)
 {
 	if(this.active){
 		this.TimerActive -= deltaTime;
-		if(keyboard[32]) this.active = false;
+		if(keyboard[27]) this.active = false;
 		if(this.TimerActive <= 0) {
 			this.title = false;
 			this.TimerCredits -= deltaTime;
@@ -121,7 +121,7 @@ Credits.prototype.draw = function draw()
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, 32);
 
-	var text = "Push SPACEBAR to skip...";
+	var text = "Push ESC to skip...";
 	context.fillStyle = "white";
 	context.font = (this.fontSize*0.5).toString() + "px Candara";
 	var textSize = context.measureText(text);

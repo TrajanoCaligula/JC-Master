@@ -11,6 +11,8 @@ var previousTimestamp;
 var keyboard = [];
 var interacted;
 var points = 0;
+var lifes = 4;
+var coins = 0;
 var recordPoints = 0;
 var nextLevel = 1;
 var isMenu = true; //	MENU, POSAR A TRUE
@@ -62,19 +64,25 @@ function frameUpdate(timestamp)
 		if(isMenu) {
 			menu.update(TIME_PER_FRAME);
 			menu.setRecordPoints(recordPoints);
-			this.nextLevel = menu.whereTo-1;
-			if(this.nextLevel != -1) this.isMenu = false;
+			nextLevel = menu.whereTo-1;
+			menu.nbCoins = coins;
+			menu.lifes = lifes;
+			menu.points = points;
+			if(nextLevel != -1) isMenu = false;
 		}												//TODO:updatemenu;
-		else if(this.nextLevel == 2){				//End of last lvl
+		else if(nextLevel == 2){					//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {
 				loadLevels();
-				nextLevel = 0;							//redirect to menu
+				nextLevel = 0;
+				isMenu = true;						//redirect to menu
 			}
 		} else{											//New lvl
 			lvls[nextLevel].update(TIME_PER_FRAME);
 			if(lvls[nextLevel].endLevel) {				//Check index!
 				points += lvls[nextLevel].points;		//Check points not in loop
+				coins += lvls[nextLevel].coins;
+				lifes = lvls[nextLevel].lifes;
 				nextLevel++;	
 			}				
 		}
@@ -94,6 +102,7 @@ function loadLevels(){
 	credits = new Credits();
 	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01),1));	//1 for the level 1 (is shown in the scene)
+	lvls.push(new Scene(new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level02),2));	//2 for the level 2 (is shown in the scene)
 }
 
 // Init and launch game loop

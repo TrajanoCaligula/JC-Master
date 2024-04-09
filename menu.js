@@ -35,13 +35,16 @@ function Menu()
 
 Menu.prototype.update = function(deltaTime)
 {
-	if(keyboard[38]){// UP
+	if(keyboard[38] || keyboard[87]){// UP
 		this.checkPosition();
 		this.whereTo = 0;
 	}
-	else if(keyboard[40]){// DOWN
+	else if(keyboard[40] || keyboard[83]){// DOWN
 		this.checkPosition();
 		this.whereTo = 0;
+	}
+	else if(keyboard[27]){// ESC
+		this.isSelector = false;
 	}
 	else if((keyboard[32] || keyboard[13]) && !this.active){ // SPACE/ENTER
 		var previousBoolean = this.isSelector;
@@ -111,7 +114,7 @@ Menu.prototype.draw = function ()
 	if(this.lifes-1 <= 0) text = " x 0";
 	context.font = "24px Candara";
 	var textSize = context.measureText(text);
-	context.fillText(text,  (896/4)+textSize.width - 30, 90);
+	context.fillText(text,  (896/4)+textSize.width, 90);
 
 	context.drawImage(this.imCoins,  896-(896/4) - 65, 65, 32, 32);
 	var text = " x " + this.nbCoins;

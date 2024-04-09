@@ -3,17 +3,17 @@ const FLAGLAYER = 9;
 
 // Scene. Updates and draws a single scene of the game.
 
-function Scene()
+function Scene(map, levelID)
 {
 	// Loading texture to use in a TileMap
-	var tilesheet = new Texture("Textures/Levels/Texture_Level.png");
 	this.imPirateLife = new Image();
 	this.imPirateLife.src = "Textures/Characters/PirateLife.png";
 	this.imCoins = new Image();
 	this.imCoins.src = "Textures/Levels/Coins.png";
 	
 	// Create tilemap
-	this.map = new Tilemap(tilesheet, [32, 32], [32, 32], [0, 32], level01);
+	this.map = map;
+	this.levelId = levelID;
 	
 	// Create entities
 	this.barrels = []
@@ -49,6 +49,7 @@ function Scene()
 	this.createFlag();
  	this.isFinished = false;
 	this.finishPointsAdded = false;
+	this.lifesPointsAdded = false;
 	this.flagHitted = false;
 	this.endLevel = false;
 
@@ -80,7 +81,7 @@ function Scene()
 Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
-		this.music.play();
+		if(interacted)this.music.play();
 		this.currentTime += deltaTime;
 		
 		if(this.isStarting){
@@ -102,13 +103,18 @@ Scene.prototype.update = function(deltaTime)
 				else{
 					this.player.sprite.update(deltaTime);
 					this.player.sprite.x += 2;
-					if((this.player.sprite.x - this.flag.sprite.x) >= (3*32) && !this.finishPointsAdded){
+					if(!this.lifesPointsAdded && this.player.lifes - 1 > 0) {
+							this.lifesPointsAdded = true;
+							this.points += (this.player.lifes - 1)*1000;
+							this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, (this.player.lifes - 1)*1000));
+						}
+					if((this.player.sprite.x - this.flag.sprite.x) >= (4*32) && !this.finishPointsAdded){
 						this.finishPointsAdded = true;
 						this.points += Math.trunc((this.cronoTime/1000)*10);
 						this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y, Math.trunc((this.cronoTime/1000)*10)));
-						this.endLevel = true;
 						this.cronoTime = 0;
 					}
+					if((this.player.sprite.x - this.flag.sprite.x) >= (12*32))	this.endLevel = true;
 				}
 				//Displacement
 				if((this.player.sprite.x-this.displacement)>this.displacementMargin && (this.flag.sprite.x-this.player.sprite.x) > 450){
@@ -207,7 +213,7 @@ Scene.prototype.draw = function ()
 	var textSize = context.measureText(text);
 	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75);
 
-	var text = "1 - 1";
+	var text = "1 - " + this.levelId;
 	var textSize = context.measureText(text);
 	context.fillText(text, this.displacement +(896/2)-(textSize.width/2), 75+25);
 
@@ -269,7 +275,7 @@ Scene.prototype.draw = function ()
 				this.displayPoints[i].draw();
 		}
 	} else {
-		var text = "1 - 1";
+		var text = "1 - " + this.levelId;
 		context.font = "64px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, 896/2 - textSize.width/2, 736/2);

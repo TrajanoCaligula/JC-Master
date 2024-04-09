@@ -192,7 +192,7 @@ Scene.prototype.draw = function ()
 	var textSize = context.measureText(text);
 	context.fillText(text, this.displacement + 30, 75);
 	
-	var text = this.noramlizeNumbers(this.points);
+	var text = this.normalizeNumbers(this.points);
 	context.fillText(text, this.displacement + 30, 75+25);
 	
 	context.drawImage(this.imPirateLife, this.displacement + (896/4), 80,30,25);
@@ -221,7 +221,7 @@ Scene.prototype.draw = function ()
 	var textSize = context.measureText(text);
 	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75);
 
-	var text = this.noramlizeTime(Math.floor(this.cronoTime / 1000));
+	var text = this.normalizeTime(Math.floor(this.cronoTime / 1000));
 	var textSize = context.measureText(text);
 	context.fillText(text, this.displacement +(896 - 30)-textSize.width, 75+25);
 
@@ -292,7 +292,7 @@ Scene.prototype.draw = function ()
 	context.restore();
 }
 
-Scene.prototype.noramlizeNumbers = function(x){
+Scene.prototype.normalizeNumbers = function(x){
 	var value = String(x);
 	if(x < 10)  value = "0000" + value;
 	else if(x < 100)  value = "000" + value;
@@ -301,7 +301,7 @@ Scene.prototype.noramlizeNumbers = function(x){
 	return value;
 }
 
-Scene.prototype.noramlizeTime = function(x){
+Scene.prototype.normalizeTime = function(x){
 	var value = String(x);
 	if(x < 10)  value = "000" + value;
 	else if(x < 100)  value = "00" + value;

@@ -62,8 +62,10 @@ function frameUpdate(timestamp)
 		if(isMenu) {
 			menu.update(TIME_PER_FRAME);
 			menu.setRecordPoints(recordPoints);
-		}//TODO:updatemenu;
-		else if(lvls.length == nextLevel){				//End of last lvl
+			this.nextLevel = menu.whereTo-1;
+			if(this.nextLevel != -1) this.isMenu = false;
+		}												//TODO:updatemenu;
+		else if(this.nextLevel == 2){				//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {
 				loadLevels();

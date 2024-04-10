@@ -68,6 +68,7 @@ Hat.prototype.update = function(deltaTime)
 		}
 	}
 	else{
+		if(this.sprite.y >= 640) this.sprite.y += 32;
 		if(this.direction == LEFT){
 			if(this.sprite.currentAnimation != HAT_LEFT) this.sprite.setAnimation(HAT_LEFT);
 			this.sprite.x -= 2;
@@ -80,7 +81,6 @@ Hat.prototype.update = function(deltaTime)
 			if(this.sprite.currentAnimation != HAT_RIGHT)this.sprite.setAnimation(HAT_RIGHT);
 			this.sprite.x += 2;
 			if(this.map.collisionMoveRight(this.sprite)){
-			console.log("collision");
 				this.sprite.x -= 2;
 				this.direction = LEFT;
 			}

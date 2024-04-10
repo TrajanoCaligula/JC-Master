@@ -70,6 +70,7 @@ Wheel.prototype.update = function(deltaTime)
 		}
 	}
 	else{
+		if(this.sprite.y >= 640) this.sprite.y += 32;
 		if(this.map.collisionMoveDownWheel(this.sprite)) this.sprite.y -=1;
 		if(this.direction == LEFT){		
 			if(this.sprite.currentAnimation != WHEEL_LEFT) this.sprite.setAnimation(WHEEL_LEFT);

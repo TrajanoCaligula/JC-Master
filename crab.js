@@ -105,7 +105,8 @@ function Crab(x, y, map)
 	this.goDown = false;
 	this.displaced = false;
 	this.points = 200;
-	
+
+	this.deadSound = AudioFX('Sounds/crab.mp3');
 }
 
 
@@ -191,7 +192,10 @@ Crab.prototype.update = function(deltaTime)
 		}
 		else
 		{
-			if(this.sprite.y >= this.map.killY)this.Dead = true;
+			if(this.sprite.y >= this.map.killY){
+				this.Dead = true;
+				this.deadSound.play();
+			}
 			this.isfalling = true;
 			if( this.direction == LEFT && this.sprite.currentAnimation != CRAB_FALL_LEFT)this.sprite.setAnimation(CRAB_FALL_LEFT);	
 			else if(this.direction == RIGHT && this.sprite.currentAnimation != CRAB_FALL_RIGHT)this.sprite.setAnimation(CRAB_FALL_RIGHT);	
@@ -217,6 +221,7 @@ Crab.prototype.collisionBox = function()
 
 Crab.prototype.killed = function()
 {
+	this.deadSound.play();
 	this.isDying = true;
 }
 

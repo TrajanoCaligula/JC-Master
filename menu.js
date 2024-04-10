@@ -30,6 +30,11 @@ function Menu()
 	this.imPirateLife.src = "Textures/Characters/PirateLife.png";
 	this.imCoins = new Image();
 	this.imCoins.src = "Textures/Levels/Coins.png";
+
+	this.select = AudioFX('Sounds/select.mp3');
+	this.select2 = AudioFX('Sounds/select.mp3');
+	this.choose = AudioFX('Sounds/choose.mp3');
+
 }
 
 
@@ -37,16 +42,19 @@ Menu.prototype.update = function(deltaTime)
 {
 	if(keyboard[38] || keyboard[87]){// UP
 		this.checkPosition();
+		this.select.play();
 		this.whereTo = 0;
 	}
 	else if(keyboard[40] || keyboard[83]){// DOWN
 		this.checkPosition();
+		this.select2.play();
 		this.whereTo = 0;
 	}
 	else if(keyboard[27]){// ESC
 		this.isSelector = false;
 	}
 	else if((keyboard[32] || keyboard[13]) && !this.active){ // SPACE/ENTER
+		this.choose.play();
 		var previousBoolean = this.isSelector;
 		this.TimerActive = TIMER_CD;
 		this.active = true;

@@ -70,6 +70,10 @@ function Scene(map, levelData,levelID)
 
 	this.music = AudioFX('Sounds/music_level.mp3', { loop: true });
 	this.powerUp = AudioFX('Sounds/powerUp.mp3');
+	this.powerUpWheel = AudioFX('Sounds/powerUpWheel2.mp3');
+	this.coinsSound = AudioFX('Sounds/coin.mp3');
+	this.soundEnd = AudioFX('Sounds/level_end.mp3');
+	this.soundShellHitted = AudioFX('Sounds/shellHit.mp3');
 
 	this.points = 0;
 	this.displayPoints = [];
@@ -518,6 +522,7 @@ Scene.prototype.updateAllBarrels = function(deltaTime){
 						}
 						else{
 							if(Math.random() < 0.7){
+								this.coinsSound.play();
 								this.nbCoins +=1;
 								this.coins.push(new Coin(this.barrelsInt[i].sprite.x, this.barrelsInt[i].sprite.y-16,this.map));
 								this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.coins[0].points));
@@ -564,7 +569,7 @@ Scene.prototype.updateAllObjects = function(deltaTime){
 				this.points += this.wheels[i].points;
 				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,this.wheels[i].points));
 				this.wheels[i].killed();
-				this.powerUp.play();
+				this.powerUpWheel.play();
 				if(this.player.vulnerability){
 					this.player.changingStates(deltaTime,this.player.actualIndexSprite,this.player.actualIndexSprite+2);	
 				}
@@ -654,6 +659,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					if(typeCollision == 1){
 						if(this.enemies_shells[i].isMoving) this.player.hitted();
 						else {
+							this.soundShellHitted.play();
 							this.enemies_shells[i].isMoving = true;
 							this.enemies_shells[i].direction = RIGHT;
 						}
@@ -661,6 +667,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					else if(typeCollision == 2){ 
 						if(this.enemies_shells[i].isMoving) this.player.hitted();
 						else {
+							this.soundShellHitted.play();
 							this.enemies_shells[i].isMoving = true;
 							this.enemies_shells[i].direction = LEFT;
 						}
@@ -670,6 +677,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 					}
 					else{ //golpe que para la shell
 						if(this.enemies_shells[i].isMoving) {
+							this.soundShellHitted.play();
 							this.enemies_shells[i].isMoving = false;
 							num_anim = this.enemies_shells[i].sprite.currentAnimation;
 							if(num_anim == SHELL_MOVE_LEFT) this.enemies_shells[i].sprite.setAnimation(SHELL_STAND_LEFT);
@@ -678,6 +686,7 @@ Scene.prototype.updateAllEnemies = function(deltaTime){
 						}
 						else { //golpe y rebote con la shell parada
 							if(this.enemies_shells[i].vulerabilityCD) {
+								this.soundShellHitted.play();
 								this.enemies_shells[i].isMoving = true;
 							}
 						}
@@ -713,6 +722,8 @@ Scene.prototype.updateFlag = function(deltaTime){
 		}
 		else if(this.flag.sprite.y < this.player.sprite.y + 12) {
 			if(!this.flagHitted) {
+				this.soundEnd.play();
+				this.music.stop();
 				this.flagHitted = true;
 				var tmp = Math.abs((this.player.sprite.y+12)-botFlag)/276;
 				tmp = Math.trunc(tmp * 1000);
@@ -723,6 +734,8 @@ Scene.prototype.updateFlag = function(deltaTime){
 		}
 		else if(this.flag.sprite.y >= this.player.sprite.y + 12){
 			if(!this.flagHitted){
+				this.soundEnd.play();
+				this.music.stop();
 				this.flagHitted = true;
 				this.points += 1000; //MAX POINTS
 				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,1000));

@@ -106,7 +106,7 @@ function Shark(x, y, map)
 	
 	this.points = 100;
 
-	this.deadSound = AudioFX('Sounds/shark.mp3');
+	this.deadSound = AudioFX('Sounds/gruntShark.mp3');
 	
 }
 
@@ -183,7 +183,10 @@ Shark.prototype.update = function(deltaTime)
 		else
 		{
 			this.isfalling = true;
-			if(this.sprite.y > this.map.killY)this.Dead = true;
+			if(this.sprite.y > this.map.killY){
+				this.deadSound.play();
+				this.Dead = true;
+			}
 			if(this.direction == LEFT && this.sprite.currentAnimation != SHARK_FALL_LEFT)this.sprite.setAnimation(SHARK_FALL_LEFT);	
 			else if(this.direction == RIGHT && this.sprite.currentAnimation != SHARK_FALL_RIGHT)this.sprite.setAnimation(SHARK_FALL_RIGHT);	
 		}		

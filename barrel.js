@@ -14,6 +14,7 @@ function Barrel(x, y)
 	this.isShown = true;
 	this.originalY = this.sprite.y;
 	this.crack = AudioFX('Sounds/wood_crash.mp3');
+	this.barrelSound = AudioFX('Sounds/barrel.mp3');
 
 	this.animation = false;
 	this.animationTime = 100;
@@ -53,6 +54,7 @@ Barrel.prototype.Activated = function(){
 }
 
 Barrel.prototype.move = function(){
+	this.barrelSound.play();
 	this.sprite.y -= 2;
 	this.animation = true;	
 }

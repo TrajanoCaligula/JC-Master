@@ -12,6 +12,8 @@ function Tilemap(tilesheet, tileSize, blockGrid, basePos, map)
 	this.killY = 800;
 
 	this.tilesheet = tilesheet;
+
+
 }
 
 Tilemap.prototype.draw = function ()
@@ -74,12 +76,13 @@ Tilemap.prototype.collisionMoveLeft = function(sprite)
 	
 	for(var y=y0; y<=y1; y++)
 	{
-		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0)
+		if(this.map.layers[TERRAIN].data[y * this.map.width + x] != 0){
 			return true;
-		else if(this.map.layers[5].data[y * this.map.width + x] != 0)
+		}else if(this.map.layers[5].data[y * this.map.width + x] != 0){
 			return true;
-		else if(this.map.layers[4].data[y * this.map.width + x] != 0)
+		}else if(this.map.layers[4].data[y * this.map.width + x] != 0){
 			return true;
+		}
 	}
 	
 	return false;
@@ -253,7 +256,7 @@ Tilemap.prototype.collisionMoveDown = function(sprite)
 
 Tilemap.prototype.collisionMoveUp = function(sprite, size)
 {
-if(size == 1) extra = 26;
+if(size == 1) extra = 20;
 else extra = 10;
   var y = Math.floor((sprite.y + sprite.height- extra- this.basePos[1]) / this.tileSize[1]);
   var x0 = Math.floor((sprite.x + 18 - this.basePos[0]) / this.tileSize[0]);

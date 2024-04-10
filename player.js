@@ -85,6 +85,11 @@ function Player(x, y, map)
 	this.isEnding = false;
 	this.isFinished = false;
 
+	this.soundHitted = AudioFX('Sounds/pirateHitted.mp3');
+	this.soundJump = AudioFX('Sounds/pirateJump.mp3');
+	this.soundUpImpact = AudioFX('Sounds/pirateUpImpact.mp3');
+	this.soundTerrainImpact = AudioFX('Sounds/impact.mp3');
+
 }
 
 
@@ -142,13 +147,14 @@ Player.prototype.update = function(deltaTime)
 			this.incrementX = this.speed * deltaTime / 1000.0
 
 			this.sprite.x += this.incrementX
-			if (this.sprite.x < -7){//TODO: Adapatar a displaicement
+			if (this.sprite.x < -7){
 				this.sprite.x -= this.incrementX;
 				this.incrementX = 0;
 				this.speed = 0;
 				if(this.sprite.currentAnimation != PIRATE_STAND_LEFT &&(this.sprite.currentAnimation == PIRATE_WALK_LEFT || this.sprite.currentAnimation == PIRATE_RUN_LEFT)) this.sprite.setAnimation(PIRATE_STAND_LEFT);
 			} 
 			if(this.map.collisionMoveLeft(this.sprite)){
+				this.soundTerrainImpact.play();
 				this.sprite.x -= this.incrementX;
 				this.incrementX = 0;
 				this.speed = 0;
@@ -197,6 +203,7 @@ Player.prototype.update = function(deltaTime)
 
 			this.sprite.x += this.incrementX
 			if(this.map.collisionMoveRight(this.sprite) ){
+				this.soundTerrainImpact.play();
 				this.sprite.x -= this.incrementX;
 				this.incrementX = 0;
 				this.speed = 0;
@@ -242,6 +249,7 @@ Player.prototype.update = function(deltaTime)
 				this.speed = 0;
 			}
 			if(this.map.collisionMoveRight(this.sprite)|| this.map.collisionMoveLeft(this.sprite)){
+				this.soundTerrainImpact.play();
 				this.sprite.x -= this.incrementX;
 				this.incrementX = 0;
 				this.speed = 0;
@@ -287,6 +295,7 @@ Player.prototype.update = function(deltaTime)
 					this.bJumping = !this.map.collisionMoveDown(this.sprite);
 				}
 				else if(this.map.collisionMoveUp(this.sprite, this.size)){
+					this.soundUpImpact.play();
 					this.jumpAngle = 90;
 					this.startY = (this.sprite.y + 130 )/ Math.sin(3.14159 * this.jumpAngle / 180);
 				}
@@ -308,6 +317,7 @@ Player.prototype.update = function(deltaTime)
 				// Check arrow up key. If pressed, jump.
 				if ((keyboard[38] || keyboard[32] || keyboard[87]))
 				{
+					this.soundJump.play();
 					this.bJumping = true;
 					this.jumpAngle = 0;
 					this.startY = this.sprite.y;
@@ -364,10 +374,12 @@ Player.prototype.update = function(deltaTime)
 }
 
 Player.prototype.resetJump = function(){
+	
 	if(this.jumpAngle<=90){
 		this.jumpAngle = 90;
 		this.startY = (this.sprite.y + 130 )/ Math.sin(3.14159 * this.jumpAngle / 180);
 	}else{
+		this.soundJump.play();
 		this.bJumping = true;
 		this.jumpAngle = 0;
 		this.startY = this.sprite.y;
@@ -392,6 +404,7 @@ Player.prototype.hitted = function()
 {
 	num_anim = this.sprite.currentAnimation;
 	if(this.vulnerability && this.size == 1){ //If the player is vulnerable and is big
+		this.soundHitted.play();
 		this.nextAnimationAfterHitted = num_anim;
         if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT) this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         else this.sprite.setAnimation(PIRATE_HIT_LEFT);
@@ -400,6 +413,7 @@ Player.prototype.hitted = function()
 		this.changingStates(0, this.actualIndexSprite, this.actualIndexSprite-1);
 		this.changeSize();
 	} else if(this.vulnerability){
+		this.soundHitted.play();
 	    if(num_anim == PIRATE_STAND_LEFT || num_anim == PIRATE_WALK_LEFT || num_anim == PIRATE_JUMP_LEFT || num_anim == PIRATE_FALL_LEFT)this.sprite.setAnimation(PIRATE_HIT_RIGHT);
         else this.sprite.setAnimation(PIRATE_HIT_LEFT);
         this.isDying = true;
@@ -510,12 +524,14 @@ Player.prototype.changingStates = function(deltaTime, actualSprite, spriteToChan
 	
 }
 Player.prototype.killOutOfMap = function(){
+	this.soundHitted.play();
 	this.isDying = true;
 	this.jumpAngle = 180;
 	this.startY = this.sprite.y;
 }
 
 Player.prototype.killOutOfTime = function(){
+	this.soundHitted.play();
 	this.isDying = true;
 	this.jumpAngle = 0;
 	this.startY = this.sprite.y;

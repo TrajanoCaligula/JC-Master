@@ -100,7 +100,7 @@ Credits.prototype.draw = function draw()
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), this.baseY + 630 - this.displacement);
 
-		var text = "Pixabay.com & ";
+		var text = "Pixabay.com ";
 		context.font = (this.fontSize).toString() + "px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), this.baseY + 670 - this.displacement);

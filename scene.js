@@ -825,6 +825,8 @@ Scene.prototype.restart = function(){
   this.isFinished = false;
   this.finishPointsAdded = false;
   this.flagHitted = false;
+  this.flagHitted = false;
+  this.endLevel = false;
 
   // Resetting particles
   this.particleBarrels = [];

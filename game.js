@@ -71,7 +71,7 @@ function frameUpdate(timestamp)
 			menu.points = points;
 			if(nextLevel != -1) isMenu = false;
 			lvls[0].player.lifes = lifes;
-		}												//TODO:updatemenu;
+		}												//TODO:updatemenu	
 		else if(nextLevel == 2){						//End of last lvl
 			credits.update(TIME_PER_FRAME);
 			if(!credits.active) {

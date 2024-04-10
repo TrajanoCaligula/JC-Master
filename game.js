@@ -66,11 +66,14 @@ function frameUpdate(timestamp)
 			menu.update(TIME_PER_FRAME);
 			menu.setRecordPoints(recordPoints);
 			nextLevel = menu.whereTo-1;
+			if(nextLevel != -1) {
+				isMenu = false;
+				lifes = 4;
+				if(nextLevel != 2) lvls[nextLevel].player.lifes = lifes;
+			}
 			menu.nbCoins = coins;
 			menu.lifes = lifes;
 			menu.points = points;
-			if(nextLevel != -1) isMenu = false;
-			lvls[0].player.lifes = lifes;
 		}												//TODO:updatemenu	
 		else if(nextLevel == 2){						//End of last lvl
 			credits.update(TIME_PER_FRAME);
@@ -79,7 +82,7 @@ function frameUpdate(timestamp)
 				isMenu = true;							//redirect to menu
 				reload = true;
 			}
-		} else{											//New lvl
+		} else if(lifes > 0){											//New lvl
 			lvls[nextLevel].update(TIME_PER_FRAME);
 			if(lvls[nextLevel].endLevel) {
 				lifes = lvls[nextLevel].player.lifes;
@@ -101,6 +104,8 @@ function frameUpdate(timestamp)
 					lifes = lvls[1].player.lifes;
 				}
 			}				
+		} else{
+			nextLevel = 2;
 		}
 		previousTimestamp += TIME_PER_FRAME;
 		deltaTime = timestamp - previousTimestamp;

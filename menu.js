@@ -22,8 +22,8 @@ function Menu()
 	this.nbCoins;
 	this.points;
 
-	this.whereTo = 0; //0 menu, 1 lvl1, 2 lvl2, 3credits
-	this.isSelector = false;
+	this.whereTo = -1;
+	this.iAm = 0;
 
 
 	this.imPirateLife = new Image();
@@ -45,36 +45,41 @@ Menu.prototype.update = function(deltaTime)
 		this.checkPosition();
 		this.select.stop();
 		this.select.play();
-		this.whereTo = 0;
+		this.whereTo = -1;
 	}
 	else if(keyboard[40] || keyboard[83]){// DOWN
 		this.checkPosition();
 		this.select.stop();
 		this.select.play();
-		this.whereTo = 0;
+		this.whereTo = -1;
 	}
 	else if(keyboard[27]){// ESC
-		this.isSelector = false;
+		this.iAm = 0;
 	}
 	else if((keyboard[32] || keyboard[13]) && !this.active){ // SPACE/ENTER
 		this.soundSea.stop();
 		this.choose.stop();
 		this.choose.play();
-		var previousBoolean = this.isSelector;
 		this.TimerActive = TIMER_CD;
 		this.active = true;
-		if(!previousBoolean){
+		if(this.iAm == 0){
 			if(this.position == 1) { //selector de nivell
-				this.isSelector = true;
+				this.iAm = 1;
 			} else {	//credits
-				this.whereTo = 3;
+				this.iAm = 2;
+				this.position = 1;
 			}
-		}
-		else {
+		} else if(this.iAm == 1){
 			if(this.position == 1) { //1-1
-				this.whereTo = 1;
+				this.whereTo = LEVEL1;
 			} else {	//1-2
-				this.whereTo = 2;
+				this.whereTo = LEVEL2;
+			}
+		} else {
+			if(this.position == 1) { //instruccions
+				this.whereTo = CONTROLS;
+			} else {	//1-2
+				this.whereTo = CREDITS;
 			}
 		}
 		for(var i = 0; i < this.icons.length; i++) this.icons[i].sprite.y = 425;
@@ -146,23 +151,35 @@ Menu.prototype.draw = function ()
 	context.fillText(text, (896 - 30)-textSize.width, 65+25);
 
 	context.fillStyle = "black";
-	if(!this.isSelector){
+	if(this.iAm == 0){
 		var text = "Play";
 		context.font = "64px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), 475);
 
-		var text = "Credits";
+		var text = "Options";
 		context.font = "64px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), 575);
-	}else{
+	}
+	else if(this.iAm == 1){
 		var text = "1 - 1";
 		context.font = "64px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), 475);
 
 		var text = "1 - 2";
+		context.font = "64px Candara";
+		var textSize = context.measureText(text);
+		context.fillText(text, (896/2)-(textSize.width/2), 575);
+	}
+	else if(this.iAm == 2){
+		var text = "Controls";
+		context.font = "64px Candara";
+		var textSize = context.measureText(text);
+		context.fillText(text, (896/2)-(textSize.width/2), 475);
+
+		var text = "Credits";
 		context.font = "64px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), 575);
@@ -202,13 +219,6 @@ Menu.prototype.updateParticles = function(deltaTime){
 		} 
 		else this.particleBarrels[i].update(deltaTime);
 	}
-}
-
-Menu.prototype.resetBooleans = function(){
-	this.goCredits = false;
-	this.goLevel1 = false;
-	this.goLevel2 = false;
-	this.isSelector = false;
 }
 
 Menu.prototype.checkPosition = function(){

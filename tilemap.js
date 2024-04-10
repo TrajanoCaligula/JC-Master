@@ -12,6 +12,7 @@ function Tilemap(tilesheet, tileSize, blockGrid, basePos, map)
 	this.killY = 800;
 
 	this.tilesheet = tilesheet;
+	this.soundTerrainImpact = AudioFX('Sounds/impact.mp3');
 
 
 }
@@ -264,6 +265,7 @@ else extra = 10;
 
   for (var x = x0; x <= x1; x++) {
     if (this.map.layers[TERRAIN].data[(y - 1) * this.map.width + x] != 0) {
+		this.soundTerrainImpact.play();
 		return true;
     }
 	if (this.map.layers[5].data[(y - 1) * this.map.width + x] != 0) {

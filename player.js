@@ -87,7 +87,6 @@ function Player(x, y, map)
 
 	this.soundHitted = AudioFX('Sounds/pirateHitted.mp3');
 	this.soundJump = AudioFX('Sounds/pirateJump.mp3');
-	this.soundUpImpact = AudioFX('Sounds/pirateUpImpact.mp3');
 	this.soundTerrainImpact = AudioFX('Sounds/impact.mp3');
 
 }
@@ -295,7 +294,6 @@ Player.prototype.update = function(deltaTime)
 					this.bJumping = !this.map.collisionMoveDown(this.sprite);
 				}
 				else if(this.map.collisionMoveUp(this.sprite, this.size)){
-					this.soundUpImpact.play();
 					this.jumpAngle = 90;
 					this.startY = (this.sprite.y + 130 )/ Math.sin(3.14159 * this.jumpAngle / 180);
 				}

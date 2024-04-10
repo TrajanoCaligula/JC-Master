@@ -108,7 +108,7 @@ Menu.prototype.draw = function ()
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.save();
 
-	context.drawImage(this.background, 0, 32,);
+	context.drawImage(this.background, 0, 32);
 	context.fillStyle = "white";
 
 	// Draw text

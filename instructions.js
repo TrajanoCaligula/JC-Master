@@ -10,6 +10,8 @@ function Instructions() //TODO
 	this.title = true;
 	this.displacement = 0;
 	this.baseY = 1000;
+	this.background = new Image();
+	this.background.src = "Textures/Levels/InstructionsBackground.png";
 }
 
 
@@ -27,6 +29,7 @@ Instructions.prototype.draw = function draw()
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
 	context.fillStyle = "white";
+	context.drawImage(this.background, 0, 32);
 	
 	var text = "CONTROLS";
 	context.font = (this.fontSize*3).toString() + "px Candara";

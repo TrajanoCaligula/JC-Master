@@ -10,6 +10,8 @@ function Credits() //TODO
 	this.title = true;
 	this.displacement = 0;
 	this.baseY = 1000;
+	this.background = new Image();
+	this.background.src = "Textures/Levels/CreditsBackground.png";
 }
 
 
@@ -33,6 +35,7 @@ Credits.prototype.draw = function draw()
 	var context = canvas.getContext("2d");	
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(0, 0, canvas.width, canvas.height);
+	context.drawImage(this.background, 0, 32);
 
 	if(this.title){
 		var text = "THE PIRATE HUNTER";

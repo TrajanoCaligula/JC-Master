@@ -142,11 +142,6 @@ Scene.prototype.update = function(deltaTime)
 						this.player.sprite.y = 576;
 						this.displacement = this.player.sprite.x-this.displacementMargin;
 					}
-					else if(keyboard[51]){// TP 3
-						this.player.sprite.x = 6304;
-						this.player.sprite.y = 288;
-						this.displacement = this.player.sprite.x-this.displacementMargin;
-					}
 				// Check for collision between entities
 					this.updateAllBarrels(deltaTime);
 				

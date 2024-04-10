@@ -23,6 +23,7 @@ var recordPoints = 0;
 var nextLevel = 1;
 var isMenu = true; //	MENU, POSAR A TRUE
 var reload = false;
+var mustChange = false;
 
 
 // Control keyboard events
@@ -67,6 +68,26 @@ function frameUpdate(timestamp)
 	
 	while(deltaTime > TIME_PER_FRAME)
 	{
+
+		if(keyboard[49]){
+			isMenu = false;
+			nextLevel = LEVEL1;
+			mustChange = true;
+		}
+		if(keyboard[50]){
+			isMenu = false;
+			nextLevel = LEVEL2;
+			mustChange = true;
+		}
+		if(keyboard[57]){
+			isMenu = true;
+			nextLevel = MENU;
+			reload = true;
+		}
+		if(mustChange) {
+			refreshLevels();
+			mustChange = false;
+		}
 		if(isMenu) {
 			if(reload) refreshLevels();
 			menu.update(TIME_PER_FRAME);
@@ -97,8 +118,7 @@ function frameUpdate(timestamp)
 				reload = true;
 			}
 		}
-		else if(lifes > 0){											
-			console.log(nextLevel);
+		else if(lifes > 0){				
 			lvls[nextLevel].update(TIME_PER_FRAME);
 			if(lvls[nextLevel].endLevel) {
 				lifes = lvls[nextLevel].player.lifes;
@@ -123,10 +143,10 @@ function frameUpdate(timestamp)
 				}
 			}				
 		} else{
-			nextLevel = CREDITS;
 			lvls[0].stopSounds();
 			lvls[1].stopSounds();
 		}
+		
 		previousTimestamp += TIME_PER_FRAME;
 		deltaTime = timestamp - previousTimestamp;
 		

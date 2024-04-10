@@ -141,12 +141,12 @@ Scene.prototype.update = function(deltaTime)
 				}
 				// Update entities
 				if(this.player.isAlive()){
-					if(keyboard[49]){// TP 1
+					if(keyboard[51]){// TP 1
 						this.player.sprite.x = 3136;
 						this.player.sprite.y = 576;
 						this.displacement = this.player.sprite.x-this.displacementMargin;
 					}
-					else if(keyboard[50]){// TP 2
+					else if(keyboard[52]){// TP 2
 						this.player.sprite.x = 5980;
 						this.player.sprite.y = 576;
 						this.displacement = this.player.sprite.x-this.displacementMargin;

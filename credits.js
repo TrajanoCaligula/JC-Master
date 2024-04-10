@@ -52,7 +52,7 @@ Credits.prototype.draw = function draw()
 		context.font = (this.fontSize).toString() + "px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), this.baseY + 40 - this.displacement);
-		var text = "Alvaro Rodriguez Martinez";
+		var text = "Alvaro Rodríguez Rubio";
 		context.font = (this.fontSize).toString() + "px Candara";
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), this.baseY + 80 - this.displacement);

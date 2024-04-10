@@ -32,7 +32,6 @@ function Menu()
 	this.imCoins.src = "Textures/Levels/Coins.png";
 
 	this.select = AudioFX('Sounds/select.mp3');
-	this.select2 = AudioFX('Sounds/select.mp3');
 	this.choose = AudioFX('Sounds/choose.mp3');
 
 }
@@ -42,18 +41,21 @@ Menu.prototype.update = function(deltaTime)
 {
 	if(keyboard[38] || keyboard[87]){// UP
 		this.checkPosition();
+		this.select.stop();
 		this.select.play();
 		this.whereTo = 0;
 	}
 	else if(keyboard[40] || keyboard[83]){// DOWN
 		this.checkPosition();
-		this.select2.play();
+		this.select.stop();
+		this.select.play();
 		this.whereTo = 0;
 	}
 	else if(keyboard[27]){// ESC
 		this.isSelector = false;
 	}
 	else if((keyboard[32] || keyboard[13]) && !this.active){ // SPACE/ENTER
+		this.choose.stop();
 		this.choose.play();
 		var previousBoolean = this.isSelector;
 		this.TimerActive = TIMER_CD;

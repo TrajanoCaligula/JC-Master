@@ -74,6 +74,7 @@ function Scene(map, levelData,levelID)
 	this.coinsSound = AudioFX('Sounds/coin.mp3');
 	this.soundEnd = AudioFX('Sounds/level_end.mp3');
 	this.soundShellHitted = AudioFX('Sounds/shellHit.mp3');
+	this.stopMusic = false;
 
 	this.points = 0;
 	this.displayPoints = [];
@@ -87,7 +88,7 @@ function Scene(map, levelData,levelID)
 Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
-		if(interacted)this.music.play();
+		if(interacted && !this.stopMusic)this.music.play();
 		this.currentTime += deltaTime;
 		
 		if(this.isStarting){
@@ -724,6 +725,7 @@ Scene.prototype.updateFlag = function(deltaTime){
 			if(!this.flagHitted) {
 				this.soundEnd.play();
 				this.music.stop();
+				this.stopMusic = true;
 				this.flagHitted = true;
 				var tmp = Math.abs((this.player.sprite.y+12)-botFlag)/276;
 				tmp = Math.trunc(tmp * 1000);
@@ -736,6 +738,7 @@ Scene.prototype.updateFlag = function(deltaTime){
 			if(!this.flagHitted){
 				this.soundEnd.play();
 				this.music.stop();
+				this.stopMusic = true;
 				this.flagHitted = true;
 				this.points += 1000; //MAX POINTS
 				this.displayPoints.push(new PointsDisplay(this.player.sprite.x,this.player.sprite.y,1000));
@@ -831,10 +834,15 @@ Scene.prototype.restart = function(){
   this.cronoTime = this.cronoMax;
 
   // Stop music
-  this.music.stop();
+  if(interacted){
+	this.music.stop(); 
+	this.music.play();
+	}
+	this.stopMusic = false;
+
 
   // Start music again
-  this.music.play();
+
 
   // Resetting other flags and variables
   this.drawHitBoxesState = false;

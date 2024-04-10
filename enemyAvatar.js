@@ -6,7 +6,7 @@ const WALK_RIGHT = 3;
 function EnemyAvatar(x, y)
 {
 	// Loading spritesheets
-	if(RangeRandom(0, 1) == 0){
+	if(Math.random()  >= 0.5){
 		this.isShark(x, y);
 	}else{
 		this.isCrab(x, y);
@@ -15,9 +15,7 @@ function EnemyAvatar(x, y)
 	// Set initial animation
 	this.sprite.setAnimation(STAND_LEFT);
 	
-	// Set tilemap for collisions
-	this.map = map;
-	
+	// Set tilemap for collisions	
 	this.directionLeft = true;
 	this.walk=false;
 	this.timerNewAct = 0;
@@ -27,10 +25,10 @@ EnemyAvatar.prototype.update = function(deltaTime)
 {
 	if(this.timerNewAct >=3000){
 		this.timerNewAct = 0;
-		if(RangeRandom(0, 1) == 0){
+		if(Math.random()  >= 0.5){
 			this.walk = !this.walk;
 		}
-		if(RangeRandom(0, 1) == 0){
+		if(Math.random()  == 0.5){
 			this.directionLeft = !this.directionLeft;
 		}
 		this.walk = !this.walk;
@@ -38,18 +36,18 @@ EnemyAvatar.prototype.update = function(deltaTime)
 	if(this.walk){
 		if(this.directionLeft){
 			if(this.sprite.currentAnimation != WALK_LEFT)this.sprite.setAnimation(WALK_LEFT);
-			this.sprite.position.x -= 1;
-			if(this.sprite.position.x < 8){
+			this.sprite.x -= 1;
+			if(this.sprite.x < 8){
 				this.directionLeft = false;
-				this.sprite.position.x = 8;
+				this.sprite.x = 8;
 				this.sprite.setAnimation(WALK_RIGHT);
 			}
 		}else{
 			if(this.sprite.currentAnimation != WALK_RIGHT)this.sprite.setAnimation(WALK_RIGHT);
-			this.sprite.position.x += 1;
-			if(this.sprite.position.x > 800){
+			this.sprite.x += 1;
+			if(this.sprite.x > 800){
 				this.directionLeft = true;
-				this.sprite.position.x = 800;
+				this.sprite.x = 800;
 				this.sprite.setAnimation(WALK_LEFT);
 			}
 		}
@@ -126,24 +124,26 @@ EnemyAvatar.prototype.isCrab = function(x, y){
 
 	//STAND
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(STAND_LEFT, [224, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [192, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [160, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [128, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [96, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [64, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [32, 224, 32, 32]);
-	this.sprite.addKeyframe(STAND_LEFT, [0, 224, 32, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [0, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [64, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [128, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [192, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [256, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [320, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [384, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [448, 0, 64, 32]);
+	this.sprite.addKeyframe(STAND_LEFT, [512, 0, 64, 32]);
 
 	this.sprite.addAnimation();
-	this.sprite.addKeyframe(STAND_RIGHT, [0, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [32, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [64, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [96, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [128, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [160, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [192, 0, 32, 32]);
-	this.sprite.addKeyframe(STAND_RIGHT, [224, 0, 32, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [512, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [448, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [384, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [320, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [256, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [192, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [128, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [64, 160, 64, 32]);
+	this.sprite.addKeyframe(STAND_RIGHT, [0, 160, 64, 32]);
 	//WALK
 
 	this.sprite.addAnimation();

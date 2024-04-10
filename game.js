@@ -108,7 +108,9 @@ function frameUpdate(timestamp)
 					coins = lvls[0].nbCoins;
 					lifes = lvls[0].player.lifes;
 					lvls[1].player.lifes = lifes;
-
+					lvls[0].music.stop();
+					lvls[0].soundsBackground.stop();
+					
 				}else {
 					nextLevel = CREDITS;
 					points += lvls[1].points;
@@ -122,6 +124,8 @@ function frameUpdate(timestamp)
 			}				
 		} else{
 			nextLevel = CREDITS;
+			lvls[0].stopSounds();
+			lvls[1].stopSounds();
 		}
 		previousTimestamp += TIME_PER_FRAME;
 		deltaTime = timestamp - previousTimestamp;

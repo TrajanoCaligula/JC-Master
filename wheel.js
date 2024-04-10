@@ -70,7 +70,6 @@ Wheel.prototype.update = function(deltaTime)
 		}
 	}
 	else{
-		if(this.sprite.y >= 640) this.sprite.y += 32;
 		if(this.map.collisionMoveDownWheel(this.sprite)) this.sprite.y -=1;
 		if(this.direction == LEFT){		
 			if(this.sprite.currentAnimation != WHEEL_LEFT) this.sprite.setAnimation(WHEEL_LEFT);
@@ -91,8 +90,11 @@ Wheel.prototype.update = function(deltaTime)
 		// Move PIRATE so that it is affected by gravity
 		
 		this.sprite.y += 6;
-		if(this.map.collisionMoveDownWheel(this.sprite))this.isfalling = false;
-		else this.isfalling = true;
+		if(this.sprite.y < this.map.limitY && this.map.collisionMoveDown(this.sprite)) this.isfalling = false;
+		else{
+			if(this.sprite.y >= this.map.killY)this.Dead = true;
+			this.isfalling = true;
+		}
 		// Update sprites
 		
 	}

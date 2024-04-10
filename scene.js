@@ -178,7 +178,11 @@ Scene.prototype.update = function(deltaTime)
 				}
 		}
 	}
-	else if(this.player.Dead) this.endLevel = true;
+	if(this.player.Dead){
+		this.endLevel = true;
+		this.music.stop();
+		this.soundsBackground.stop();
+	} 
 	
 	
 }
@@ -718,6 +722,9 @@ Scene.prototype.updateFlag = function(deltaTime){
 	var botFlag = 576;
 
 	if(!this.isFinished && !this.player.hittedState && this.player.collisionBox().intersect(this.flag.collisionBox())){
+		this.soundEnd.play();
+		this.music.stop();
+		this.soundsBackground.stop();
 		if(this.player.sprite.y >= botFlag){
 			if(this.player.isFinished) {
 				this.isFinished = true;
@@ -741,9 +748,6 @@ Scene.prototype.updateFlag = function(deltaTime){
 		}
 		else if(this.flag.sprite.y >= this.player.sprite.y + 12){
 			if(!this.flagHitted){
-				this.soundEnd.play();
-				this.music.stop();
-				this.soundsBackground.stop();
 				this.stopMusic = true;
 				this.flagHitted = true;
 				this.points += 1000; //MAX POINTS
@@ -844,9 +848,7 @@ Scene.prototype.restart = function(){
   // Stop music
   if(interacted){
 	this.music.stop(); 
-	this.music.play();
 	this.soundsBackground.stop();
-	this.soundsBackground.play();
 	}
 	this.stopMusic = false;
 
@@ -871,4 +873,10 @@ Scene.prototype.restart = function(){
 
   this.player.sprite.x = 100;
   this.player.sprite.y = 0;
+}
+
+Scene.prototype.stopSounds = function(){
+	this.music.stop();
+	this.soundsBackground.stop();
+	this.stopMusic = false;
 }

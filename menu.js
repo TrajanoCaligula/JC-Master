@@ -34,12 +34,14 @@ function Menu()
 	this.select = AudioFX('Sounds/select.mp3');
 	this.choose = AudioFX('Sounds/choose.mp3');
 	this.soundSea = AudioFX('Sounds/sea.mp3', { volume: 0.5, loop: true });
+	this.enemy = new EnemyAvatar(300, 576);
 
 }
 
 
 Menu.prototype.update = function(deltaTime)
 {
+	this.enemy.update(deltaTime);
 	if(interacted)this.soundSea.play();
 	if(keyboard[38] || keyboard[87]){// UP
 		this.checkPosition();
@@ -57,9 +59,9 @@ Menu.prototype.update = function(deltaTime)
 		this.iAm = 0;
 	}
 	else if((keyboard[32] || keyboard[13]) && !this.active){ // SPACE/ENTER
-		this.soundSea.stop();
 		this.choose.stop();
 		this.choose.play();
+		this.soundSea.stop();
 		this.TimerActive = TIMER_CD;
 		this.active = true;
 		if(this.iAm == 0){
@@ -184,6 +186,8 @@ Menu.prototype.draw = function ()
 		var textSize = context.measureText(text);
 		context.fillText(text, (896/2)-(textSize.width/2), 575);
 	}
+
+	this.enemy.draw();
 
 	for(var i = 0; i < this.icons.length; i++) this.icons[i].draw();
 

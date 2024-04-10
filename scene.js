@@ -82,13 +82,22 @@ function Scene(map, levelData,levelID)
 	this.cronoTime = this.cronoMax;
 
 	this.playerHasToDraw = true;
+	if(this.levelId == 1){
+		this.soundsBackground = AudioFX('Sounds/sea.mp3', { volume: 0.5, loop: true });
+	}
+	else if(this.levelId == 2){
+		this.soundsBackground = AudioFX('Sounds/level2background.mp3', { volume: 0.5, loop: true });
+	}
 }
 
 
 Scene.prototype.update = function(deltaTime)
 {
 	if(this.player.lifes > 0){
-		if(interacted && !this.stopMusic)this.music.play();
+		if(interacted && !this.stopMusic){
+			this.music.play();
+			this.soundsBackground.play();
+		}
 		this.currentTime += deltaTime;
 		
 		if(this.isStarting){
@@ -720,6 +729,7 @@ Scene.prototype.updateFlag = function(deltaTime){
 			if(!this.flagHitted) {
 				this.soundEnd.play();
 				this.music.stop();
+				this.soundsBackground.stop();
 				this.stopMusic = true;
 				this.flagHitted = true;
 				var tmp = Math.abs((this.player.sprite.y+12)-botFlag)/276;
@@ -733,6 +743,7 @@ Scene.prototype.updateFlag = function(deltaTime){
 			if(!this.flagHitted){
 				this.soundEnd.play();
 				this.music.stop();
+				this.soundsBackground.stop();
 				this.stopMusic = true;
 				this.flagHitted = true;
 				this.points += 1000; //MAX POINTS
@@ -834,6 +845,8 @@ Scene.prototype.restart = function(){
   if(interacted){
 	this.music.stop(); 
 	this.music.play();
+	this.soundsBackground.stop();
+	this.soundsBackground.play();
 	}
 	this.stopMusic = false;
 

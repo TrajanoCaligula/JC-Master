@@ -33,12 +33,14 @@ function Menu()
 
 	this.select = AudioFX('Sounds/select.mp3');
 	this.choose = AudioFX('Sounds/choose.mp3');
+	this.soundSea = AudioFX('Sounds/sea.mp3', { volume: 0.5, loop: true });
 
 }
 
 
 Menu.prototype.update = function(deltaTime)
 {
+	if(interacted)this.soundSea.play();
 	if(keyboard[38] || keyboard[87]){// UP
 		this.checkPosition();
 		this.select.stop();
@@ -55,6 +57,7 @@ Menu.prototype.update = function(deltaTime)
 		this.isSelector = false;
 	}
 	else if((keyboard[32] || keyboard[13]) && !this.active){ // SPACE/ENTER
+		this.soundSea.stop();
 		this.choose.stop();
 		this.choose.play();
 		var previousBoolean = this.isSelector;
